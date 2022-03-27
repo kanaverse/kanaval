@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 #include "kanaval/quality_control.hpp"
 #include "utils.h"
+#include <iostream>
 
 void add_quality_control(H5::H5File handle, int num_cells, int num_batches) {
     auto qhandle = handle.createGroup("quality_control");
@@ -26,7 +27,7 @@ void add_quality_control(H5::H5File handle, int num_cells, int num_batches) {
     return;
 }
 
-TEST(QualityControl, ParametersOk) {
+TEST(QualityControl, AllOK) {
     const std::string path = "TEST_quality_control.h5";
 
     // Works in simple mode.
@@ -50,5 +51,82 @@ TEST(QualityControl, ParametersOk) {
     }
 }
 
+void quick_qc_throw(const std::string& path, int num_cells, int num_batches, std::string msg) {
+    H5::H5File handle(path, H5F_ACC_RDONLY);
+    EXPECT_ANY_THROW({
+        try {
+            kanaval::quality_control::validate(handle, num_cells, num_batches);
+            std::cout << "failed to throw '" << msg << "'" << std::endl;
+        } catch (std::exception& e) {
+            std::string found(e.what());
+            if (found.find(msg) == std::string::npos) {
+                std::cout << "error '" << e.what() << "' does not match '" << msg << "'" << std::endl;
+                EXPECT_FALSE(true);
+            }
+            throw e;
+        }
+    });
+}
 
+TEST(QualityControl, ParametersFailed) {
+    const std::string path = "TEST_quality_control.h5";
 
+    {
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        add_quality_control(handle, 100, 1);
+        handle.unlink("quality_control/parameters");
+    }
+    quick_qc_throw(path, 100, 1, "'parameters' group");
+
+    {
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        add_quality_control(handle, 100, 1);
+        handle.unlink("quality_control/parameters/mito_prefix");
+    }
+    quick_qc_throw(path, 100, 1, "'mito_prefix'");
+
+    {
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        add_quality_control(handle, 100, 1);
+        handle.unlink("quality_control/parameters/use_mito_default");
+    }
+    quick_qc_throw(path, 100, 1, "'use_mito_default'");
+
+    {
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        add_quality_control(handle, 100, 1);
+        handle.unlink("quality_control/parameters/nmads");
+    }
+    quick_qc_throw(path, 100, 1, "'nmads'");
+
+    {
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        add_quality_control(handle, 100, 1);
+        handle.unlink("quality_control/parameters/nmads");
+        quick_write_dataset(handle, "quality_control/parameters/nmads", -1.0);
+    }
+    quick_qc_throw(path, 100, 1, "non-negative");
+}
+
+TEST(QualityControl, ResultsFailed) {
+    const std::string path = "TEST_quality_control.h5";
+
+    {
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        add_quality_control(handle, 100, 1);
+        handle.unlink("quality_control/results");
+    }
+    quick_qc_throw(path, 100, 1, "'results' group");
+
+    {
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        add_quality_control(handle, 200, 1);
+    }
+    quick_qc_throw(path, 100, 1, "failed to retrieve metrics");
+
+    {
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        add_quality_control(handle, 100, 2);
+    }
+    quick_qc_throw(path, 100, 1, "failed to retrieve thresholds");
+}

@@ -73,7 +73,7 @@ inline int validate_results(const H5::Group& qhandle, int num_cells, int num_bat
  * 
  * @description
  * This function checks the quality control parameters and results.
- * `parameters` shouhld contain:
+ * `parameters` should contain:
  * 
  * - `use_mito_default`: a scalar integer to be interpreted as a boolean.
  *   This specifies whether to use the default mitochondrial gene list.

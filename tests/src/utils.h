@@ -46,7 +46,7 @@ template<class Object>
 void quick_write_dataset(Object& handle, std::string name, std::vector<double> val) {
     auto space = create_space(val.size());
     auto dhandle = handle.createDataSet(name, H5::PredType::NATIVE_DOUBLE, space);
-    dhandle.write(&val, H5::PredType::NATIVE_DOUBLE);
+    dhandle.write(val.data(), H5::PredType::NATIVE_DOUBLE);
     return;
 }
 
