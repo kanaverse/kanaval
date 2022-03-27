@@ -13,6 +13,9 @@ enable_testing()
 add_executable(
     libtest 
     src/quality_control.cpp
+    src/normalization.cpp
+    src/feature_selection.cpp
+    src/pca.cpp
 )
 
 target_link_libraries(

@@ -50,4 +50,21 @@ void quick_write_dataset(Object& handle, std::string name, std::vector<double> v
     return;
 }
 
+template<class Function>
+void quick_throw(Function fun, std::string msg) {
+    EXPECT_ANY_THROW({
+        try {
+            fun();
+            std::cout << "failed to throw '" << msg << "'" << std::endl;
+        } catch (std::exception& e) {
+            std::string found(e.what());
+            if (found.find(msg) == std::string::npos) {
+                std::cout << "error '" << e.what() << "' does not match '" << msg << "'" << std::endl;
+                EXPECT_FALSE(true);
+            }
+            throw e;
+        }
+    });
+}
+
 #endif

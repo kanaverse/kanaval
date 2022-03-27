@@ -5,10 +5,19 @@
 #include <vector>
 #include "utils.hpp"
 
+/**
+ * @file quality_control.hpp
+ *
+ * @brief Validate quality control contents.
+ */
+
 namespace kanaval {
 
 namespace quality_control {
 
+/**
+ * @cond
+ */
 inline void validate_parameters(const H5::Group& qhandle) {
     auto phandle = utils::check_and_open_group(qhandle, "parameters");
     utils::check_and_open_scalar(phandle, "use_mito_default", H5T_INTEGER);
@@ -61,9 +70,13 @@ inline int validate_results(const H5::Group& qhandle, int num_cells, int num_bat
     
     return remaining;
 }
-
+/**
+ * @endcond
+ */
 
 /**
+ * Check contents for the quality control step.
+ * 
  * @param handle An open HDF5 file handle.
  * @param num_cells Number of cells in the dataset before any quality filtering is applied.
  * @param num_batches Number of batches in the dataset.
@@ -72,7 +85,8 @@ inline int validate_results(const H5::Group& qhandle, int num_cells, int num_bat
  * If the format is invalid, an error is raised instead.
  * 
  * @description
- * This function checks the quality control parameters and results.
+ * `handle` should contain a `quality_control` group, itself containing the `parameters` and `results` subgroups.
+ *
  * `parameters` should contain:
  * 
  * - `use_mito_default`: a scalar integer to be interpreted as a boolean.

@@ -3,7 +3,7 @@
 #include "utils.h"
 #include <iostream>
 
-void add_quality_control(H5::H5File handle, int num_cells, int num_batches) {
+void add_quality_control(H5::H5File& handle, int num_cells, int num_batches) {
     auto qhandle = handle.createGroup("quality_control");
 
     auto phandle = qhandle.createGroup("parameters");
@@ -52,20 +52,10 @@ TEST(QualityControl, AllOK) {
 }
 
 void quick_qc_throw(const std::string& path, int num_cells, int num_batches, std::string msg) {
-    H5::H5File handle(path, H5F_ACC_RDONLY);
-    EXPECT_ANY_THROW({
-        try {
-            kanaval::quality_control::validate(handle, num_cells, num_batches);
-            std::cout << "failed to throw '" << msg << "'" << std::endl;
-        } catch (std::exception& e) {
-            std::string found(e.what());
-            if (found.find(msg) == std::string::npos) {
-                std::cout << "error '" << e.what() << "' does not match '" << msg << "'" << std::endl;
-                EXPECT_FALSE(true);
-            }
-            throw e;
-        }
-    });
+    quick_throw([&]() -> void {
+        H5::H5File handle(path, H5F_ACC_RDONLY);
+        kanaval::quality_control::validate(handle, num_cells, num_batches);
+    }, msg);
 }
 
 TEST(QualityControl, ParametersFailed) {
