@@ -39,9 +39,10 @@ inline void validate_parameters(const H5::Group& handle) {
     return;
 }
 
-inline void validate_results(const H5::Group& handle, int num_cells, bool in_use) {
+inline int validate_results(const H5::Group& handle, int num_cells, bool in_use) {
     auto phandle = utils::check_and_open_group(handle, "results");
 
+    int nclusters = 0;
     if (phandle.exists("clusters") || in_use) {
         std::vector<size_t> dim { static_cast<size_t>(num_cells) };
         auto clushandle = utils::check_and_open_dataset(phandle, "clusters", H5T_INTEGER, dim);
@@ -55,7 +56,9 @@ inline void validate_results(const H5::Group& handle, int num_cells, bool in_use
             }
 
             auto maxed = *std::max_element(clusters.begin(), clusters.end());
-            std::vector<int> counts(maxed + 1);
+            nclusters = maxed + 1;
+
+            std::vector<int> counts(nclusters);
             for (auto c : clusters) {
                 ++counts[c];
             }
@@ -67,7 +70,7 @@ inline void validate_results(const H5::Group& handle, int num_cells, bool in_use
         }
     }
 
-    return;
+    return nclusters;
 }
 /**
  * @endcond
@@ -78,8 +81,10 @@ inline void validate_results(const H5::Group& handle, int num_cells, bool in_use
  *
  * @param handle An open HDF5 file handle.
  * @param num_cells Number of cells in the dataset after any quality filtering is applied.
+ * @param in_use Was SNN clustering used by downstream steps?
  *
- * @return If the format is invalid, an error is raised.
+ * @return The total number of clusters.
+ * If the format is invalid, an error is raised.
  *
  * @description
  * `handle` should contain a `snn_graph_cluster` group, itself containing the `parameters` and `results` subgroups.
@@ -100,7 +105,7 @@ inline void validate_results(const H5::Group& handle, int num_cells, bool in_use
  * If `in_use = false`, `clusters` may be absent.
  * If it is present, it should follow the constraints listed above.
  */
-inline void validate(const H5::H5File& handle, int num_cells, bool in_use = true) {
+inline int validate(const H5::H5File& handle, int num_cells, bool in_use = true) {
     auto nhandle = utils::check_and_open_group(handle, "snn_graph_cluster");
 
     try {
@@ -109,13 +114,14 @@ inline void validate(const H5::H5File& handle, int num_cells, bool in_use = true
         throw utils::combine_errors(e, "failed to retrieve parameters from 'snn_graph_cluster'");
     }
 
+    int nclusters;
     try {
-        validate_results(nhandle, num_cells, in_use);
+        nclusters = validate_results(nhandle, num_cells, in_use);
     } catch (std::exception& e) {
         throw utils::combine_errors(e, "failed to retrieve results from 'snn_graph_cluster'");
     }
 
-    return;
+    return nclusters;
 }
 
 }

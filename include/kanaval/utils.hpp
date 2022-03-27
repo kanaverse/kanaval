@@ -110,6 +110,12 @@ inline std::runtime_error combine_errors(const std::exception& e, const std::str
 
 }
 
+namespace markers {
+    
+inline const std::vector<std::string> effects { "lfc", "delta_detected", "cohen", "auc" };
+
+}
+
 }
 
 #endif

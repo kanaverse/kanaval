@@ -18,13 +18,13 @@ namespace choose_clustering {
 /**
  * @cond
  */
-inline void validate_parameters(const H5::Group& handle) {
+inline std::string validate_parameters(const H5::Group& handle) {
     auto phandle = utils::check_and_open_group(handle, "parameters");
     auto method = utils::load_string(phandle, "method");
     if (method != "kmeans" && method != "snn_graph") {
         throw std::runtime_error("'method' should be either 'kmeans' or 'snn_graph'");
     }
-    return;
+    return method;
 }
 
 inline void validate_results(const H5::Group& handle) {
@@ -40,7 +40,8 @@ inline void validate_results(const H5::Group& handle) {
  *
  * @param handle An open HDF5 file handle.
  *
- * @return If the format is invalid, an error is raised.
+ * @return The clustering method of choice. 
+ * If the format is invalid, an error is raised.
  *
  * @description
  * `handle` should contain a `choose_clustering` group, itself containing the `parameters` and `results` subgroups.
@@ -55,11 +56,12 @@ inline void validate_results(const H5::Group& handle) {
  * Depending on the `method`, `snn_graph_cluster` or `kmeans_cluster` must have non-empty `results`.
  * Both may also be non-empty, in which case the appropriate clustering is chosen based on `method`.
  */
-inline void validate(const H5::H5File& handle) {
+inline std::string validate(const H5::H5File& handle) {
     auto nhandle = utils::check_and_open_group(handle, "choose_clustering");
 
+    std::string output;
     try {
-        validate_parameters(nhandle);
+        output = validate_parameters(nhandle);
     } catch (std::exception& e) {
         throw utils::combine_errors(e, "failed to retrieve parameters from 'choose_clustering'");
     }
@@ -70,7 +72,7 @@ inline void validate(const H5::H5File& handle) {
         throw utils::combine_errors(e, "failed to retrieve results from 'choose_clustering'");
     }
 
-    return;
+    return output;
 }
 
 }

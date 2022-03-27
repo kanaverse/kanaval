@@ -22,6 +22,8 @@ add_executable(
     src/kmeans_cluster.cpp
     src/snn_graph_cluster.cpp
     src/choose_clustering.cpp
+    src/marker_detection.cpp
+    src/custom_selections.cpp
 )
 
 target_link_libraries(
