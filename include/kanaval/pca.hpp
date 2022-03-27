@@ -53,14 +53,13 @@ inline void validate_results(const H5::Group& handle, int num_pcs, int num_cells
  * Check contents for the PCA step.
  *
  * @param handle An open HDF5 file handle.
- * @param num_cells Number of cells in the dataset before any quality filtering is applied.
- * @param num_batches Number of batches in the dataset.
+ * @param num_cells Number of cells in the dataset after any quality filtering is applied.
  *
  * @return The number of cells remaining after QC filtering.
  * If the format is invalid, an error is raised instead.
  *
  * @description
- * `handle` should contain a `quality_control` group, itself containing the `parameters` and `results` subgroups.
+ * `handle` should contain a `pca` group, itself containing the `parameters` and `results` subgroups.
  *
  * `parameters` should contain:
  *

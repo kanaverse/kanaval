@@ -75,7 +75,7 @@ H5::DataSet check_and_open_scalar(const Object& handle, const std::string& name,
 }
 
 template<typename T = int, class Object>
-T load_integer_scalar(const Object&handle, const std::string& name) {
+T load_integer_scalar(const Object& handle, const std::string& name) {
     auto dhandle = check_and_open_scalar(handle, name, H5T_INTEGER);
 
     // TODO: support more int types.
@@ -86,7 +86,7 @@ T load_integer_scalar(const Object&handle, const std::string& name) {
 }
 
 template<typename T = double, class Object>
-T load_float_scalar(const Object&handle, const std::string& name) {
+T load_float_scalar(const Object& handle, const std::string& name) {
     auto dhandle = check_and_open_scalar(handle, name, H5T_FLOAT);
 
     // TODO: support more types.
@@ -94,6 +94,14 @@ T load_float_scalar(const Object&handle, const std::string& name) {
     dhandle.read(&output, H5::PredType::NATIVE_DOUBLE);
 
     return output;    
+}
+
+template<class Object>
+std::string load_string(const Object& handle, const std::string& name) {
+    auto dhandle = check_and_open_scalar(handle, name, H5T_STRING);
+    std::string output;
+    dhandle.read(output, dhandle.getStrType());
+    return output;
 }
 
 inline std::runtime_error combine_errors(const std::exception& e, const std::string& msg) {

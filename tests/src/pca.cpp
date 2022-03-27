@@ -3,7 +3,7 @@
 #include "utils.h"
 #include <iostream>
 
-void add_pca(H5::H5File handle, int num_pcs, int num_cells) {
+void add_pca(H5::H5File& handle, int num_pcs, int num_cells) {
     auto qhandle = handle.createGroup("pca");
 
     auto phandle = qhandle.createGroup("parameters");

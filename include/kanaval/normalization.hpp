@@ -34,8 +34,6 @@ inline void validate_results(const H5::Group& handle) {
  * Check contents for the normalization step.
  *
  * @param handle An open HDF5 file handle.
- * @param num_cells Number of cells in the dataset before any quality filtering is applied.
- * @param num_batches Number of batches in the dataset.
  * 
  * @return If the format is invalid, an error is raised.
  * 

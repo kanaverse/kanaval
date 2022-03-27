@@ -3,7 +3,7 @@
 #include "utils.h"
 #include <iostream>
 
-void add_feature_selection(H5::H5File handle, int num_genes) {
+void add_feature_selection(H5::H5File& handle, int num_genes) {
     auto qhandle = handle.createGroup("feature_selection");
 
     auto phandle = qhandle.createGroup("parameters");

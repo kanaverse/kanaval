@@ -16,6 +16,12 @@ add_executable(
     src/normalization.cpp
     src/feature_selection.cpp
     src/pca.cpp
+    src/neighbor_index.cpp
+    src/tsne.cpp
+    src/umap.cpp
+    src/kmeans_cluster.cpp
+    src/snn_graph_cluster.cpp
+    src/choose_clustering.cpp
 )
 
 target_link_libraries(
