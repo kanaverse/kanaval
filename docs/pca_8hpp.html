@@ -140,11 +140,20 @@ Functions</h2></td></tr>
 <ul>
 <li><code>num_hvgs</code>: a scalar integer containing the number of highly variable genes to use to compute the PCA.</li>
 <li><code>num_pcs</code>: a scalar integer containing the number of PCs to compute.</li>
+<li><code>block_method</code>: a scalar string specifying the method to use when dealing with multiple blocks in the dataset. This may be <code>"none"</code>, <code>"regress"</code> or <code>"mnn"</code>.</li>
 </ul>
 <p ><code>results</code> should contain:</p>
 <ul>
-<li><code>pcs</code>: a 2-dimensional float dataset containing the PC coordinates in a row-major layout. Each row corresponds to a cell (after QC filtering) and each column corresponds to a PC. Note that this is deliberately transposed from the Javascript/Wasm representation for easier storage.</li>
+<li><code>pcs</code>: a 2-dimensional float dataset containing the PC coordinates in a row-major layout. Each row corresponds to a cell (after QC filtering) and each column corresponds to a PC. Note that this is deliberately transposed from the Javascript/Wasm representation for easier storage.<ul>
+<li>If <code>block_type = "mnn"</code>, the PCs will be computed using a weighted method that adjusts for differences in the number of cells across blocks.</li>
+<li>If <code>block_type = "regress"</code>, the PCs will be computed on the residuals after regressing out the block-wise effects.</li>
+</ul>
+</li>
 <li><code>var_exp</code>: a float dataset of length equal to the number of PCs, containing the percentage of variance explained by each PC.</li>
+</ul>
+<p >If <code>block_type = "mnn"</code>, the <code>results</code> group will also contain:</p>
+<ul>
+<li><code>corrected</code>, a float dataset with the same dimensions as <code>pcs</code>, containing the MNN-corrected PCs for each cell.</li>
 </ul>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
