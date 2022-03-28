@@ -34,11 +34,6 @@ inline void validate_results(const H5::Group& handle) {
 /**
  * Check contents for the neighbor index step.
  *
- * @param handle An open HDF5 file handle.
- * 
- * @return If the format is invalid, an error is raised.
- * 
- * @details
  * `handle` should contain a `neighbor_index` group, itself containing the `parameters` and `results` subgroups.
  *
  * `parameters` should contain:
@@ -46,6 +41,10 @@ inline void validate_results(const H5::Group& handle) {
  * - `approximate`: an integer scalar to be interpreted as a boolean, specifying whether an approximate nearest neighbor search should be performed.
  * 
  * No contents are mandated for `results`.
+ *
+ * @param handle An open HDF5 file handle.
+ * 
+ * @return If the format is invalid, an error is raised.
  */
 inline void validate(const H5::H5File& handle) {
     auto nhandle = utils::check_and_open_group(handle, "neighbor_index");

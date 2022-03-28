@@ -38,11 +38,6 @@ inline void validate_results(const H5::Group& handle) {
 /**
  * Check contents for the clustering choice.
  *
- * @param handle An open HDF5 file handle.
- *
- * @return The clustering method of choice. 
- * If the format is invalid, an error is raised.
- *
  * @details
  * `handle` should contain a `choose_clustering` group, itself containing the `parameters` and `results` subgroups.
  * 
@@ -55,6 +50,11 @@ inline void validate_results(const H5::Group& handle) {
  * 
  * Depending on the `method`, `snn_graph_cluster` or `kmeans_cluster` must have non-empty `results`.
  * Both may also be non-empty, in which case the appropriate clustering is chosen based on `method`.
+ *
+ * @param handle An open HDF5 file handle.
+ *
+ * @return The clustering method of choice. 
+ * If the format is invalid, an error is raised.
  */
 inline std::string validate(const H5::H5File& handle) {
     auto nhandle = utils::check_and_open_group(handle, "choose_clustering");

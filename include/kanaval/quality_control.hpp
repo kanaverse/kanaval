@@ -77,14 +77,6 @@ inline int validate_results(const H5::Group& qhandle, int num_cells, int num_bat
 /**
  * Check contents for the quality control step.
  * 
- * @param handle An open HDF5 file handle.
- * @param num_cells Number of cells in the dataset before any quality filtering is applied.
- * @param num_batches Number of batches in the dataset.
- * 
- * @return The number of cells remaining after QC filtering.
- * If the format is invalid, an error is raised instead.
- * 
- * @details
  * `handle` should contain a `quality_control` group, itself containing the `parameters` and `results` subgroups.
  *
  * `parameters` should contain:
@@ -101,14 +93,20 @@ inline int validate_results(const H5::Group& qhandle, int num_cells, int num_bat
  *   - `sums`: a float dataset of length equal to the number of cells, containing the total count for each cell.
  *   - `detected`:  an integer dataset of length equal to the number of cells, containing the total number of detected genes for each cell.
  *   - `proportion`: a float dataset of length equal to the number of cells, containing the percentage of counts in (mitochondrial) genes.
- * - `thresholds`, a group containing per-cell QC metrics.
+ * - `thresholds`, a group containing thresholds on the metrics for each batch.
  *   This contains:
  *   - `sums`: a float dataset of length equal to the number of batches, containing the total count threshold for each batch.
  *   - `detected`:  an integer dataset of length equal to the number of batches, containing the threshold on the total number of detected genes for each batch.
  *   - `proportion`: a float dataset of length equal to the number of batches, containing the threshold on the percentage of counts in (mitochondrial) genes for each batch.
- *   For simple analyses, we assume that only one batch is present, so all datasets will be of length 1.
  * - `discards`: an integer dataset of length equal to the number of cells.
  *   Each value is interpreted as a boolean and specifies whether the corresponding cell would be discarded by the filter thresholds.
+ *
+ * @param handle An open HDF5 file handle.
+ * @param num_cells Number of cells in the dataset before any quality filtering is applied.
+ * @param num_batches Number of batches in the dataset.
+ * 
+ * @return The number of cells remaining after QC filtering.
+ * If the format is invalid, an error is raised instead.
  */ 
 inline int validate(const H5::H5File& handle, int num_cells, int num_batches) {
     auto qhandle = utils::check_and_open_group(handle, "quality_control");

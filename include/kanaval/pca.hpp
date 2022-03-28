@@ -52,13 +52,6 @@ inline void validate_results(const H5::Group& handle, int num_pcs, int num_cells
 /**
  * Check contents for the PCA step.
  *
- * @param handle An open HDF5 file handle.
- * @param num_cells Number of cells in the dataset after any quality filtering is applied.
- *
- * @return The number of cells remaining after QC filtering.
- * If the format is invalid, an error is raised instead.
- *
- * @details
  * `handle` should contain a `pca` group, itself containing the `parameters` and `results` subgroups.
  *
  * `parameters` should contain:
@@ -72,6 +65,12 @@ inline void validate_results(const H5::Group& handle, int num_pcs, int num_cells
  *   Each row corresponds to a cell (after QC filtering) and each column corresponds to a PC.
  *   Note that this is deliberately transposed from the Javascript/Wasm representation for easier storage.
  * - `var_exp`: a float dataset of length equal to the number of PCs, containing the percentage of variance explained by each PC.
+ *
+ * @param handle An open HDF5 file handle.
+ * @param num_cells Number of cells in the dataset after any quality filtering is applied.
+ *
+ * @return The number of cells remaining after QC filtering.
+ * If the format is invalid, an error is raised instead.
  */
 inline void validate(const H5::H5File& handle, int num_cells) {
     auto phandle = utils::check_and_open_group(handle, "pca");

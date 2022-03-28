@@ -44,12 +44,6 @@ inline void validate_results(const H5::Group& handle, int num_genes) {
 /**
  * Check contents for the feature selection step.
  * 
- * @param handle An open HDF5 file handle.
- * @param num_genes Number of genes in the dataset.
- *
- * @return If the format is invalid, an error is raised.
- *
- * @details
  * `handle` should contain a `feature_selection` group, itself containing the `parameters` and `results` subgroups.
  *
  * `parameters` should contain:
@@ -66,6 +60,11 @@ inline void validate_results(const H5::Group& handle, int num_genes) {
  *   containing the fitted value of the trend for each gene.
  * - `resids`: a 1-dimensional float dataset of length equal to the number of genes,
  *   containing the residuals from the trend for each gene.
+ *
+ * @param handle An open HDF5 file handle.
+ * @param num_genes Number of genes in the dataset.
+ *
+ * @return If the format is invalid, an error is raised.
  */
 inline void validate(const H5::Group& handle, int num_genes) {
     auto fhandle = utils::check_and_open_group(handle, "feature_selection");

@@ -51,12 +51,6 @@ inline void validate_results(const H5::Group& handle, int num_cells) {
 /**
  * Check contents for the t-SNE step.
  *
- * @param handle An open HDF5 file handle.
- * @param num_cells Number of cells in the dataset after any quality filtering is applied.
- *
- * @return If the format is invalid, an error is raised.
- *
- * @details
  * `handle` should contain a `tsne` group, itself containing the `parameters` and `results` subgroups.
  *
  * `parameters` should contain:
@@ -69,6 +63,11 @@ inline void validate_results(const H5::Group& handle, int num_cells) {
  *
  * - `x`: a float dataset of length equal to the number of cells (after QC filtering), containing the x-coordinates for each cell.
  * - `y`: a float dataset of length equal to the number of cells (after QC filtering), containing the y-coordinates for each cell.
+ *
+ * @param handle An open HDF5 file handle.
+ * @param num_cells Number of cells in the dataset after any quality filtering is applied.
+ *
+ * @return If the format is invalid, an error is raised.
  */
 inline void validate(const H5::H5File& handle, int num_cells) {
     auto thandle = utils::check_and_open_group(handle, "tsne");

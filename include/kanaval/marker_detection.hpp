@@ -60,13 +60,6 @@ inline void validate_results(const H5::Group& handle, int num_clusters, int num_
 /**
  * Check contents for the marker detection step.
  * 
- * @param handle An open HDF5 file handle.
- * @param num_clusters Number of clusters produced by previous steps.
- * @param num_genes Number of genes in the dataset.
- *
- * @return If the format is invalid, an error is raised.
- *
- * @details
  * `handle` should contain a `marker_detection` group, itself containing the `parameters` and `results` subgroups.
  *
  * `parameters` should be empty.
@@ -86,6 +79,12 @@ inline void validate_results(const H5::Group& handle, int num_clusters, int num_
  *   - `delta_detected`: same as `lfc`, but for the delta-detected (i.e., difference in the percentage of detected expression).
  *   - `cohen`: same as `lfc`, but for Cohen's d.
  *   - `auc`: same as `lfc`, but for the AUCs.
+ *
+ * @param handle An open HDF5 file handle.
+ * @param num_clusters Number of clusters produced by previous steps.
+ * @param num_genes Number of genes in the dataset.
+ *
+ * @return If the format is invalid, an error is raised.
  */
 inline void validate(const H5::Group& handle, int num_clusters, int num_genes) {
     auto mhandle = utils::check_and_open_group(handle, "marker_detection");

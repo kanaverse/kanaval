@@ -67,14 +67,6 @@ inline int validate_results(const H5::Group& handle, int k, int num_cells, bool 
 /**
  * Check contents for the k-means clustering step.
  *
- * @param handle An open HDF5 file handle.
- * @param num_cells Number of cells in the dataset after any quality filtering is applied.
- * @param in_use Was k-means clustering used by downstream steps?
- *
- * @return The total number of clusters.
- * If the format is invalid, an error is raised.
- *
- * @details
  * `handle` should contain a `kmeans_cluster` group, itself containing the `parameters` and `results` subgroups.
  * 
  * `parameters` should contain:
@@ -90,6 +82,13 @@ inline int validate_results(const H5::Group& handle, int k, int num_cells, bool 
  * 
  * If `in_use = false`, `clusters` may be absent.
  * If it is present, it should follow the constraints listed above.
+ *
+ * @param handle An open HDF5 file handle.
+ * @param num_cells Number of cells in the dataset after any quality filtering is applied.
+ * @param in_use Was k-means clustering used by downstream steps?
+ *
+ * @return The total number of clusters.
+ * If the format is invalid, an error is raised.
  */
 inline int validate(const H5::H5File& handle, int num_cells, bool in_use = true) {
     auto nhandle = utils::check_and_open_group(handle, "kmeans_cluster");

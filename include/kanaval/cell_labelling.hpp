@@ -78,12 +78,6 @@ inline void validate_results(const H5::Group& handle, const std::unordered_set<s
 /**
  * Check contents for the cell labelling step.
  *
- * @param handle An open HDF5 file handle.
- * @param num_clusters Number of clusters to be labelled.
- * 
- * @return If the format is invalid, an error is raised.
- * 
- * @details
  * `handle` should contain a `cell_labelling` group, itself containing the `parameters` and `results` subgroups.
  *
  * `parameters` should contain:
@@ -103,6 +97,11 @@ inline void validate_results(const H5::Group& handle, const std::unordered_set<s
  * 
  * - `integrated`: a string dataset of length equal to the number of clusters.
  *   This specifies the reference with the top-scoring label for each cluster, after integrating the results of all per-reference classifications.
+ *
+ * @param handle An open HDF5 file handle.
+ * @param num_clusters Number of clusters to be labelled.
+ * 
+ * @return If the format is invalid, an error is raised.
  */
 inline void validate(const H5::H5File& handle, int num_clusters) {
     auto nhandle = utils::check_and_open_group(handle, "cell_labelling");
