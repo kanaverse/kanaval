@@ -84,7 +84,7 @@ inline int validate_results(const H5::Group& qhandle, int num_cells, int num_bat
  * @return The number of cells remaining after QC filtering.
  * If the format is invalid, an error is raised instead.
  * 
- * @description
+ * @details
  * `handle` should contain a `quality_control` group, itself containing the `parameters` and `results` subgroups.
  *
  * `parameters` should contain:

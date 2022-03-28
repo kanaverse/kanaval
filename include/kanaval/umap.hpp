@@ -61,7 +61,7 @@ inline void validate_results(const H5::Group& handle, int num_cells) {
  *
  * @return If the format is invalid, an error is raised.
  *
- * @description
+ * @details
  * `handle` should contain a `umap` group, itself containing the `parameters` and `results` subgroups.
  *
  * `parameters` should contain:

@@ -66,7 +66,7 @@ inline void validate_results(const H5::Group& handle, int num_clusters, int num_
  *
  * @return If the format is invalid, an error is raised.
  *
- * @description
+ * @details
  * `handle` should contain a `marker_detection` group, itself containing the `parameters` and `results` subgroups.
  *
  * `parameters` should be empty.

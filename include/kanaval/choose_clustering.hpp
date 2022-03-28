@@ -43,7 +43,7 @@ inline void validate_results(const H5::Group& handle) {
  * @return The clustering method of choice. 
  * If the format is invalid, an error is raised.
  *
- * @description
+ * @details
  * `handle` should contain a `choose_clustering` group, itself containing the `parameters` and `results` subgroups.
  * 
  * `parameters` should contain:

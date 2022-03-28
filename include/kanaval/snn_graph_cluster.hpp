@@ -86,7 +86,7 @@ inline int validate_results(const H5::Group& handle, int num_cells, bool in_use)
  * @return The total number of clusters.
  * If the format is invalid, an error is raised.
  *
- * @description
+ * @details
  * `handle` should contain a `snn_graph_cluster` group, itself containing the `parameters` and `results` subgroups.
  *
  * `parameters` will contain:

@@ -49,7 +49,7 @@ inline void validate_results(const H5::Group& handle, int num_genes) {
  *
  * @return If the format is invalid, an error is raised.
  *
- * @description
+ * @details
  * `handle` should contain a `feature_selection` group, itself containing the `parameters` and `results` subgroups.
  *
  * `parameters` should contain:

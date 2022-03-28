@@ -71,6 +71,9 @@ inline void validate_results(const H5::Group& handle, const std::unordered_set<s
 
     return;
 }
+/**
+ * @endcond
+ */
 
 /**
  * Check contents for the cell labelling step.
@@ -80,7 +83,7 @@ inline void validate_results(const H5::Group& handle, const std::unordered_set<s
  * 
  * @return If the format is invalid, an error is raised.
  * 
- * @description
+ * @details
  * `handle` should contain a `cell_labelling` group, itself containing the `parameters` and `results` subgroups.
  *
  * `parameters` should contain:

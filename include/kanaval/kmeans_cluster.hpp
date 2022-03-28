@@ -74,7 +74,7 @@ inline int validate_results(const H5::Group& handle, int k, int num_cells, bool 
  * @return The total number of clusters.
  * If the format is invalid, an error is raised.
  *
- * @description
+ * @details
  * `handle` should contain a `kmeans_cluster` group, itself containing the `parameters` and `results` subgroups.
  * 
  * `parameters` should contain:

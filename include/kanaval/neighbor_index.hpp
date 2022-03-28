@@ -38,7 +38,7 @@ inline void validate_results(const H5::Group& handle) {
  * 
  * @return If the format is invalid, an error is raised.
  * 
- * @description
+ * @details
  * `handle` should contain a `neighbor_index` group, itself containing the `parameters` and `results` subgroups.
  *
  * `parameters` should contain:
