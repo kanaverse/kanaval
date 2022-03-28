@@ -108,6 +108,51 @@ inline std::runtime_error combine_errors(const std::exception& e, const std::str
     return std::runtime_error(msg + "\n  - " + std::string(e.what()));
 }
 
+template<class Object>
+std::vector<std::string> load_string_vector(const Object& handle) {
+    auto dspace = handle.getSpace();
+
+    size_t ndims = dspace.getSimpleExtentNdims();
+    std::vector<hsize_t> observed(ndims);
+    dspace.getSimpleExtentDims(observed.data());
+
+    size_t len = 1;
+    for (auto d : observed) {
+        len *= d;
+    }
+    std::vector<std::string> output;
+    output.reserve(len);
+
+    auto dtype = handle.getStrType();
+    if (dtype.isVariableStr()) {
+        std::vector<char*> buffer(len);
+        handle.read(buffer.data(), dtype);
+        for (size_t i = 0; i < len; ++i) {
+            output.emplace_back(buffer[i]);
+        }
+        H5Dvlen_reclaim(dtype.getId(), dspace.getId(), H5P_DEFAULT, buffer.data());
+
+    } else {
+        size_t size = dtype.getSize();
+        std::vector<char> buffer(len * size);
+        handle.read(buffer.data(), dtype);
+        auto start = buffer.data();
+        for (size_t i = 0; i < len; ++i, start += size) {
+            size_t j = 0;
+            for (; j < size && start[j] != '\0'; ++j) {}
+            output.emplace_back(start, start + j);
+        }
+    }
+
+    return output;
+}
+
+template<class Object>
+std::vector<std::string> load_string_vector(const Object& handle, const std::string& name) {
+    auto dhandle = check_and_open_dataset(handle, name, H5T_STRING);
+    return load_string_vector(dhandle);
+}
+
 }
 
 namespace markers {

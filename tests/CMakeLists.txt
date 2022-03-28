@@ -24,6 +24,7 @@ add_executable(
     src/choose_clustering.cpp
     src/marker_detection.cpp
     src/custom_selections.cpp
+    src/cell_labelling.cpp
 )
 
 target_link_libraries(

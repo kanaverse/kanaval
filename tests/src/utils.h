@@ -50,6 +50,29 @@ void quick_write_dataset(Object& handle, std::string name, std::vector<double> v
     return;
 }
 
+template<class Object>
+void quick_write_dataset(Object& handle, std::string name, std::vector<std::string> val) {
+    size_t maxlen = 0;
+    for (auto v : val) {
+        if (v.size() > maxlen) {
+            maxlen = v.size();
+        }
+    }
+
+    std::vector<char> buffer(maxlen * val.size());
+    auto bIt = buffer.begin();
+    for (size_t i = 0; i < val.size(); ++i, bIt += maxlen) {
+        std::copy(val[i].begin(), val[i].end(), bIt);
+    }
+
+    H5::StrType stype(H5::PredType::C_S1, maxlen);
+    auto space = create_space(val.size());
+    auto dhandle = handle.createDataSet(name, stype, space);
+    dhandle.write(buffer.data(), stype);
+    return;
+}
+
+
 template<class Function>
 void quick_throw(Function fun, std::string msg) {
     EXPECT_ANY_THROW({
