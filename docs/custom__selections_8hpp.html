@@ -141,16 +141,7 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p >Check contents for the custom selections step.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">handle</td><td>An open HDF5 file handle. </td></tr>
-    <tr><td class="paramname">num_genes</td><td>Number of genes in the dataset. </td></tr>
-    <tr><td class="paramname">num_cells</td><td>Number of cells in the dataset after QC filtering.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>If the format is invalid, an error is raised.</dd></dl>
-<p><code>handle</code> should contain a <code>custom_selections</code> group, itself containing the <code>parameters</code> and <code>results</code> subgroups.</p>
+<p ><code>handle</code> should contain a <code>custom_selections</code> group, itself containing the <code>parameters</code> and <code>results</code> subgroups.</p>
 <p ><code>parameters</code> should contain:</p>
 <ul>
 <li><code>selections</code>: a group defining the custom selections. Each child is named after a user-created selection. Each child is an integer dataset of arbitrary length containing the indices of the selected cells. Note that indices refer to the dataset after QC filtering and should be less than <code>num_cells</code>.</li>
@@ -163,10 +154,19 @@ Functions</h2></td></tr>
 <li><code>lfc</code>: a float dataset of length equal to the number of genes, containing the log-fold change in the selection compared to all other cells.</li>
 <li><code>delta_detected</code>: same as <code>lfc</code>, but for the delta-detected (i.e., difference in the percentage of detected expression).</li>
 <li><code>cohen</code>: same as <code>lfc</code>, but for Cohen's d.</li>
-<li><code>auc</code>: same as <code>lfc</code>, but for the AUCs. </li>
+<li><code>auc</code>: same as <code>lfc</code>, but for the AUCs.</li>
 </ul>
 </li>
 </ul>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">handle</td><td>An open HDF5 file handle. </td></tr>
+    <tr><td class="paramname">num_genes</td><td>Number of genes in the dataset. </td></tr>
+    <tr><td class="paramname">num_cells</td><td>Number of cells in the dataset after QC filtering.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>If the format is invalid, an error is raised. </dd></dl>
 
 </div>
 </div>

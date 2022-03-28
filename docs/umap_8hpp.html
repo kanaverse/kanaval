@@ -135,15 +135,7 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p >Check contents for the UMAP step.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">handle</td><td>An open HDF5 file handle. </td></tr>
-    <tr><td class="paramname">num_cells</td><td>Number of cells in the dataset after any quality filtering is applied.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>If the format is invalid, an error is raised.</dd></dl>
-<p><code>handle</code> should contain a <code>umap</code> group, itself containing the <code>parameters</code> and <code>results</code> subgroups.</p>
+<p ><code>handle</code> should contain a <code>umap</code> group, itself containing the <code>parameters</code> and <code>results</code> subgroups.</p>
 <p ><code>parameters</code> should contain:</p>
 <ul>
 <li><code>num_epochs</code>: a scalar integer containing the number of epochs to perform.</li>
@@ -154,8 +146,16 @@ Functions</h2></td></tr>
 <p ><code>results</code> should contain:</p>
 <ul>
 <li><code>x</code>: a float dataset of length equal to the number of cells (after QC filtering), containing the x-coordinates for each cell.</li>
-<li><code>y</code>: a float dataset of length equal to the number of cells (after QC filtering), containing the y-coordinates for each cell. </li>
+<li><code>y</code>: a float dataset of length equal to the number of cells (after QC filtering), containing the y-coordinates for each cell.</li>
 </ul>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">handle</td><td>An open HDF5 file handle. </td></tr>
+    <tr><td class="paramname">num_cells</td><td>Number of cells in the dataset after any quality filtering is applied.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>If the format is invalid, an error is raised. </dd></dl>
 
 </div>
 </div>
