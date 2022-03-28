@@ -1,6 +1,8 @@
 #ifndef KANAVAL_UTILS_HPP
 #define KANAVAL_UTILS_HPP
+
 #include "H5Cpp.h"
+#include <vector>
 
 namespace kanaval {
 
@@ -78,14 +80,13 @@ template<typename T = int, class Object>
 T load_integer_scalar(const Object& handle, const std::string& name) {
     auto dhandle = check_and_open_scalar(handle, name, H5T_INTEGER);
 
-    // TODO: support more int types.
     T output;
     if constexpr(std::is_same<T, hsize_t>::value) {
         dhandle.read(&output, H5::PredType::NATIVE_HSIZE);
     } else if constexpr(std::is_same<T, int>::value) {
         dhandle.read(&output, H5::PredType::NATIVE_INT);
     } else {
-        static_assert(dependent_false<T>::value, "this type is not yet supported");
+        static_assert(!sizeof(T*), "this type is not yet supported");
     }
 
     return output;    
@@ -119,18 +120,55 @@ inline std::runtime_error combine_errors(const std::exception& e, const std::str
     return std::runtime_error(msg + "\n  - " + std::string(e.what()));
 }
 
+template<typename T = int, class Object>
+std::vector<T> load_integer_vector(const Object& handle) {
+    auto dspace = handle.getSpace();
+
+    size_t ndims = dspace.getSimpleExtentNdims();
+    if (ndims != 1) {
+        throw std::runtime_error("expected a 1-dimensional integer dataset");
+    }
+
+    std::vector<hsize_t> observed(ndims);
+    dspace.getSimpleExtentDims(observed.data());
+    size_t len = observed.front();
+    std::vector<T> output(len);
+
+    if constexpr(std::is_same<T, hsize_t>::value) {
+        handle.read(output.data(), H5::PredType::NATIVE_HSIZE);
+    } else if constexpr(std::is_same<T, int>::value) {
+        handle.read(output.data(), H5::PredType::NATIVE_INT);
+    } else {
+        static_assert(!sizeof(T*), "this type is not yet supported");
+    }
+
+    return output;
+}
+
+template<typename T = int, class Object>
+std::vector<T> load_integer_vector(const Object& handle, const std::string& name) {
+    auto dhandle = check_and_open_dataset(handle, name, H5T_INTEGER);
+    std::vector<T> output;
+    try {
+        output = load_integer_vector<T>(dhandle);
+    } catch (std::exception& e) {
+        throw combine_errors(e, "failed to load integer vector from '" + name + "'");
+    }
+    return output;
+}
+
 template<class Object>
 std::vector<std::string> load_string_vector(const Object& handle) {
     auto dspace = handle.getSpace();
 
     size_t ndims = dspace.getSimpleExtentNdims();
+    if (ndims != 1) {
+        throw std::runtime_error("expected a 1-dimensional string dataset");
+    }
+
     std::vector<hsize_t> observed(ndims);
     dspace.getSimpleExtentDims(observed.data());
-
-    size_t len = 1;
-    for (auto d : observed) {
-        len *= d;
-    }
+    size_t len = observed.front();
     std::vector<std::string> output;
     output.reserve(len);
 
@@ -161,7 +199,13 @@ std::vector<std::string> load_string_vector(const Object& handle) {
 template<class Object>
 std::vector<std::string> load_string_vector(const Object& handle, const std::string& name) {
     auto dhandle = check_and_open_dataset(handle, name, H5T_STRING);
-    return load_string_vector(dhandle);
+    std::vector<std::string> output;
+    try {
+        output = load_string_vector(dhandle);
+    } catch (std::exception& e) {
+        throw combine_errors(e, "failed to load string vector from '" + name + "'");
+    }
+    return output;
 }
 
 }

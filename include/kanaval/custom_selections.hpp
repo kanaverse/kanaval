@@ -27,16 +27,7 @@ inline std::vector<std::string> validate_parameters(const H5::Group& handle, int
         auto name = shandle.getObjnameByIdx(i);
         output.push_back(name);
 
-        auto dhandle = utils::check_and_open_dataset(shandle, name, H5T_INTEGER);
-        auto dspace = dhandle.getSpace();
-        if (dspace.getSimpleExtentNdims() != 1) {
-            throw std::runtime_error("selection '" + output.back() + "' should contain a 1-dimensional dataset");
-        }
-        hsize_t len;
-        dspace.getSimpleExtentDims(&len);
-
-        std::vector<int> involved(len);
-        dhandle.read(involved.data(), H5::PredType::NATIVE_INT);
+        auto involved = utils::load_integer_vector(shandle, name);
         for (auto i : involved) {
             if (i < 0 || i >= num_cells) {
                 throw std::runtime_error("indices out of range for selection '" + output.back() + "'");
