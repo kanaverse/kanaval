@@ -80,7 +80,13 @@ T load_integer_scalar(const Object& handle, const std::string& name) {
 
     // TODO: support more int types.
     T output;
-    dhandle.read(&output, H5::PredType::NATIVE_INT);
+    if constexpr(std::is_same<T, hsize_t>::value) {
+        dhandle.read(&output, H5::PredType::NATIVE_HSIZE);
+    } else if constexpr(std::is_same<T, int>::value) {
+        dhandle.read(&output, H5::PredType::NATIVE_INT);
+    } else {
+        static_assert(dependent_false<T>::value, "this type is not yet supported");
+    }
 
     return output;    
 }
@@ -97,11 +103,16 @@ T load_float_scalar(const Object& handle, const std::string& name) {
 }
 
 template<class Object>
-std::string load_string(const Object& handle, const std::string& name) {
-    auto dhandle = check_and_open_scalar(handle, name, H5T_STRING);
+std::string load_string(const Object& handle) {
     std::string output;
     dhandle.read(output, dhandle.getStrType());
     return output;
+}
+
+template<class Object>
+std::string load_string(const Object& handle, const std::string& name) {
+    auto dhandle = check_and_open_scalar(handle, name, H5T_STRING);
+    return load_string(dhandle);
 }
 
 inline std::runtime_error combine_errors(const std::exception& e, const std::string& msg) {
