@@ -1,6 +1,15 @@
 #ifndef KANAVAL_INPUTS_HPP
 #define KANAVAL_INPUTS_HPP
 
+#include "H5Cpp.h"
+#include "utils.hpp"
+#include <stdexcept>
+#include <vector>
+#include <string>
+#include <numeric>
+#include <unordered_set>
+#include <unordered_map>
+
 /**
  * @file inputs.hpp
  *
@@ -21,26 +30,26 @@ inline bool validate_parameters(const H5::Group& handle, bool embedded, int vers
     std::vector<std::string> formats;
     bool multifile = false;
     {
-        auto fhandle = utils::check_and_open_dataset(handle, "format", H5T_STRING);
+        auto fhandle = utils::check_and_open_dataset(phandle, "format", H5T_STRING);
         auto fspace = fhandle.getSpace();
         if (fspace.getSimpleExtentNdims() == 0) {
-            formats.push_back(load_string(fhandle));
+            formats.push_back(utils::load_string(fhandle));
         } else {
             if (version < 1001000) {
-                throw std::runtime_error("'format' should be a scalar string in version 1.0.*");
+                throw std::runtime_error("'format' should be a scalar string in version 1.0");
             }
             multifile = true;
-            formats = load_string_vector(fhandle);
+            formats = utils::load_string_vector(fhandle);
         }
     }
 
-    auto fihandle = utils::check_and_open_group(handle, "files");
-    auto nfiles = fhandle.getNumObjs();
+    auto fihandle = utils::check_and_open_group(phandle, "files");
+    auto nfiles = fihandle.getNumObjs();
 
     // Checking the runs.
     std::vector<int> runs;
     if (multifile) {
-        runs = utils::load_integer_vector(handle, "sample_groups");
+        runs = utils::load_integer_vector(phandle, "sample_groups");
         if (runs.size() != formats.size()) {
             throw std::runtime_error("'sample_groups' and 'format' should have the same length");
         }
@@ -51,7 +60,7 @@ inline bool validate_parameters(const H5::Group& handle, bool embedded, int vers
         }
 
         // Checking that everyone has unique groups.
-        auto names = utils::load_string_vector(handle, "sample_names");
+        auto names = utils::load_string_vector(phandle, "sample_names");
         if (runs.size() != formats.size()) {
             throw std::runtime_error("'names' and 'format' should have the same length");
         }
@@ -69,30 +78,34 @@ inline bool validate_parameters(const H5::Group& handle, bool embedded, int vers
 
     // Checking the files.
     int sofar = 0;
-    std::vector<std::pair<size_t, size_t> > bytes;
+    std::vector<std::pair<hsize_t, hsize_t> > bytes;
     for (size_t r = 0; r < runs.size(); ++r) {
         auto curf = formats[r];
         std::vector<std::string> types;
 
         for (int s = 0; s < runs[r]; ++s) {
             std::string current = std::to_string(s + sofar);
-            auto curfihandle = utils::check_and_open_group(fihandle, current);
+            try {
+                auto curfihandle = utils::check_and_open_group(fihandle, current);
 
-            utils::check_and_open_dataset(current, "name", H5T_STRING, {});
-            types.push_back(utils::load_string(current, "type"));
+                utils::check_and_open_dataset(curfihandle, "name", H5T_STRING, {});
+                types.push_back(utils::load_string(curfihandle, "type"));
 
-            if (embedded) {
-                bytes.emplace_back(
-                    utils::load_integer<hsize_t>(current, "start"),
-                    utils::load_integer<hsize_t>(current, "offset")
-                );
-            } else {
-                utils::check_and_open_dataset(current, "id", H5T_STRING, {});
+                if (embedded) {
+                    bytes.emplace_back(
+                        utils::load_integer_scalar<hsize_t>(curfihandle, "offset"),
+                        utils::load_integer_scalar<hsize_t>(curfihandle, "size")
+                    );
+                } else {
+                    utils::check_and_open_dataset(curfihandle, "id", H5T_STRING, {});
+                }
+            } catch (std::exception& e) {
+                throw utils::combine_errors(e, "failed to retrieve information for file " + current);
             }
         }
 
         if (curf == "MatrixMarket") {
-            std::unordered_map<std::string> expected;
+            std::unordered_map<std::string, int> expected;
             expected["mtx"] = 0;
             expected["genes"] = 0;
             expected["annotation"] = 0;
@@ -102,7 +115,7 @@ inline bool validate_parameters(const H5::Group& handle, bool embedded, int vers
                 if (it == expected.end()) {
                     throw std::runtime_error("unknown file type '" + t + "' when format is 'MatrixMarket'");
                 }
-                ++(it->second)
+                ++(it->second);
             }
 
             if (expected["mtx"] != 1) {
@@ -126,6 +139,18 @@ inline bool validate_parameters(const H5::Group& handle, bool embedded, int vers
         }
     }
 
+    // Checking the files make sense.
+    if (embedded) {
+        std::sort(bytes.begin(), bytes.end());
+        hsize_t sofar = 0;
+        for (const auto& b : bytes) {
+            if (b.first != sofar) {
+                throw std::runtime_error("offsets and sizes of 'files' are not contiguous");
+            }
+            sofar += b.second;
+        }
+    }
+
     // Checking if there's a batch variable.
     if (phandle.exists("sample_factor")) {
         utils::check_and_open_dataset(phandle, "sample_factor", H5T_STRING, {});
@@ -135,7 +160,7 @@ inline bool validate_parameters(const H5::Group& handle, bool embedded, int vers
     }
 }
 
-inline bool validate_results(const H5::Group& handle, bool blocked, int version = 1001000) {
+inline void validate_results(const H5::Group& handle, bool blocked, int version = 1001000) {
     auto rhandle = utils::check_and_open_group(handle, "results");
 
     auto dims = utils::load_integer_vector<int>(rhandle, "dimensions");
@@ -206,9 +231,11 @@ inline bool validate_results(const H5::Group& handle, bool blocked, int version 
  *   Each inner group is named by their positional index in the array and contains information about a file in an upload.
  *   Each inner group should contain:
  *   - `type`: a scalar string specifying the type of the file.
- *     If `format = "MatrixMarket"`, there should be at least one `type = "mtx"`, and no more than one of `type = "gene"` and `type = "annotation"` amongst the `files`.
- *     If `format = "10X"` or `"H5AD"`, there should be exactly one `type = "h5"`.
- *     @v1_1{\[**since version 1.1**\] For multiple matrices, the above constraints apply to all files corresponding to a single sample.}
+ *     @v1_1{\[**since version 1.1**\] For multiple matrices, the constraints below apply to all files corresponding to a single matrix.}
+ *     - If `format = "MatrixMarket"`, there should be exactly one `type = "mtx"` corresponding to the (possibly Gzipped) `*.mtx` file.
+ *       There may be zero or one `type = "genes"`, containing a (possibly Gzipped) TSV file with the Ensembl and gene symbols for each row.
+ *       There may be zero or one `type = "annotation"`, containing a (possibly Gzipped) TSV file with the annotations for each column.
+ *     - If `format = "10X"` or `"H5AD"`, there should be exactly one `type = "h5"`.
  *   - `name`: a scalar string specifying the file name as it was provided to **kana**.
  *   - `offset`: a scalar integer specifying where the file starts as an offset from the start of the remaining bytes section.
  *   - `size`: a scalar integer specifying the number of bytes in the file.
@@ -258,18 +285,18 @@ inline bool validate_results(const H5::Group& handle, bool blocked, int version 
  * @return Boolean indicating whether downstream analyses need to block on the sample.
  * If the format is invalid, an error is raised instead.
  */
-inline bool validate(const H5::Group& handle, int version = 1001000) {
+inline bool validate(const H5::Group& handle, bool embedded = true, int version = 1001000) {
     auto ihandle = utils::check_and_open_group(handle, "inputs");
 
     bool blocked;
     try {
-        blocked = validate_parameters(phandle, version);
+        blocked = validate_parameters(ihandle, embedded, version);
     } catch (std::exception& e) {
         throw utils::combine_errors(e, "failed to retrieve parameters from 'inputs'");
     }
 
     try {
-        validate_results(phandle, blocked, version);
+        validate_results(ihandle, blocked, version);
     } catch (std::exception& e) {
         throw utils::combine_errors(e, "failed to retrieve results from 'inputs'");
     }
@@ -280,3 +307,5 @@ inline bool validate(const H5::Group& handle, int version = 1001000) {
 }
 
 }
+
+#endif

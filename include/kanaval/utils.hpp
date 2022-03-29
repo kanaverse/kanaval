@@ -106,7 +106,7 @@ T load_float_scalar(const Object& handle, const std::string& name) {
 template<class Object>
 std::string load_string(const Object& handle) {
     std::string output;
-    dhandle.read(output, dhandle.getStrType());
+    handle.read(output, handle.getStrType());
     return output;
 }
 
