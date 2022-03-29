@@ -68,22 +68,23 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p ><a class="anchor" id="md__github_workspace_README"></a> </p><h1>Overview</h1>
-<p >The <code>kana</code> file format contains an embedded HDF5 file that captures the analysis state of the <a href="https://github.com/jkanche/kana"><b>kana</b></a> application. This embedded state file stores the parameters and results for each step in a simple single-cell RNA-seq analysis, allowing the <b>kana</b> application to easily reload existing analyses without recomputation and to share results with other data science frameworks. The <b>kanaval</b> repository contains a specification of the expected structure and content of this file. We use a specification-as-code approach that enforces the specification with a validator implementation written as a header-only C++ library. It is thus possible to create <code>kana</code> files from other languages, validate them, and expect them to work with <b>kana</b>.</p>
-<h1>Layout of the <code>kana</code> file</h1>
+<p >The <code>kana</code> file format contains an embedded HDF5 file that captures the analysis state of the <a href="https://github.com/jkanche/kana"><b>kana</b></a> application. This embedded state file stores the parameters and results for each step in a simple single-cell RNA-seq analysis. By storing this state, we can easily reload existing analyses into <b>kana</b> without recomputation. It is also straightforward to extract results from this state in other data analysis frameworks (e.g., R/Bioconductor).</p>
+<p >The <b>kanaval</b> repository contains a specification of the expected structure and content of the state file. We use a specification-as-code approach that enforces the specification with a validator library, implemented with header-only C++ for portablity to any system that supports a foreign function interface. It is thus possible to create <code>kana</code> files from other languages, validate them, and upload them to <b>kana</b>.</p>
+<h1>Background on the <code>kana</code> layout</h1>
 <p >This section describes version 1 of the <code>kana</code> export format.</p>
 <p >The first 8 bytes define an unsigned 64-bit integer in little-endian, specifying the format type. This is used to denote whether the input data files are embedded (0) or linked (1); the former is used for export to a standalone file while the latter is used to save the state to the browser's cache.</p>
-<p >The next 8 bytes define another unsigned 64-bit integer describing the format version. We use semantic versioning where each version number is described by 3 digits, i.e., <code>XXXYYYZZZ</code>. This document will only consider version 1.0, i.e., <code>001YYYZZZ</code>.</p>
+<p >The next 8 bytes define another unsigned 64-bit integer describing the format version. We use semantic versioning where each version number is described by 3 digits, i.e., <code>XXXYYYZZZ</code>. This document will only consider version 1, i.e., <code>001YYYZZZ</code>.</p>
 <p >The next 8 bytes define another unsigned 64-bit integer specifying the size of the HDF5 file containing the analysis state. Let's call this value <code>state_nbytes</code>.</p>
 <p >The next <code>state_nbytes</code> bytes contain a HDF5 state file. Each analysis step is represented by a HDF5 group that contains the parameters and results. See the next section for details on the expected groups.</p>
-<p >The remaining bytes contain the embedded input files when the format type is "embedded". Each file can be excised by reading the offsets and sizes in the <code>inputs</code> field.</p>
+<p >The remaining bytes contain the embedded input files when dealing with an embedded format type. Each file can be excised by reading the offsets and sizes in the <code>inputs</code> group in the state file.</p>
 <h1>Structure of the HDF5 state file</h1>
-<p >Each analysis step is represented by a HDF5 group:</p>
+<p >Inside the HDF5 state file, each analysis step is represented by a HDF5 group. The expectations for the contents of each group are described in the documentation for the corresponding validation function:</p>
 <ul>
 <li><a href="https://ltla.github.io/kanaval/inputs_8hpp.html">Inputs</a></li>
 <li><a href="https://ltla.github.io/kanaval/quality__control_8hpp.html">Quality control</a></li>
 <li><a href="https://ltla.github.io/kanaval/normalization_8hpp.html">Normalization</a></li>
 <li><a href="https://ltla.github.io/kanaval/feature__selection_8hpp.html">Feature selection</a></li>
-<li><a href="https://ltla.github.io/kanaval/principal__components__analysis_8hpp.html">Principal components analysis</a></li>
+<li><a href="https://ltla.github.io/kanaval/pca_8hpp.html">Principal components analysis</a></li>
 <li><a href="https://ltla.github.io/kanaval/kmeans__cluster_8hpp.html">k-means clustering</a></li>
 <li><a href="https://ltla.github.io/kanaval/neighbor__index_8hpp.html">Neighbor index</a></li>
 <li><a href="https://ltla.github.io/kanaval/snn__graph__cluster_8hpp.html">SNN graph clustering</a></li>

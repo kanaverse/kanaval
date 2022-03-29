@@ -140,18 +140,20 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p >Check contents for the k-means clustering step.</p>
-<p ><code>handle</code> should contain a <code>kmeans_cluster</code> group, itself containing the <code>parameters</code> and <code>results</code> subgroups.</p>
-<p ><code>parameters</code> should contain:</p>
+<p >Check contents for the k-means clustering step. Contents are stored inside a <code>kmeans_cluster</code> HDF5 group at the root of the file. The <code>kmeans_cluster</code> group itself contains the <code>parameters</code> and <code>results</code> subgroups.</p>
+<hr  />
+<p> <code>parameters</code> should contain:</p>
 <ul>
 <li><code>k</code>: a scalar integer specifying the number of clusters to create.</li>
 </ul>
-<p >If <code>in_use = true</code>, <code>results</code> should contain:</p>
+<hr  />
+<p> If <code>in_use = true</code>, <code>results</code> should contain:</p>
 <ul>
 <li><code>clusters</code>: an integer dataset of length equal to <code>num_cells</code>. This contains the cluster assignment for each cell, which should lie in $[0, k)$. The total number of clusters may be less than $k$, e.g., when there are too few cells. For $N$ clusters, there should be at least one occurrence of each integer in $[0, N)$.</li>
 </ul>
-<p >If <code>in_use = false</code>, <code>clusters</code> may be absent. If it is present, it should follow the constraints listed above.</p>
-<dl class="params"><dt>Parameters</dt><dd>
+<p >If <code>in_use = false</code>, <code>clusters</code> may be absent. Nonetheless, if it is present, it should follow the constraints listed above.</p>
+<hr  />
+ <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">handle</td><td>An open HDF5 file handle. </td></tr>
     <tr><td class="paramname">num_cells</td><td>Number of cells in the dataset after any quality filtering is applied. </td></tr>

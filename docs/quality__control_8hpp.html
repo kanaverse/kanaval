@@ -140,15 +140,16 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p >Check contents for the quality control step.</p>
-<p ><code>handle</code> should contain a <code>quality_control</code> group, itself containing the <code>parameters</code> and <code>results</code> subgroups.</p>
-<p ><code>parameters</code> should contain:</p>
+<p >Check contents for the quality control step. Contents are stored inside a <code>quality_control</code> HDF5 group at the root of the file. The <code>quality_control</code> group itself contains the <code>parameters</code> and <code>results</code> subgroups.</p>
+<hr  />
+<p> <code>parameters</code> should contain:</p>
 <ul>
 <li><code>use_mito_default</code>: a scalar integer to be interpreted as a boolean. This specifies whether to use the default mitochondrial gene list.</li>
 <li><code>mito_prefix</code>: a scalar string containing the expected prefix for mitochondrial gene symbols.</li>
 <li><code>nmads</code>: a scalar float specifying the number of MADs to use to define the QC thresholds.</li>
 </ul>
-<p ><code>results</code> should contain:</p>
+<hr  />
+<p> <code>results</code> should contain:</p>
 <ul>
 <li><code>metrics</code>, a group containing per-cell QC metrics. This contains:<ul>
 <li><code>sums</code>: a float dataset of length equal to the number of cells, containing the total count for each cell.</li>
@@ -164,7 +165,8 @@ Functions</h2></td></tr>
 </li>
 <li><code>discards</code>: an integer dataset of length equal to the number of cells. Each value is interpreted as a boolean and specifies whether the corresponding cell would be discarded by the filter thresholds.</li>
 </ul>
-<dl class="params"><dt>Parameters</dt><dd>
+<hr  />
+ <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">handle</td><td>An open HDF5 file handle. </td></tr>
     <tr><td class="paramname">num_cells</td><td>Number of cells in the dataset before any quality filtering is applied. </td></tr>

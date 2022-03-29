@@ -124,15 +124,17 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p >Check contents for the clustering choice.</p>
-<p ><code>handle</code> should contain a <code>choose_clustering</code> group, itself containing the <code>parameters</code> and <code>results</code> subgroups.</p>
-<p ><code>parameters</code> should contain:</p>
+<p >Check contents for the clustering choice. Contents are stored inside a <code>choose_clustering</code> HDF5 group at the root of the file. The <code>choose_clustering</code> group itself contains the <code>parameters</code> and <code>results</code> subgroups.</p>
+<hr  />
+<p> <code>parameters</code> should contain:</p>
 <ul>
 <li><code>method</code>: a scalar string specifying the clustering method to use. This is currently either <code>snn_graph</code> or <code>kmeans</code>.</li>
 </ul>
-<p ><code>results</code> is empty.</p>
+<hr  />
+<p> <code>results</code> is empty.</p>
 <p >Depending on the <code>method</code>, <code>snn_graph_cluster</code> or <code>kmeans_cluster</code> must have non-empty <code>results</code>. Both may also be non-empty, in which case the appropriate clustering is chosen based on <code>method</code>.</p>
-<dl class="params"><dt>Parameters</dt><dd>
+<hr  />
+ <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">handle</td><td>An open HDF5 file handle.</td></tr>
   </table>

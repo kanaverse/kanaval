@@ -140,20 +140,22 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p >Check contents for the k-means clustering step.</p>
-<p ><code>handle</code> should contain a <code>snn_graph_cluster</code> group, itself containing the <code>parameters</code> and <code>results</code> subgroups.</p>
-<p ><code>parameters</code> will contain:</p>
+<p >Check contents for the SNN graph clustering step. Contents are stored inside an <code>snn_graph_cluster</code> HDF5 group at the root of the file. The <code>snn_graph_cluster</code> group itself contains the <code>parameters</code> and <code>results</code> subgroups.</p>
+<hr  />
+<p> <code>parameters</code> will contain:</p>
 <ul>
 <li><code>k</code>: a scalar integer specifying the number of nearest neighbors to find.</li>
 <li><code>scheme</code>: a scalar string specifying the edge weighting scheme to use. This may be <code>"rank"</code>, <code>"number"</code> or <code>"jaccard"</code>.</li>
 <li><code>resolution</code>: a scalar float specifying the resolution of the multi-level community detection.</li>
 </ul>
-<p >If <code>in_use = true</code>, <code>results</code> should contain:</p>
+<hr  />
+<p> If <code>in_use = true</code>, <code>results</code> should contain:</p>
 <ul>
 <li><code>clusters</code>: an integer dataset of length equal to the number of cells (after QC filtering), containing the SNN graph cluster assignment for each cell. For $N$ clusters, there should be at least one occurrence of each integer in $[0, N)$.</li>
 </ul>
 <p >If <code>in_use = false</code>, <code>clusters</code> may be absent. If it is present, it should follow the constraints listed above.</p>
-<dl class="params"><dt>Parameters</dt><dd>
+<hr  />
+ <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">handle</td><td>An open HDF5 file handle. </td></tr>
     <tr><td class="paramname">num_cells</td><td>Number of cells in the dataset after any quality filtering is applied. </td></tr>

@@ -140,13 +140,14 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p >Check contents for the custom selections step.</p>
-<p ><code>handle</code> should contain a <code>custom_selections</code> group, itself containing the <code>parameters</code> and <code>results</code> subgroups.</p>
-<p ><code>parameters</code> should contain:</p>
+<p >Check contents for the custom selections step. Contents are stored inside a <code>custom_selections</code> HDF5 group at the root of the file. The <code>custom_selections</code> group itself contains the <code>parameters</code> and <code>results</code> subgroups.</p>
+<hr  />
+<p> <code>parameters</code> should contain:</p>
 <ul>
 <li><code>selections</code>: a group defining the custom selections. Each child is named after a user-created selection. Each child is an integer dataset of arbitrary length containing the indices of the selected cells. Note that indices refer to the dataset after QC filtering and should be less than <code>num_cells</code>.</li>
 </ul>
-<p ><code>results</code> should contain:</p>
+<hr  />
+<p> <code>results</code> should contain:</p>
 <ul>
 <li><code>markers</code>: a group containing the marker results for each selection after a comparison to a group containing all other cells. Each child is named after its selection and is a group containing:<ul>
 <li><code>means</code>: a float dataset of length equal to the number of genes, containing the mean expression of each gene in the selection.</li>
@@ -158,7 +159,8 @@ Functions</h2></td></tr>
 </ul>
 </li>
 </ul>
-<dl class="params"><dt>Parameters</dt><dd>
+<hr  />
+ <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">handle</td><td>An open HDF5 file handle. </td></tr>
     <tr><td class="paramname">num_genes</td><td>Number of genes in the dataset. </td></tr>
