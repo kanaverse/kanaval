@@ -12,6 +12,7 @@ enable_testing()
 
 add_executable(
     libtest 
+    src/inputs.cpp
     src/quality_control.cpp
     src/normalization.cpp
     src/feature_selection.cpp

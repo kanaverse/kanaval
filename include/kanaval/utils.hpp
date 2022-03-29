@@ -104,11 +104,16 @@ T load_float_scalar(const Object& handle, const std::string& name) {
 }
 
 template<class Object>
+std::string load_string(const Object& handle) {
+    std::string output;
+    handle.read(output, handle.getStrType());
+    return output;
+}
+
+template<class Object>
 std::string load_string(const Object& handle, const std::string& name) {
     auto dhandle = check_and_open_scalar(handle, name, H5T_STRING);
-    std::string output;
-    dhandle.read(output, dhandle.getStrType());
-    return output;
+    return load_string(dhandle);
 }
 
 inline std::runtime_error combine_errors(const std::exception& e, const std::string& msg) {
