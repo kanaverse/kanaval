@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['umap_2ehpp_0',['umap.hpp',['../umap_8hpp.html',1,'']]]
+  ['tsne_2ehpp_0',['tsne.hpp',['../tsne_8hpp.html',1,'']]]
 ];
