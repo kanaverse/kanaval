@@ -55,9 +55,10 @@ inline void validate_results(const H5::Group& handle, int num_cells) {
 
 /**
  * Check contents for the UMAP step.
+ * Contents are stored inside an `umap` HDF5 group at the root of the file.
+ * The `umap` group itself contains the `parameters` and `results` subgroups.
  *
- * `handle` should contain a `umap` group, itself containing the `parameters` and `results` subgroups.
- *
+ * <HR>
  * `parameters` should contain:
  *
  * - `num_epochs`: a scalar integer containing the number of epochs to perform.
@@ -65,11 +66,13 @@ inline void validate_results(const H5::Group& handle, int num_cells) {
  * - `min_dist`: a scalar float specifying the minimum distance between points.
  * - `animate`: a scalar integer to be interpreted as a boolean, indicating whether an animation should be performed.
  *
+ * <HR>
  * `results` should contain:
  *
  * - `x`: a float dataset of length equal to the number of cells (after QC filtering), containing the x-coordinates for each cell.
  * - `y`: a float dataset of length equal to the number of cells (after QC filtering), containing the y-coordinates for each cell.
  *
+ * <HR>
  * @param handle An open HDF5 file handle.
  * @param num_cells Number of cells in the dataset after any quality filtering is applied.
  *

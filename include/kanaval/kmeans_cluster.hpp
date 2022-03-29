@@ -66,13 +66,15 @@ inline int validate_results(const H5::Group& handle, int k, int num_cells, bool 
 
 /**
  * Check contents for the k-means clustering step.
+ * Contents are stored inside a `kmeans_cluster` HDF5 group at the root of the file.
+ * The `kmeans_cluster` group itself contains the `parameters` and `results` subgroups.
  *
- * `handle` should contain a `kmeans_cluster` group, itself containing the `parameters` and `results` subgroups.
- * 
+ * <HR>
  * `parameters` should contain:
  * 
  * - `k`: a scalar integer specifying the number of clusters to create.
  * 
+ * <HR>
  * If `in_use = true`, `results` should contain:
  * 
  * - `clusters`: an integer dataset of length equal to `num_cells`.
@@ -81,8 +83,9 @@ inline int validate_results(const H5::Group& handle, int k, int num_cells, bool 
  *   For $N$ clusters, there should be at least one occurrence of each integer in $[0, N)$.
  * 
  * If `in_use = false`, `clusters` may be absent.
- * If it is present, it should follow the constraints listed above.
+ * Nonetheless, if it is present, it should follow the constraints listed above.
  *
+ * <HR>
  * @param handle An open HDF5 file handle.
  * @param num_cells Number of cells in the dataset after any quality filtering is applied.
  * @param in_use Was k-means clustering used by downstream steps?

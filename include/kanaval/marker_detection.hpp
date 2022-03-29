@@ -59,11 +59,13 @@ inline void validate_results(const H5::Group& handle, int num_clusters, int num_
 
 /**
  * Check contents for the marker detection step.
+ * Contents are stored inside an `marker_detection` HDF5 group at the root of the file.
+ * The `marker_detection` group itself contains the `parameters` and `results` subgroups.
  * 
- * `handle` should contain a `marker_detection` group, itself containing the `parameters` and `results` subgroups.
- *
+ * <HR>
  * `parameters` should be empty.
  * 
+ * <HR>
  * `results` should contain:
  *
  * - `clusters`: a group representing an array of length equal to the number of clusters.
@@ -80,6 +82,7 @@ inline void validate_results(const H5::Group& handle, int num_clusters, int num_
  *   - `cohen`: same as `lfc`, but for Cohen's d.
  *   - `auc`: same as `lfc`, but for the AUCs.
  *
+ * <HR>
  * @param handle An open HDF5 file handle.
  * @param num_clusters Number of clusters produced by previous steps.
  * @param num_genes Number of genes in the dataset.

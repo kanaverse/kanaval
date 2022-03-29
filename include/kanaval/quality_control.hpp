@@ -76,9 +76,10 @@ inline int validate_results(const H5::Group& qhandle, int num_cells, int num_bat
 
 /**
  * Check contents for the quality control step.
+ * Contents are stored inside a `quality_control` HDF5 group at the root of the file.
+ * The `quality_control` group itself contains the `parameters` and `results` subgroups.
  * 
- * `handle` should contain a `quality_control` group, itself containing the `parameters` and `results` subgroups.
- *
+ * <HR>
  * `parameters` should contain:
  * 
  * - `use_mito_default`: a scalar integer to be interpreted as a boolean.
@@ -86,6 +87,7 @@ inline int validate_results(const H5::Group& qhandle, int num_cells, int num_bat
  * - `mito_prefix`: a scalar string containing the expected prefix for mitochondrial gene symbols.
  * - `nmads`: a scalar float specifying the number of MADs to use to define the QC thresholds.
  * 
+ * <HR>
  * `results` should contain:
  * 
  * - `metrics`, a group containing per-cell QC metrics.
@@ -101,6 +103,7 @@ inline int validate_results(const H5::Group& qhandle, int num_cells, int num_bat
  * - `discards`: an integer dataset of length equal to the number of cells.
  *   Each value is interpreted as a boolean and specifies whether the corresponding cell would be discarded by the filter thresholds.
  *
+ * <HR>
  * @param handle An open HDF5 file handle.
  * @param num_cells Number of cells in the dataset before any quality filtering is applied.
  * @param num_batches Number of batches in the dataset.

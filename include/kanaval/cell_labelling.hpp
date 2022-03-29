@@ -77,9 +77,10 @@ inline void validate_results(const H5::Group& handle, const std::unordered_set<s
 
 /**
  * Check contents for the cell labelling step.
+ * Contents are stored inside an `inputs` HDF5 group at the root of the file.
+ * The `cell_labelling` group itself contains the `parameters` and `results` subgroups.
  *
- * `handle` should contain a `cell_labelling` group, itself containing the `parameters` and `results` subgroups.
- *
+ * <HR>
  * `parameters` should contain:
  * 
  * - `human_references`: a string dataset defining the human reference datasets used for labelling.
@@ -87,6 +88,7 @@ inline void validate_results(const H5::Group& handle, const std::unordered_set<s
  * - `mouse_references`: a string dataset defining the mouse reference datasets used for labelling.
  *   Each entry contains the name of a reference dataset, e.g., `"ImmGen"`.
  * 
+ * <HR>
  * `results` should contain:
  * 
  * - `per_reference`: a group containing the label assignments for each cluster in each reference.
@@ -98,6 +100,7 @@ inline void validate_results(const H5::Group& handle, const std::unordered_set<s
  * - `integrated`: a string dataset of length equal to the number of clusters.
  *   This specifies the reference with the top-scoring label for each cluster, after integrating the results of all per-reference classifications.
  *
+ * <HR>
  * @param handle An open HDF5 file handle.
  * @param num_clusters Number of clusters to be labelled.
  * 

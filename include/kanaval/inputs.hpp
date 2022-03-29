@@ -217,14 +217,14 @@ inline void validate_results(const H5::Group& handle, bool blocked, int version 
  * This should be exactly one file for HDF5-based formats, or multiple files for MatrixMarket formats, e.g., to include feature information - see below for details.
  * A matrix may contain data for one or more samples.
  *
- * @section Parameters
+ * <HR>
  * `parameters` should contain:
  * 
  * - `format`: a scalar string specifying the file format for a single matrix.
  *   This is usually either `"MatrixMarket"`, for a MatrixMarket file with possible feature/barcode annotations;
  *   `"10X"`, for the 10X Genomics HDF5 matrix format;
  *   or `"H5AD"`, for the H5AD format.
- *   Other values are allowed but their interpretation is implementation-defined (e.g., for in-house resources). 
+ *   Other values are allowed but their interpretation is implementation-defined (e.g., for custom resources). 
  *   @v1_1{\[**since version 1.1**\] For multiple matrices, `format` should instead be a 1-dimensional string dataset of length equal to the number of uploads.
  *   Each element of the dataset is usually one of `"MatrixMarket"`, `"10X"` or `"H5AD"`; 
  *   different values can be present for mixed input formats.}
@@ -237,6 +237,7 @@ inline void validate_results(const H5::Group& handle, bool blocked, int version 
  *       There may be zero or one `type = "genes"`, containing a (possibly Gzipped) TSV file with the Ensembl and gene symbols for each row.
  *       There may be zero or one `type = "annotation"`, containing a (possibly Gzipped) TSV file with the annotations for each column.
  *     - If `format = "10X"` or `"H5AD"`, there should be exactly one `type = "h5"`.
+ *     - For other `format`s, any `type` can be used, typically for custom resources.
  *   - `name`: a scalar string specifying the file name as it was provided to **kana**.
  *   - `offset`: a scalar integer specifying where the file starts as an offset from the start of the remaining bytes section.
  *   - `size`: a scalar integer specifying the number of bytes in the file.
@@ -255,7 +256,7 @@ inline void validate_results(const H5::Group& handle, bool blocked, int version 
  * - @v1_1{`sample_factor`: a string scalar specifying the field in the per-cell annotation that contains the sample blocking factor. 
  *   If present, it is assumed that the matrix contains data for multiple samples.}
  *
- * @section Results
+ * <HR>
  * `results` should contain:
  * 
  * - `dimensions`: an integer dataset of length 2,
@@ -280,7 +281,9 @@ inline void validate_results(const H5::Group& handle, bool blocked, int version 
  * - `marker_detection::validate()`
  * - `custom_selections::validate()`
  * 
+ * <HR>
  * @param handle An open HDF5 file handle.
+ * @param embedded Whether the data files are embedded or linked.
  * @param version Version of the state file.
  *
  * @return Boolean indicating whether downstream analyses need to block on the sample.

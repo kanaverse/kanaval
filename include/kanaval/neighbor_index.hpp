@@ -33,15 +33,18 @@ inline void validate_results(const H5::Group& handle) {
 
 /**
  * Check contents for the neighbor index step.
+ * Contents are stored inside an `neighbor_index` HDF5 group at the root of the file.
+ * The `neighbor_index` group itself contains the `parameters` and `results` subgroups.
  *
- * `handle` should contain a `neighbor_index` group, itself containing the `parameters` and `results` subgroups.
- *
+ * <HR>
  * `parameters` should contain:
  * 
  * - `approximate`: an integer scalar to be interpreted as a boolean, specifying whether an approximate nearest neighbor search should be performed.
  * 
+ * <HR>
  * No contents are mandated for `results`.
  *
+ * <HR>
  * @param handle An open HDF5 file handle.
  * 
  * @return If the format is invalid, an error is raised.

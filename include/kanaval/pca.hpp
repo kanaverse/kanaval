@@ -65,9 +65,10 @@ inline void validate_results(const H5::Group& handle, int num_pcs, std::string b
 
 /**
  * Check contents for the PCA step.
+ * Contents are stored inside an `pca` HDF5 group at the root of the file.
+ * The `pca` group itself contains the `parameters` and `results` subgroups.
  *
- * `handle` should contain a `pca` group, itself containing the `parameters` and `results` subgroups.
- *
+ * <HR>
  * `parameters` should contain:
  *
  * - `num_hvgs`: a scalar integer containing the number of highly variable genes to use to compute the PCA.
@@ -75,6 +76,7 @@ inline void validate_results(const H5::Group& handle, int num_pcs, std::string b
  * - \v1_1{\[**since version 1.1**\] `block_method`: a scalar string specifying the method to use when dealing with multiple blocks in the dataset.
  *   This may be `"none"`, `"regress"` or `"mnn"`.}
  *
+ * <HR>
  * `results` should contain:
  *
  * - `pcs`: a 2-dimensional float dataset containing the PC coordinates in a row-major layout.
@@ -88,6 +90,7 @@ inline void validate_results(const H5::Group& handle, int num_pcs, std::string b
  *
  * - \v1_1{`corrected`, a float dataset with the same dimensions as `pcs`, containing the MNN-corrected PCs for each cell.}
  *
+ * <HR>
  * @param handle An open HDF5 file handle.
  * @param num_cells Number of cells in the dataset after any quality filtering is applied.
  * @param version Version of the state file.

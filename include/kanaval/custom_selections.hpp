@@ -67,9 +67,10 @@ inline void validate_results(const H5::Group& handle, const std::vector<std::str
 
 /**
  * Check contents for the custom selections step.
+ * Contents are stored inside a `custom_selections` HDF5 group at the root of the file.
+ * The `custom_selections` group itself contains the `parameters` and `results` subgroups.
  * 
- * `handle` should contain a `custom_selections` group, itself containing the `parameters` and `results` subgroups.
- *
+ * <HR>
  * `parameters` should contain:
  *
  * - `selections`: a group defining the custom selections.
@@ -77,6 +78,7 @@ inline void validate_results(const H5::Group& handle, const std::vector<std::str
  *   Each child is an integer dataset of arbitrary length containing the indices of the selected cells.
  *   Note that indices refer to the dataset after QC filtering and should be less than `num_cells`.
  * 
+ * <HR>
  * `results` should contain:
  *
  * - `markers`: a group containing the marker results for each selection after a comparison to a group containing all other cells.
@@ -88,6 +90,7 @@ inline void validate_results(const H5::Group& handle, const std::vector<std::str
  *   - `cohen`: same as `lfc`, but for Cohen's d.
  *   - `auc`: same as `lfc`, but for the AUCs.
  *
+ * <HR>
  * @param handle An open HDF5 file handle.
  * @param num_genes Number of genes in the dataset.
  * @param num_cells Number of cells in the dataset after QC filtering.

@@ -32,10 +32,16 @@ inline void validate_results(const H5::Group& handle) {
 
 /**
  * Check contents for the normalization step.
+ * Contents are stored inside a `normalization` HDF5 group at the root of the file.
+ * The `normalization` group itself contains the `parameters` and `results` subgroups.
  *
- * `handle` should contain a `normalization` group, itself containing the `parameters` and `results` subgroups.
- * No contents are mandated for either subgroup.
+ * <HR>
+ * No contents are mandated for `parameters`.
  *
+ * <HR>
+ * No contents are mandated for `results`.
+ * 
+ * <HR>
  * @param handle An open HDF5 file handle.
  * 
  * @return If the format is invalid, an error is raised.

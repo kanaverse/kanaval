@@ -43,13 +43,15 @@ inline void validate_results(const H5::Group& handle, int num_genes) {
 
 /**
  * Check contents for the feature selection step.
+ * Contents are stored inside a `feature_selection` HDF5 group at the root of the file.
+ * The `feature_selection` group itself contains the `parameters` and `results` subgroups.
  * 
- * `handle` should contain a `feature_selection` group, itself containing the `parameters` and `results` subgroups.
- *
+ * <HR>
  * `parameters` should contain:
  * 
  * - `span`: a scalar float specifying the span to use for the LOWESS smoother.
  * 
+ * <HR>
  * `results` should contain:
  * 
  * - `means`: a 1-dimensional float dataset of length equal to the number of genes,
@@ -61,6 +63,7 @@ inline void validate_results(const H5::Group& handle, int num_genes) {
  * - `resids`: a 1-dimensional float dataset of length equal to the number of genes,
  *   containing the residuals from the trend for each gene.
  *
+ * <HR>
  * @param handle An open HDF5 file handle.
  * @param num_genes Number of genes in the dataset.
  *
