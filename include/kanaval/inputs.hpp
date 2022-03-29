@@ -182,9 +182,10 @@ inline bool validate_results(const H5::Group& handle, bool blocked, int version 
  * @endcond
  */
 
- matrix inputs/**
+/**
  * Check contents for the input step.
- * Contents are stored inside the `inputs` group, itself containing the `parameters` and `results` subgroups.
+ * Contents are stored inside an `inputs` HDF5 group at the root of the file.
+ * The `inputs` group itself contains the `parameters` and `results` subgroups.
  *
  * In this section, a "matrix" refers to one or more files describing a single (count) matrix.
  * This should be exactly one file for HDF5-based formats, or multiple files for MatrixMarket formats, e.g., to include feature information - see below for details.
@@ -198,76 +199,58 @@ inline bool validate_results(const H5::Group& handle, bool blocked, int version 
  *   `"10X"`, for the 10X Genomics HDF5 matrix format;
  *   or `"H5AD"`, for the H5AD format.
  *   Other values are allowed but their interpretation is implementation-defined (e.g., for in-house resources). 
- *   <span style="color:purple">
- *   \[**since version 1.1**\] For multiple matrices, `format` should instead be a 1-dimensional string dataset of length equal to the number of uploads.
+ *   @v1_1{\[**since version 1.1**\] For multiple matrices, `format` should instead be a 1-dimensional string dataset of length equal to the number of uploads.
  *   Each element of the dataset is usually one of `"MatrixMarket"`, `"10X"` or `"H5AD"`; 
- *   different values can be present for mixed input formats.
- *   </span>
+ *   different values can be present for mixed input formats.}
  * - `files`: a group of groups representing an array of input file information.
  *   Each inner group is named by their positional index in the array and contains information about a file in an upload.
  *   Each inner group should contain:
  *   - `type`: a scalar string specifying the type of the file.
  *     If `format = "MatrixMarket"`, there should be at least one `type = "mtx"`, and no more than one of `type = "gene"` and `type = "annotation"` amongst the `files`.
  *     If `format = "10X"` or `"H5AD"`, there should be exactly one `type = "h5"`.
- *     <span style="color:purple">
- *     \[**since version 1.1**\] For multiple matrices, the above constraints apply to all files corresponding to a single sample.
- *     </span>
+ *     @v1_1{\[**since version 1.1**\] For multiple matrices, the above constraints apply to all files corresponding to a single sample.}
  *   - `name`: a scalar string specifying the file name as it was provided to **kana**.
  *   - `offset`: a scalar integer specifying where the file starts as an offset from the start of the remaining bytes section.
  *   - `size`: a scalar integer specifying the number of bytes in the file.
  *
- * <span style="color:purple">
- * \[**since version 1.1**\] For multiple matrices, `parameters` should also contain:
- * </span>
+ * @v1_1{\[**since version 1.1**\] For multiple matrices, `parameters` should also contain:}
  *
- * - <span style="color:purple">
- *   `sample_groups`: an integer dataset of length equal to the number of samples.
+ * - @v1_1{`sample_groups`: an integer dataset of length equal to the number of samples.
  *   Each entry specifies the number of files in `files` that belong to a sample.
  *   (All files from the same sample are assumed to be contiguous in the array represented by `files`;
- *   so a `sample_groups` of `[3, 2, 1]` would mean that the first three files belong to the first sample, the next 2 files belong to the second sample, and the last file belongs to the third sample.)
- *   </span>
- * - <span style="color:purple">
- *   `sample_names`: a string dataset of length equal to the number of samples, containing the sample name.
- *   </span>
+ *   so a `sample_groups` of `[3, 2, 1]` would mean that the first three files belong to the first sample, 
+ *   the next 2 files belong to the second sample, and the last file belongs to the third sample.)}
+ * - @v1_1{`sample_names`: a string dataset of length equal to the number of samples, containing the sample name.}
  *
- * <span style="color:purple">
- * \[**since version 1.1**\] For single matrix inputs, `parameters` may also contain:
- * </span>
+ * @v1_1{\[**since version 1.1**\] For single matrix inputs, `parameters` may also contain:}
  *
- * - <span style="color:purple">
- *   `sample_factor`: a string scalar specifying the field in the per-cell annotation that contains the sample blocking factor. 
- *   If present, it is assumed that the matrix contains data for multiple samples.
- *   </span>
+ * - @v1_1{`sample_factor`: a string scalar specifying the field in the per-cell annotation that contains the sample blocking factor. 
+ *   If present, it is assumed that the matrix contains data for multiple samples.}
  *
  * @section Results
  * `results` should contain:
  * 
  * - `dimensions`: an integer dataset of length 2,
  *   containing the number of features and the number of cells in the dataset.
- *   <span style="color:purple">
- *   \[**since version 1.1**\] When dealing with multi-sample inputs, the first entry is instead defined as the size of the intersection of features across all samples.
- *   </span>
+ *   @v1_1{\[**since version 1.1**\] When dealing with multi-sample inputs, the first entry is instead defined as the size of the intersection of features across all samples.}
  *
  * If there is only a single sample, `results` should also contain:
  *
  * - `permutation`: an integer dataset of length equal to the number of cells,
  *   describing the permutation to be applied to the per-gene results to recover the original row order.
  *
- * <span style="color:purple">
- * \[**since version 1.1**\] If there are multiple samples, `results` should instead contain:
- * </span>
+ * @v1_1{\[**since version 1.1**\] If there are multiple samples, `results` should instead contain:}
  *
- * - <span style="color:purple">
- *   `indices`: an integer dataset containing the row index of each feature in the intersection.
+ * - @v1_1{`indices`: an integer dataset containing the row index of each feature in the intersection.
  *   For each entry, the gene is defined as the indexed row in the first sample _without permutation_.
- *   The `indices` are parallel to the per-gene results.
- *   </span>
+ *   The `indices` are parallel to the per-gene results.}
  * 
  * All steps that generate per-gene results should use `permutation` or `indices` to identify the genes corresponding to the statistics.
+ * See the documentation for the functions listed below:
  *
- * - `feature_selection::validate`
- * - `marker_detection::validate`
- * - `custom_selections::validate`
+ * - `feature_selection::validate()`
+ * - `marker_detection::validate()`
+ * - `custom_selections::validate()`
  * 
  * @param handle An open HDF5 file handle.
  * @param version Version of the state file.
