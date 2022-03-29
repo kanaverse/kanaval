@@ -23,7 +23,7 @@ namespace inputs {
 /**
  * @cond
  */
-inline bool validate_parameters(const H5::Group& handle, bool embedded, int version = 1001000) {
+inline std::pair<bool, bool> validate_parameters(const H5::Group& handle, bool embedded, int version = 1001000) {
     auto phandle = utils::check_and_open_group(handle, "parameters");
 
     // Formats can either be a scalar... or not.
@@ -61,8 +61,8 @@ inline bool validate_parameters(const H5::Group& handle, bool embedded, int vers
 
         // Checking that everyone has unique groups.
         auto names = utils::load_string_vector(phandle, "sample_names");
-        if (runs.size() != formats.size()) {
-            throw std::runtime_error("'names' and 'format' should have the same length");
+        if (names.size() != formats.size()) {
+            throw std::runtime_error("'sample_names' and 'format' should have the same length");
         }
 
         std::unordered_set<std::string> stuff;
@@ -83,8 +83,8 @@ inline bool validate_parameters(const H5::Group& handle, bool embedded, int vers
         auto curf = formats[r];
         std::vector<std::string> types;
 
-        for (int s = 0; s < runs[r]; ++s) {
-            std::string current = std::to_string(s + sofar);
+        for (int s = 0; s < runs[r]; ++s, ++sofar) {
+            std::string current = std::to_string(sofar);
             try {
                 auto curfihandle = utils::check_and_open_group(fihandle, current);
 
@@ -129,11 +129,11 @@ inline bool validate_parameters(const H5::Group& handle, bool embedded, int vers
             }
             
         } else if (curf == "10X") {
-            if (types.size() != 1 && types.front() != "h5") {
+            if (types.size() != 1 || types.front() != "h5") {
                 throw std::runtime_error("expected exactly one 'h5' file when format is '10X'");
             }
         } else if (curf == "H5AD") {
-            if (types.size() != 1 && types.front() != "h5") {
+            if (types.size() != 1 || types.front() != "h5") {
                 throw std::runtime_error("expected exactly one 'h5' file when format is 'H5AD'");
             }
         }
@@ -152,12 +152,13 @@ inline bool validate_parameters(const H5::Group& handle, bool embedded, int vers
     }
 
     // Checking if there's a batch variable.
+    bool multisample = multifile;
     if (phandle.exists("sample_factor")) {
         utils::check_and_open_dataset(phandle, "sample_factor", H5T_STRING, {});
-        return true;
-    } else {
-        return multifile;
-    }
+        multisample = true;
+    } 
+    
+    return std::make_pair(multifile, multisample);
 }
 
 inline void validate_results(const H5::Group& handle, bool blocked, int version = 1001000) {
@@ -261,12 +262,12 @@ inline void validate_results(const H5::Group& handle, bool blocked, int version 
  *   containing the number of features and the number of cells in the dataset.
  *   @v1_1{\[**since version 1.1**\] When dealing with multi-sample inputs, the first entry is instead defined as the size of the intersection of features across all samples.}
  *
- * If there is only a single sample, `results` should also contain:
+ * If there is only a single matrix, `results` should also contain:
  *
  * - `permutation`: an integer dataset of length equal to the number of cells,
  *   describing the permutation to be applied to the per-gene results to recover the original row order.
  *
- * @v1_1{\[**since version 1.1**\] If there are multiple samples, `results` should instead contain:}
+ * @v1_1{\[**since version 1.1**\] If there are multiple matrices, `results` should instead contain:}
  *
  * - @v1_1{`indices`: an integer dataset containing the row index of each feature in the intersection.
  *   For each entry, the gene is defined as the indexed row in the first sample _without permutation_.
@@ -288,7 +289,7 @@ inline void validate_results(const H5::Group& handle, bool blocked, int version 
 inline bool validate(const H5::Group& handle, bool embedded = true, int version = 1001000) {
     auto ihandle = utils::check_and_open_group(handle, "inputs");
 
-    bool blocked;
+    std::pair<bool, bool> blocked;
     try {
         blocked = validate_parameters(ihandle, embedded, version);
     } catch (std::exception& e) {
@@ -296,12 +297,12 @@ inline bool validate(const H5::Group& handle, bool embedded = true, int version 
     }
 
     try {
-        validate_results(ihandle, blocked, version);
+        validate_results(ihandle, blocked.first, version);
     } catch (std::exception& e) {
         throw utils::combine_errors(e, "failed to retrieve results from 'inputs'");
     }
 
-    return blocked;
+    return blocked.second;
 }
 
 }
