@@ -35,6 +35,7 @@ Each file can be excised by reading the offsets and sizes in the `inputs` field.
 
 Each analysis step is represented by a HDF5 group:
 
+- [Inputs](https://ltla.github.io/kanaval/inputs_8hpp.html)
 - [Quality control](https://ltla.github.io/kanaval/quality__control_8hpp.html)
 - [Normalization](https://ltla.github.io/kanaval/normalization_8hpp.html)
 - [Feature selection](https://ltla.github.io/kanaval/feature__selection_8hpp.html)
