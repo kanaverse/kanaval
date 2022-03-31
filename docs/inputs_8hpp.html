@@ -69,6 +69,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">inputs.hpp File Reference</div></div>
 </div><!--header-->
@@ -103,16 +104,22 @@ Include dependency graph for inputs.hpp:</div>
 </div>
 <p><a href="inputs_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structkanaval_1_1inputs_1_1Details.html">kanaval::inputs::Details</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="structkanaval_1_1inputs_1_1Details.html" title="Details about the dataset.">Details</a> about the dataset.  <a href="structkanaval_1_1inputs_1_1Details.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a92742b2dbd8a57032964a83d5f542429"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="inputs_8hpp.html#a92742b2dbd8a57032964a83d5f542429">kanaval::inputs::validate</a> (const H5::Group &amp;handle, bool embedded=true, int version=1001000)</td></tr>
-<tr class="separator:a92742b2dbd8a57032964a83d5f542429"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab088871b4fa7ed68c01da077e01a7dc8"><td class="memItemLeft" align="right" valign="top">Details&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="inputs_8hpp.html#ab088871b4fa7ed68c01da077e01a7dc8">kanaval::inputs::validate</a> (const H5::Group &amp;handle, bool embedded=true, int version=1001000)</td></tr>
+<tr class="separator:ab088871b4fa7ed68c01da077e01a7dc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Validate input contents. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="a92742b2dbd8a57032964a83d5f542429" name="a92742b2dbd8a57032964a83d5f542429"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a92742b2dbd8a57032964a83d5f542429">&#9670;&nbsp;</a></span>validate()</h2>
+<a id="ab088871b4fa7ed68c01da077e01a7dc8" name="ab088871b4fa7ed68c01da077e01a7dc8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab088871b4fa7ed68c01da077e01a7dc8">&#9670;&nbsp;</a></span>validate()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -121,7 +128,7 @@ Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">bool kanaval::inputs::validate </td>
+          <td class="memname">Details kanaval::inputs::validate </td>
           <td>(</td>
           <td class="paramtype">const H5::Group &amp;&#160;</td>
           <td class="paramname"><em>handle</em>, </td>
@@ -183,6 +190,10 @@ Functions</h2></td></tr>
 <ul>
 <li><code>dimensions</code>: an integer dataset of length 2, containing the number of features and the number of cells in the dataset.  <span style="color:purple">[<b>since version 1.1</b>] When dealing with multi-sample inputs, the first entry is instead defined as the size of the intersection of features across all samples. </span></li>
 </ul>
+<p > <span style="color:purple">[<b>since version 1.1</b>] <code>results</code> may also contain: </span></p>
+<ul>
+<li> <span style="color:purple"><code>num_samples</code>: an integer scalar dataset specifying the number of samples. If absent, this is assumed to be 1. For multiple matrices, the value listed here should be consistent with the number of samples specified in the paramaters. </span></li>
+</ul>
 <p >If there is only a single matrix, <code>results</code> should also contain:</p>
 <ul>
 <li><code>permutation</code>: an integer dataset of length equal to the number of cells, describing the permutation to be applied to the per-gene results to recover the original row order.</li>
@@ -193,9 +204,9 @@ Functions</h2></td></tr>
 </ul>
 <p >All steps that generate per-gene results should use <code>permutation</code> or <code>indices</code> to identify the genes corresponding to the statistics. See the documentation for the functions listed below:</p>
 <ul>
-<li><code><a class="el" href="inputs_8hpp.html#a92742b2dbd8a57032964a83d5f542429">feature_selection::validate()</a></code></li>
-<li><code><a class="el" href="inputs_8hpp.html#a92742b2dbd8a57032964a83d5f542429">marker_detection::validate()</a></code></li>
-<li><code><a class="el" href="inputs_8hpp.html#a92742b2dbd8a57032964a83d5f542429">custom_selections::validate()</a></code></li>
+<li><code><a class="el" href="inputs_8hpp.html#ab088871b4fa7ed68c01da077e01a7dc8">feature_selection::validate()</a></code></li>
+<li><code><a class="el" href="inputs_8hpp.html#ab088871b4fa7ed68c01da077e01a7dc8">marker_detection::validate()</a></code></li>
+<li><code><a class="el" href="inputs_8hpp.html#ab088871b4fa7ed68c01da077e01a7dc8">custom_selections::validate()</a></code></li>
 </ul>
 <hr  />
  <dl class="params"><dt>Parameters</dt><dd>
@@ -206,7 +217,7 @@ Functions</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>Boolean indicating whether downstream analyses need to block on the sample. If the format is invalid, an error is raised instead. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Details about the dataset. If the format is invalid, an error is raised instead. </dd></dl>
 
 </div>
 </div>

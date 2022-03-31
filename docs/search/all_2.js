@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['inputs_2ehpp_0',['inputs.hpp',['../inputs_8hpp.html',1,'']]]
+  ['feature_5fselection_2ehpp_0',['feature_selection.hpp',['../feature__selection_8hpp.html',1,'']]]
 ];
