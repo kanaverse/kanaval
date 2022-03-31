@@ -50,7 +50,10 @@ TEST(SingleInputs, AllOK) {
     }
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        EXPECT_FALSE(kanaval::inputs::validate(handle));
+        auto output = kanaval::inputs::validate(handle);
+        EXPECT_EQ(output.num_genes, 1000);
+        EXPECT_EQ(output.num_cells, 100);
+        EXPECT_EQ(output.num_samples, 1);
     }
 
     // Trying with HDF5.
@@ -60,7 +63,10 @@ TEST(SingleInputs, AllOK) {
     }
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        EXPECT_FALSE(kanaval::inputs::validate(handle));
+        auto output = kanaval::inputs::validate(handle);
+        EXPECT_EQ(output.num_genes, 1000);
+        EXPECT_EQ(output.num_cells, 100);
+        EXPECT_EQ(output.num_samples, 1);
     }
 
     // Trying with a sample factor.
@@ -72,7 +78,26 @@ TEST(SingleInputs, AllOK) {
     }
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        EXPECT_TRUE(kanaval::inputs::validate(handle));
+        auto output = kanaval::inputs::validate(handle);
+        EXPECT_EQ(output.num_genes, 1000);
+        EXPECT_EQ(output.num_cells, 100);
+        EXPECT_EQ(output.num_samples, 1);
+    }
+
+    {
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        add_single_matrix(handle, "H5AD");
+        auto phandle = handle.openGroup("inputs/parameters");
+        quick_write_dataset(phandle, "sample_factor", "FOO");
+        auto rhandle = handle.openGroup("inputs/results");
+        quick_write_dataset(rhandle, "num_samples", 5);
+    }
+    {
+        H5::H5File handle(path, H5F_ACC_RDONLY);
+        auto output = kanaval::inputs::validate(handle);
+        EXPECT_EQ(output.num_genes, 1000);
+        EXPECT_EQ(output.num_cells, 100);
+        EXPECT_EQ(output.num_samples, 5);
     }
 
     // Trying with links.
@@ -88,7 +113,10 @@ TEST(SingleInputs, AllOK) {
     }
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        EXPECT_FALSE(kanaval::inputs::validate(handle, false));
+        auto output = kanaval::inputs::validate(handle, false);
+        EXPECT_EQ(output.num_genes, 1000);
+        EXPECT_EQ(output.num_cells, 100);
+        EXPECT_EQ(output.num_samples, 1);
     }
 }
 
@@ -260,6 +288,14 @@ TEST(SingleInputs, ResultsFail) {
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
         add_single_matrix(handle);
+        auto rhandle = handle.openGroup("inputs/results");
+        quick_write_dataset(rhandle, "num_samples", 5);
+    }
+    quick_input_throw(path, "without 'sample_factor'");
+
+    {
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        add_single_matrix(handle);
         handle.unlink("inputs/results/permutation");
         auto rhandle = handle.openGroup("inputs/results");
         quick_write_dataset(rhandle, "permutation", std::vector<int>{1,2,3});
@@ -314,6 +350,7 @@ void add_multiple_matrices(H5::H5File& handle) {
 
     auto rhandle = ihandle.createGroup("results");
     quick_write_dataset(rhandle, "dimensions", std::vector<int>{500, 100});
+    quick_write_dataset(rhandle, "num_samples", 2);
 
     std::vector<int> indices(500);
     std::iota(indices.begin(), indices.end(), 0); 
@@ -331,7 +368,10 @@ TEST(MultipleInputs, AllOK) {
     }
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        EXPECT_TRUE(kanaval::inputs::validate(handle));
+        auto output = kanaval::inputs::validate(handle);
+        EXPECT_EQ(output.num_genes, 500);
+        EXPECT_EQ(output.num_cells, 100);
+        EXPECT_EQ(output.num_samples, 2);
     }
 }
 
@@ -344,6 +384,13 @@ TEST(MultipleInputs, ParametersFailed) {
         handle.unlink("inputs/parameters/sample_names");
     }
     quick_input_throw(path, "sample_names");
+
+    {
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        add_multiple_matrices(handle);
+        handle.unlink("inputs/results/num_samples");
+    }
+    quick_input_throw(path, "equal to the number of matrices");
 
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
