@@ -3,7 +3,7 @@
 #include "utils.h"
 #include <iostream>
 
-void add_quality_control(H5::H5File& handle, int num_cells, int num_batches) {
+void add_quality_control(H5::H5File& handle, int num_cells, int num_samples) {
     auto qhandle = handle.createGroup("quality_control");
 
     auto phandle = qhandle.createGroup("parameters");
@@ -19,9 +19,9 @@ void add_quality_control(H5::H5File& handle, int num_cells, int num_batches) {
     quick_write_dataset(mhandle, "proportion", std::vector<double>(num_cells));
 
     auto thandle = rhandle.createGroup("thresholds");
-    quick_write_dataset(thandle, "sums", std::vector<double>(num_batches));
-    quick_write_dataset(thandle, "detected", std::vector<double>(num_batches));
-    quick_write_dataset(thandle, "proportion", std::vector<double>(num_batches));
+    quick_write_dataset(thandle, "sums", std::vector<double>(num_samples));
+    quick_write_dataset(thandle, "detected", std::vector<double>(num_samples));
+    quick_write_dataset(thandle, "proportion", std::vector<double>(num_samples));
 
     quick_write_dataset(rhandle, "discards", std::vector<int>(num_cells));
     return;
@@ -51,10 +51,10 @@ TEST(QualityControl, AllOK) {
     }
 }
 
-void quick_qc_throw(const std::string& path, int num_cells, int num_batches, std::string msg) {
+void quick_qc_throw(const std::string& path, int num_cells, int num_samples, std::string msg) {
     quick_throw([&]() -> void {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        kanaval::quality_control::validate(handle, num_cells, num_batches);
+        kanaval::quality_control::validate(handle, num_cells, num_samples);
     }, msg);
 }
 

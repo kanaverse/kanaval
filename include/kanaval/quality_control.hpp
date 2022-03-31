@@ -29,7 +29,7 @@ inline void validate_parameters(const H5::Group& qhandle) {
     return;
 }
 
-inline int validate_results(const H5::Group& qhandle, int num_cells, int num_batches) {
+inline int validate_results(const H5::Group& qhandle, int num_cells, int num_samples) {
     auto rhandle = utils::check_and_open_group(qhandle, "results");
 
     try {
@@ -45,7 +45,7 @@ inline int validate_results(const H5::Group& qhandle, int num_cells, int num_bat
     try {
         auto thandle = utils::check_and_open_group(rhandle, "thresholds");
 
-        std::vector<size_t> dims{ static_cast<size_t>(num_batches) };
+        std::vector<size_t> dims{ static_cast<size_t>(num_samples) };
         utils::check_and_open_dataset(thandle, "sums", H5T_FLOAT, dims);
         utils::check_and_open_dataset(thandle, "detected", H5T_FLOAT, dims);
         utils::check_and_open_dataset(thandle, "proportion", H5T_FLOAT, dims);
@@ -106,12 +106,12 @@ inline int validate_results(const H5::Group& qhandle, int num_cells, int num_bat
  * <HR>
  * @param handle An open HDF5 file handle.
  * @param num_cells Number of cells in the dataset before any quality filtering is applied.
- * @param num_batches Number of batches in the dataset.
+ * @param num_samples Number of batches in the dataset.
  * 
  * @return The number of cells remaining after QC filtering.
  * If the format is invalid, an error is raised instead.
  */ 
-inline int validate(const H5::H5File& handle, int num_cells, int num_batches) {
+inline int validate(const H5::H5File& handle, int num_cells, int num_samples) {
     auto qhandle = utils::check_and_open_group(handle, "quality_control");
 
     try {
@@ -122,7 +122,7 @@ inline int validate(const H5::H5File& handle, int num_cells, int num_batches) {
 
     int remaining = 0;
     try {
-        remaining = validate_results(qhandle, num_cells, num_batches);
+        remaining = validate_results(qhandle, num_cells, num_samples);
     } catch (std::exception& e) {
         throw utils::combine_errors(e, "failed to retrieve results from 'quality_control'");
     }
