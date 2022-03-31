@@ -21,14 +21,44 @@ namespace kanaval {
 namespace inputs {
 
 /**
+ * @brief Details about the dataset.
+ */
+struct Details {
+    /**
+     * Number of genes.
+     * For multi-sample datasets, this considers all genes in the intersection of feature spaces across all samples.
+     */
+    int num_genes;
+
+    /**
+     * Number of cells.
+     * For multi-sample datasets, this considers the total number of cells in all samples.
+     */
+    int num_cells;
+
+    /**
+     * Number of samples.
+     * Note that a single matrix may contain multiple samples.
+     */
+    int num_samples;
+};
+
+/**
  * @cond
  */
-inline std::pair<bool, bool> validate_parameters(const H5::Group& handle, bool embedded, int version = 1001000) {
+struct ParamDump {
+    int num_matrices;
+    bool multi_matrix;
+    bool multi_sample;
+};
+
+inline ParamDump validate_parameters(const H5::Group& handle, bool embedded, int version = 1001000) {
     auto phandle = utils::check_and_open_group(handle, "parameters");
+    ParamDump output;
 
     // Formats can either be a scalar... or not.
     std::vector<std::string> formats;
-    bool multifile = false;
+    output.multi_matrix = false;
     {
         auto fhandle = utils::check_and_open_dataset(phandle, "format", H5T_STRING);
         auto fspace = fhandle.getSpace();
@@ -38,17 +68,18 @@ inline std::pair<bool, bool> validate_parameters(const H5::Group& handle, bool e
             if (version < 1001000) {
                 throw std::runtime_error("'format' should be a scalar string in version 1.0");
             }
-            multifile = true;
+            output.multi_matrix = true;
             formats = utils::load_string_vector(fhandle);
         }
     }
+    output.num_matrices = formats.size();
 
     auto fihandle = utils::check_and_open_group(phandle, "files");
     auto nfiles = fihandle.getNumObjs();
 
     // Checking the runs.
     std::vector<int> runs;
-    if (multifile) {
+    if (output.multi_matrix) {
         runs = utils::load_integer_vector(phandle, "sample_groups");
         if (runs.size() != formats.size()) {
             throw std::runtime_error("'sample_groups' and 'format' should have the same length");
@@ -152,17 +183,19 @@ inline std::pair<bool, bool> validate_parameters(const H5::Group& handle, bool e
     }
 
     // Checking if there's a batch variable.
-    bool multisample = multifile;
-    if (phandle.exists("sample_factor")) {
+    if (!output.multi_matrix && phandle.exists("sample_factor")) {
         utils::check_and_open_dataset(phandle, "sample_factor", H5T_STRING, {});
-        multisample = true;
-    } 
-    
-    return std::make_pair(multifile, multisample);
+        output.multi_sample = true;
+    }  else {
+        output.multi_sample = output.multi_matrix;
+    }
+
+    return output;
 }
 
-inline void validate_results(const H5::Group& handle, bool blocked, int version = 1001000) {
+inline Details validate_results(const H5::Group& handle, const ParamDump& param_info, int version = 1001000) {
     auto rhandle = utils::check_and_open_group(handle, "results");
+    Details output;
 
     auto dims = utils::load_integer_vector<int>(rhandle, "dimensions");
     if (dims.size() != 2) {
@@ -171,8 +204,25 @@ inline void validate_results(const H5::Group& handle, bool blocked, int version 
     if (dims[0] < 0 || dims[1] < 0) {
         throw std::runtime_error("'dimensions' should contain non-negative integers");
     }
+    output.num_genes = dims[0];
+    output.num_cells = dims[1];
 
-    if (blocked) {
+    // Checking the number of samples.
+    output.num_samples = 1;
+    if (rhandle.exists("num_samples")) {
+        output.num_samples = utils::load_integer_scalar<int>(rhandle, "num_samples");
+    }
+    if (param_info.multi_matrix) {
+        if (output.num_samples != param_info.num_matrices) {
+            throw std::runtime_error("'num_samples' should be equal to the number of matrices");
+        }
+    } else {
+        if (!param_info.multi_sample && output.num_samples != 1) {
+            throw std::runtime_error("'num_samples' should be 1 for single matrix inputs without 'sample_factor'");
+        }
+    }
+
+    if (param_info.multi_matrix) {
         auto idx = utils::load_integer_vector<int>(rhandle, "indices");
         if (idx.size() != static_cast<size_t>(dims[0])) {
             throw std::runtime_error("'indices' should have length equal to the number of genes");
@@ -202,7 +252,7 @@ inline void validate_results(const H5::Group& handle, bool blocked, int version 
         }
     }
 
-    return;
+    return output;
 }
 /**
  * @endcond
@@ -263,6 +313,12 @@ inline void validate_results(const H5::Group& handle, bool blocked, int version 
  *   containing the number of features and the number of cells in the dataset.
  *   @v1_1{\[**since version 1.1**\] When dealing with multi-sample inputs, the first entry is instead defined as the size of the intersection of features across all samples.}
  *
+ * @v1_1{\[**since version 1.1**\] `results` may also contain:}
+ *
+ * - @v1_1{`num_samples`: an integer scalar dataset specifying the number of samples.
+ *   If absent, this is assumed to be 1.
+ *   For multiple matrices, the value listed here should be consistent with the number of samples specified in the paramaters.}
+ *
  * If there is only a single matrix, `results` should also contain:
  *
  * - `permutation`: an integer dataset of length equal to the number of cells,
@@ -286,26 +342,27 @@ inline void validate_results(const H5::Group& handle, bool blocked, int version 
  * @param embedded Whether the data files are embedded or linked.
  * @param version Version of the state file.
  *
- * @return Boolean indicating whether downstream analyses need to block on the sample.
+ * @return Details about the dataset.
  * If the format is invalid, an error is raised instead.
  */
-inline bool validate(const H5::Group& handle, bool embedded = true, int version = 1001000) {
+inline Details validate(const H5::Group& handle, bool embedded = true, int version = 1001000) {
     auto ihandle = utils::check_and_open_group(handle, "inputs");
 
-    std::pair<bool, bool> blocked;
+    ParamDump dump; 
     try {
-        blocked = validate_parameters(ihandle, embedded, version);
+        dump = validate_parameters(ihandle, embedded, version);
     } catch (std::exception& e) {
         throw utils::combine_errors(e, "failed to retrieve parameters from 'inputs'");
     }
 
+    Details output;
     try {
-        validate_results(ihandle, blocked.first, version);
+        output = validate_results(ihandle, dump, version);
     } catch (std::exception& e) {
         throw utils::combine_errors(e, "failed to retrieve results from 'inputs'");
     }
 
-    return blocked.second;
+    return output;
 }
 
 }
