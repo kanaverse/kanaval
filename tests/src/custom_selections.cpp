@@ -3,14 +3,14 @@
 #include "utils.h"
 #include <numeric>
 
-void add_custom_selections(H5::H5File& handle, int ngenes) {
+void add_custom_selections(H5::H5File& handle, int ngenes, int ncells = 10) {
     auto qhandle = handle.createGroup("custom_selections");
     auto phandle = qhandle.createGroup("parameters");
 
     auto shandle = phandle.createGroup("selections");
     std::vector<std::string> available { "foo", "bar", "whee" };
     for (const auto& a : available) {
-        std::vector<int> chosen(10);
+        std::vector<int> chosen(ncells);
         std::iota(chosen.begin(), chosen.end(), 0);
         quick_write_dataset(shandle, a, chosen); 
     }

@@ -3,7 +3,7 @@
 #include "utils.h"
 #include <iostream>
 
-void add_quality_control(H5::H5File& handle, int num_cells, int num_samples) {
+void add_quality_control(H5::H5File& handle, int num_cells, int num_samples, int lost = 10) {
     auto qhandle = handle.createGroup("quality_control");
 
     auto phandle = qhandle.createGroup("parameters");
@@ -23,7 +23,9 @@ void add_quality_control(H5::H5File& handle, int num_cells, int num_samples) {
     quick_write_dataset(thandle, "detected", std::vector<double>(num_samples));
     quick_write_dataset(thandle, "proportion", std::vector<double>(num_samples));
 
-    quick_write_dataset(rhandle, "discards", std::vector<int>(num_cells));
+    std::vector<int> discard(num_cells);
+    std::fill(discard.begin(), discard.begin() + lost, 1);
+    quick_write_dataset(rhandle, "discards", discard);
     return;
 }
 
@@ -37,7 +39,7 @@ TEST(QualityControl, AllOK) {
     }
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        EXPECT_NO_THROW(kanaval::quality_control::validate(handle, 100, 1));
+        EXPECT_EQ(kanaval::quality_control::validate(handle, 100, 1), 90);
     }
 
     // Works with more batches.
@@ -47,7 +49,7 @@ TEST(QualityControl, AllOK) {
     }
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        EXPECT_NO_THROW(kanaval::quality_control::validate(handle, 200, 2));
+        EXPECT_EQ(kanaval::quality_control::validate(handle, 200, 2), 190);
     }
 }
 

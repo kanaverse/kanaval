@@ -12,7 +12,7 @@ void add_cell_labelling(H5::H5File&, int = 3);
 
 void add_choose_clustering(H5::H5File&);
 
-void add_custom_selections(H5::H5File&, int);
+void add_custom_selections(H5::H5File&, int, int = 10);
 
 void add_feature_selection(H5::H5File&, int);
 
@@ -26,7 +26,7 @@ void add_normalization(H5::H5File&);
 
 void add_pca(H5::H5File&, int, int);
 
-void add_quality_control(H5::H5File&, int, int);
+void add_quality_control(H5::H5File&, int, int, int = 10);
 
 void add_snn_graph_cluster(H5::H5File&, int, int = 10);
 

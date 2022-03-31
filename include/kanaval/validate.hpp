@@ -58,11 +58,11 @@ namespace kanaval {
  */
 void validate(const H5::H5File& handle, bool embedded, int version = 1001000) {
     auto i_out = inputs::validate(handle, embedded, version);
-    auto q_out = quality_control::validate(handle, i_out.num_cells, i_out.num_samples);
+    auto filtered_cells = quality_control::validate(handle, i_out.num_cells, i_out.num_samples);
 
     normalization::validate(handle);
     feature_selection::validate(handle, i_out.num_genes);
-    pca::validate(handle, i_out.num_cells, version);
+    pca::validate(handle, filtered_cells, version);
     neighbor_index::validate(handle);
 
     auto cluster_method = choose_clustering::validate(handle);
@@ -70,7 +70,7 @@ void validate(const H5::H5File& handle, bool embedded, int version = 1001000) {
 
     {
         bool is_snn = (cluster_method == "snn_graph");
-        int snn_found = snn_graph_cluster::validate(handle, i_out.num_cells, is_snn);
+        int snn_found = snn_graph_cluster::validate(handle, filtered_cells, is_snn);
         if (is_snn) {
             nclusters = snn_found;
         }
@@ -78,17 +78,17 @@ void validate(const H5::H5File& handle, bool embedded, int version = 1001000) {
 
     {
         bool is_kmeans = (cluster_method == "kmeans");
-        int kmeans_found = kmeans_cluster::validate(handle, i_out.num_cells, is_kmeans);
+        int kmeans_found = kmeans_cluster::validate(handle, filtered_cells, is_kmeans);
         if (is_kmeans) {
             nclusters = kmeans_found;
         }
     }
 
-    tsne::validate(handle, i_out.num_cells);
-    umap::validate(handle, i_out.num_cells);
+    tsne::validate(handle, filtered_cells);
+    umap::validate(handle, filtered_cells);
 
     marker_detection::validate(handle, i_out.num_genes, nclusters);
-    custom_selections::validate(handle, i_out.num_genes, i_out.num_cells);
+    custom_selections::validate(handle, i_out.num_genes, filtered_cells);
     cell_labelling::validate(handle, nclusters);
 }
 
