@@ -69,6 +69,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#namespaces">Namespaces</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">marker_detection.hpp File Reference</div></div>
 </div><!--header-->
@@ -90,19 +91,34 @@ Include dependency graph for marker_detection.hpp:</div>
 <area shape="rect" title=" " alt="" coords="185,80,255,107"/>
 </map>
 </div>
+</div><div class="textblock"><div class="dynheader">
+This graph shows which files directly or indirectly include this file:</div>
+<div class="dyncontent">
+<div class="center"><img src="marker__detection_8hpp__dep__incl.png" border="0" usemap="#akanaval_2marker__detection_8hppdep" alt=""/></div>
+<map name="akanaval_2marker__detection_8hppdep" id="akanaval_2marker__detection_8hppdep">
+<area shape="rect" title="Validate marker detection contents." alt="" coords="5,5,200,32"/>
+<area shape="rect" href="validate_8hpp.html" title="Validate the embedded state file of a kana file." alt="" coords="33,80,173,107"/>
+</map>
+</div>
 </div>
 <p><a href="marker__detection_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespacekanaval"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacekanaval.html">kanaval</a></td></tr>
+<tr class="memdesc:namespacekanaval"><td class="mdescLeft">&#160;</td><td class="mdescRight">Utilities for validating kana files. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ad4c7f53d3b95c5c023bec41cd7a90011"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="marker__detection_8hpp.html#ad4c7f53d3b95c5c023bec41cd7a90011">kanaval::marker_detection::validate</a> (const H5::Group &amp;handle, int num_clusters, int num_genes)</td></tr>
-<tr class="separator:ad4c7f53d3b95c5c023bec41cd7a90011"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad8eb305b868ca8f7f5416dad77dfdd75"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="marker__detection_8hpp.html#ad8eb305b868ca8f7f5416dad77dfdd75">kanaval::marker_detection::validate</a> (const H5::Group &amp;handle, int num_genes, int num_clusters)</td></tr>
+<tr class="separator:ad8eb305b868ca8f7f5416dad77dfdd75"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Validate marker detection contents. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="ad4c7f53d3b95c5c023bec41cd7a90011" name="ad4c7f53d3b95c5c023bec41cd7a90011"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad4c7f53d3b95c5c023bec41cd7a90011">&#9670;&nbsp;</a></span>validate()</h2>
+<a id="ad8eb305b868ca8f7f5416dad77dfdd75" name="ad8eb305b868ca8f7f5416dad77dfdd75"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad8eb305b868ca8f7f5416dad77dfdd75">&#9670;&nbsp;</a></span>validate()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -120,13 +136,13 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>num_clusters</em>, </td>
+          <td class="paramname"><em>num_genes</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>num_genes</em>&#160;</td>
+          <td class="paramname"><em>num_clusters</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -165,8 +181,8 @@ Functions</h2></td></tr>
  <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">handle</td><td>An open HDF5 file handle. </td></tr>
-    <tr><td class="paramname">num_clusters</td><td>Number of clusters produced by previous steps. </td></tr>
-    <tr><td class="paramname">num_genes</td><td>Number of genes in the dataset.</td></tr>
+    <tr><td class="paramname">num_genes</td><td>Number of genes in the dataset. </td></tr>
+    <tr><td class="paramname">num_clusters</td><td>Number of clusters produced by previous steps.</td></tr>
   </table>
   </dd>
 </dl>

@@ -93,9 +93,17 @@ $(function() {
 <li><a href="https://ltla.github.io/kanaval/umap_8hpp.html">UMAP</a></li>
 <li><a href="https://ltla.github.io/kanaval/marker__detection_8hpp.html">Marker detection</a></li>
 <li><a href="https://ltla.github.io/kanaval/custom__selections_8hpp.html">Custom selections</a></li>
-<li><a href="https://ltla.github.io/kanaval/cell__labelling_8hpp.html">Cell labelling</a> </li>
+<li><a href="https://ltla.github.io/kanaval/cell__labelling_8hpp.html">Cell labelling</a></li>
 </ul>
-</div></div><!-- PageDoc -->
+<p >All of these can be executed on a state file by calling the <a href="https://ltla.github.io/kanaval/validate_8hpp.html"><code>validate()</code></a> function, which will throw a reasonably informative error if there are any problems.</p>
+<div class="fragment"><div class="line"><span class="preprocessor">#include &quot;H5Cpp.h&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;<a class="code" href="validate_8hpp.html">kanaval/validate.hpp</a>&quot;</span></div>
+<div class="line"> </div>
+<div class="line">H5::H5File handle(path, H5F_ACC_RDONLY);</div>
+<div class="line"><a class="code hl_function" href="namespacekanaval.html#a4cc26741a7bfd9cd83dbd4ab9d138f23">kanaval::validate</a>(handle, embedded, version);</div>
+<div class="ttc" id="anamespacekanaval_html_a4cc26741a7bfd9cd83dbd4ab9d138f23"><div class="ttname"><a href="namespacekanaval.html#a4cc26741a7bfd9cd83dbd4ab9d138f23">kanaval::validate</a></div><div class="ttdeci">void validate(const H5::H5File &amp;handle, bool embedded, int version=1001000)</div><div class="ttdef"><b>Definition:</b> validate.hpp:59</div></div>
+<div class="ttc" id="avalidate_8hpp_html"><div class="ttname"><a href="validate_8hpp.html">validate.hpp</a></div><div class="ttdoc">Validate the embedded state file of a kana file.</div></div>
+</div><!-- fragment --> </div></div><!-- PageDoc -->
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

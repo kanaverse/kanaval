@@ -83,7 +83,7 @@ $(function() {
 <div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;unordered_set&gt;</span></div>
 <div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span><span class="preprocessor">#include &lt;unordered_map&gt;</span></div>
 <div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span> </div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span>kanaval {</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacekanaval.html">kanaval</a> {</div>
 <div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
 <div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span><span class="keyword">namespace </span>inputs {</div>
 <div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
@@ -303,7 +303,7 @@ $(function() {
 <div class="line"><a id="l00254" name="l00254"></a><span class="lineno">  254</span> </div>
 <div class="line"><a id="l00255" name="l00255"></a><span class="lineno">  255</span>    <span class="keywordflow">return</span> output;</div>
 <div class="line"><a id="l00256" name="l00256"></a><span class="lineno">  256</span>}</div>
-<div class="line"><a id="l00348" name="l00348"></a><span class="lineno"><a class="line" href="inputs_8hpp.html#ab088871b4fa7ed68c01da077e01a7dc8">  348</a></span><span class="keyword">inline</span> <a class="code hl_struct" href="structkanaval_1_1inputs_1_1Details.html">Details</a> validate(<span class="keyword">const</span> H5::Group&amp; handle, <span class="keywordtype">bool</span> embedded = <span class="keyword">true</span>, <span class="keywordtype">int</span> version = 1001000) {</div>
+<div class="line"><a id="l00348" name="l00348"></a><span class="lineno"><a class="line" href="inputs_8hpp.html#ab088871b4fa7ed68c01da077e01a7dc8">  348</a></span><span class="keyword">inline</span> <a class="code hl_struct" href="structkanaval_1_1inputs_1_1Details.html">Details</a> <a class="code hl_function" href="namespacekanaval.html#a4cc26741a7bfd9cd83dbd4ab9d138f23">validate</a>(<span class="keyword">const</span> H5::Group&amp; handle, <span class="keywordtype">bool</span> embedded = <span class="keyword">true</span>, <span class="keywordtype">int</span> version = 1001000) {</div>
 <div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>    <span class="keyword">auto</span> ihandle = utils::check_and_open_group(handle, <span class="stringliteral">&quot;inputs&quot;</span>);</div>
 <div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span> </div>
 <div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>    ParamDump dump; </div>
@@ -328,6 +328,8 @@ $(function() {
 <div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>}</div>
 <div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span> </div>
 <div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="anamespacekanaval_html"><div class="ttname"><a href="namespacekanaval.html">kanaval</a></div><div class="ttdoc">Utilities for validating kana files.</div><div class="ttdef"><b>Definition:</b> cell_labelling.hpp:15</div></div>
+<div class="ttc" id="anamespacekanaval_html_a4cc26741a7bfd9cd83dbd4ab9d138f23"><div class="ttname"><a href="namespacekanaval.html#a4cc26741a7bfd9cd83dbd4ab9d138f23">kanaval::validate</a></div><div class="ttdeci">void validate(const H5::H5File &amp;handle, bool embedded, int version=1001000)</div><div class="ttdef"><b>Definition:</b> validate.hpp:59</div></div>
 <div class="ttc" id="astructkanaval_1_1inputs_1_1Details_html"><div class="ttname"><a href="structkanaval_1_1inputs_1_1Details.html">kanaval::inputs::Details</a></div><div class="ttdoc">Details about the dataset.</div><div class="ttdef"><b>Definition:</b> inputs.hpp:26</div></div>
 <div class="ttc" id="astructkanaval_1_1inputs_1_1Details_html_a02fa7387344e4994bcd39740b41d4028"><div class="ttname"><a href="structkanaval_1_1inputs_1_1Details.html#a02fa7387344e4994bcd39740b41d4028">kanaval::inputs::Details::num_cells</a></div><div class="ttdeci">int num_cells</div><div class="ttdef"><b>Definition:</b> inputs.hpp:37</div></div>
 <div class="ttc" id="astructkanaval_1_1inputs_1_1Details_html_a5098df3ec96b14cc6661e15333a3b844"><div class="ttname"><a href="structkanaval_1_1inputs_1_1Details.html#a5098df3ec96b14cc6661e15333a3b844">kanaval::inputs::Details::num_samples</a></div><div class="ttdeci">int num_samples</div><div class="ttdef"><b>Definition:</b> inputs.hpp:43</div></div>

@@ -69,6 +69,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#namespaces">Namespaces</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">quality_control.hpp File Reference</div></div>
 </div><!--header-->
@@ -90,19 +91,34 @@ Include dependency graph for quality_control.hpp:</div>
 <area shape="rect" title=" " alt="" coords="185,80,255,107"/>
 </map>
 </div>
+</div><div class="textblock"><div class="dynheader">
+This graph shows which files directly or indirectly include this file:</div>
+<div class="dyncontent">
+<div class="center"><img src="quality__control_8hpp__dep__incl.png" border="0" usemap="#akanaval_2quality__control_8hppdep" alt=""/></div>
+<map name="akanaval_2quality__control_8hppdep" id="akanaval_2quality__control_8hppdep">
+<area shape="rect" title="Validate quality control contents." alt="" coords="5,5,184,32"/>
+<area shape="rect" href="validate_8hpp.html" title="Validate the embedded state file of a kana file." alt="" coords="25,80,165,107"/>
+</map>
+</div>
 </div>
 <p><a href="quality__control_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:namespacekanaval"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacekanaval.html">kanaval</a></td></tr>
+<tr class="memdesc:namespacekanaval"><td class="mdescLeft">&#160;</td><td class="mdescRight">Utilities for validating kana files. <br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ac0e36dcc64e39418cf8de56b6f7e34c3"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="quality__control_8hpp.html#ac0e36dcc64e39418cf8de56b6f7e34c3">kanaval::quality_control::validate</a> (const H5::H5File &amp;handle, int num_cells, int num_batches)</td></tr>
-<tr class="separator:ac0e36dcc64e39418cf8de56b6f7e34c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68397ea342402d77229444372a70925c"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="quality__control_8hpp.html#a68397ea342402d77229444372a70925c">kanaval::quality_control::validate</a> (const H5::H5File &amp;handle, int num_cells, int num_samples)</td></tr>
+<tr class="separator:a68397ea342402d77229444372a70925c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Validate quality control contents. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="ac0e36dcc64e39418cf8de56b6f7e34c3" name="ac0e36dcc64e39418cf8de56b6f7e34c3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac0e36dcc64e39418cf8de56b6f7e34c3">&#9670;&nbsp;</a></span>validate()</h2>
+<a id="a68397ea342402d77229444372a70925c" name="a68397ea342402d77229444372a70925c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68397ea342402d77229444372a70925c">&#9670;&nbsp;</a></span>validate()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -126,7 +142,7 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>num_batches</em>&#160;</td>
+          <td class="paramname"><em>num_samples</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -170,7 +186,7 @@ Functions</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">handle</td><td>An open HDF5 file handle. </td></tr>
     <tr><td class="paramname">num_cells</td><td>Number of cells in the dataset before any quality filtering is applied. </td></tr>
-    <tr><td class="paramname">num_batches</td><td>Number of batches in the dataset.</td></tr>
+    <tr><td class="paramname">num_samples</td><td>Number of batches in the dataset.</td></tr>
   </table>
   </dd>
 </dl>
