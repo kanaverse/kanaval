@@ -52,3 +52,15 @@ The expectations for the contents of each group are described in the documentati
 - [Marker detection](https://ltla.github.io/kanaval/marker__detection_8hpp.html)
 - [Custom selections](https://ltla.github.io/kanaval/custom__selections_8hpp.html)
 - [Cell labelling](https://ltla.github.io/kanaval/cell__labelling_8hpp.html)
+
+All of these can be executed on a state file by calling the [`validate()`](https://ltla.github.io/kanaval/validate_8hpp.html) function,
+which will throw a reasonably informative error if there are any problems.
+
+```cpp
+#include "H5Cpp.h"
+#include "kanaval/validate.hpp"
+
+H5::H5File handle(path, H5F_ACC_RDONLY);
+kanaval::validate(handle, embedded, version);
+```
+

@@ -26,6 +26,7 @@ add_executable(
     src/marker_detection.cpp
     src/custom_selections.cpp
     src/cell_labelling.cpp
+    src/validate.cpp
 )
 
 target_link_libraries(

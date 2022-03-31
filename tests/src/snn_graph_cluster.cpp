@@ -3,7 +3,7 @@
 #include "utils.h"
 #include <iostream>
 
-void add_snn_graph_cluster(H5::H5File& handle, int num_cells) {
+void add_snn_graph_cluster(H5::H5File& handle, int num_cells, int num_clusters = 10) {
     auto qhandle = handle.createGroup("snn_graph_cluster");
 
     auto phandle = qhandle.createGroup("parameters");
@@ -12,7 +12,11 @@ void add_snn_graph_cluster(H5::H5File& handle, int num_cells) {
     quick_write_dataset(phandle, "resolution", 0.5);
 
     auto rhandle = qhandle.createGroup("results");
-    quick_write_dataset(rhandle, "clusters", std::vector<int>(num_cells));
+    std::vector<int> clusters(num_cells);
+    for (int i = 0; i < num_cells; ++i) {
+        clusters[i] = i % num_clusters;
+    }
+    quick_write_dataset(rhandle, "clusters", clusters);
 
     return;
 }

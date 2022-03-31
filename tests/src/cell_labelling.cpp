@@ -3,7 +3,7 @@
 #include "utils.h"
 #include <iostream>
 
-void add_cell_labelling(H5::H5File& handle) {
+void add_cell_labelling(H5::H5File& handle, int num_clusters = 3) {
     auto qhandle = handle.createGroup("cell_labelling");
 
     auto phandle = qhandle.createGroup("parameters");
@@ -12,12 +12,14 @@ void add_cell_labelling(H5::H5File& handle) {
 
     auto rhandle = qhandle.createGroup("results");
     auto perhandle = rhandle.createGroup("per_reference");
-    quick_write_dataset(perhandle, "ImmGen", std::vector<std::string>{ "something", "something", "something" });
-    quick_write_dataset(perhandle, "MouseRNAseq", std::vector<std::string>{ "something", "something", "something" });
-    quick_write_dataset(perhandle, "DatabaseImmuneCellExpression", std::vector<std::string>{ "something", "something", "something" });
-    quick_write_dataset(perhandle, "BlueprintEncode", std::vector<std::string>{ "something", "something", "something" });
+    std::vector<std::string> dummy(num_clusters, "something");
+    quick_write_dataset(perhandle, "ImmGen", dummy);
+    quick_write_dataset(perhandle, "MouseRNAseq", dummy);
+    quick_write_dataset(perhandle, "DatabaseImmuneCellExpression", dummy);
+    quick_write_dataset(perhandle, "BlueprintEncode", dummy);
 
-    quick_write_dataset(rhandle, "integrated", std::vector<std::string>{ "ImmGen", "ImmGen", "ImmGen" });
+    std::vector<std::string> refs(num_clusters, "ImmGen");
+    quick_write_dataset(rhandle, "integrated", refs);
     return;
 }
 

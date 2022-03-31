@@ -1,5 +1,5 @@
-#ifndef KANAVAL_FEATURE_SELECTION_HPP
-#define KANAVAL_FEATURE_SELECTION_HPP
+#ifndef KANAVAL_PCA_HPP
+#define KANAVAL_PCA_HPP
 
 #include "H5Cpp.h"
 #include <vector>

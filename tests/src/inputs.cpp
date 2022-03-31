@@ -3,7 +3,7 @@
 #include "utils.h"
 #include <iostream>
 
-void add_single_matrix(H5::H5File& handle, std::string mode = "MatrixMarket") {
+void add_single_matrix(H5::H5File& handle, std::string mode = "MatrixMarket", int ngenes = 1000, int ncells = 100) {
     auto ihandle = handle.createGroup("inputs");
 
     auto phandle = ihandle.createGroup("parameters");
@@ -31,7 +31,7 @@ void add_single_matrix(H5::H5File& handle, std::string mode = "MatrixMarket") {
     }
 
     auto rhandle = ihandle.createGroup("results");
-    quick_write_dataset(rhandle, "dimensions", std::vector<int>{1000, 100});
+    quick_write_dataset(rhandle, "dimensions", std::vector<int>{ ngenes, ncells });
 
     std::vector<int> permutation(1000);
     std::iota(permutation.rbegin(), permutation.rend(), 0); // reversed... outta control, bruh.
@@ -321,7 +321,7 @@ TEST(SingleInputs, ResultsFail) {
     quick_input_throw(path, "duplicated");
 }
 
-void add_multiple_matrices(H5::H5File& handle) {
+int add_multiple_matrices(H5::H5File& handle, int ngenes = 500, int ncells = 100) {
     auto ihandle = handle.createGroup("inputs");
 
     auto phandle = ihandle.createGroup("parameters");
@@ -349,14 +349,14 @@ void add_multiple_matrices(H5::H5File& handle) {
     quick_write_dataset(fhandle1, "offset", 1);
 
     auto rhandle = ihandle.createGroup("results");
-    quick_write_dataset(rhandle, "dimensions", std::vector<int>{500, 100});
+    quick_write_dataset(rhandle, "dimensions", std::vector<int>{ ngenes, ncells });
     quick_write_dataset(rhandle, "num_samples", 2);
 
-    std::vector<int> indices(500);
+    std::vector<int> indices(ngenes);
     std::iota(indices.begin(), indices.end(), 0); 
     quick_write_dataset(rhandle, "indices", indices);
 
-    return;
+    return 2;
 }
 
 TEST(MultipleInputs, AllOK) {
