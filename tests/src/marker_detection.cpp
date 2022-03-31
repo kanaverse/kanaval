@@ -3,7 +3,7 @@
 #include "utils.h"
 #include <iostream>
 
-void add_marker_detection(H5::H5File& handle, int nclusters, int ngenes) {
+void add_marker_detection(H5::H5File& handle, int ngenes, int nclusters) {
     auto qhandle = handle.createGroup("marker_detection");
     qhandle.createGroup("parameters");
 
@@ -31,11 +31,11 @@ TEST(MarkerDetection, AllOK) {
 
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
-        add_marker_detection(handle, 5, 100);
+        add_marker_detection(handle, 100, 5);
     }
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        EXPECT_NO_THROW(kanaval::marker_detection::validate(handle, 5, 100));
+        EXPECT_NO_THROW(kanaval::marker_detection::validate(handle, 100, 5));
     }
 }
 
@@ -51,10 +51,10 @@ TEST(MarkerDetection, ParametersFailed) {
 
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
-        add_marker_detection(handle, 7, 100);
+        add_marker_detection(handle, 100, 7);
         handle.unlink("marker_detection/parameters");
     }
-    quick_marker_throw(path, 7, 100, "'parameters' group");
+    quick_marker_throw(path, 100, 7, "'parameters' group");
 }
 
 TEST(MarkerDetection, ResultsFailed) {
@@ -62,44 +62,44 @@ TEST(MarkerDetection, ResultsFailed) {
 
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
-        add_marker_detection(handle, 7, 100);
+        add_marker_detection(handle, 100, 7);
         handle.unlink("marker_detection/results");
     }
-    quick_marker_throw(path, 7, 100, "'results' group");
+    quick_marker_throw(path, 100, 7, "'results' group");
 
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
-        add_marker_detection(handle, 7, 100);
+        add_marker_detection(handle, 100, 7);
         handle.unlink("marker_detection/results/clusters/2");
     }
-    quick_marker_throw(path, 7, 100, "number of clusters");
+    quick_marker_throw(path, 100, 7, "number of clusters");
 
     // Same number of clusters as expected, but now the numbers aren't not consecutive.
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
-        add_marker_detection(handle, 7, 100);
+        add_marker_detection(handle, 100, 7);
         handle.unlink("marker_detection/results/clusters/2");
     }
-    quick_marker_throw(path, 6, 100, "cluster 2");
+    quick_marker_throw(path, 100, 6, "cluster 2");
 
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
-        add_marker_detection(handle, 7, 100);
+        add_marker_detection(handle, 100, 7);
         handle.unlink("marker_detection/results/clusters/2/detected");
     }
-    quick_marker_throw(path, 7, 100, "detected");
+    quick_marker_throw(path, 100, 7, "detected");
 
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
-        add_marker_detection(handle, 7, 100);
+        add_marker_detection(handle, 100, 7);
         handle.unlink("marker_detection/results/clusters/2/lfc");
     }
-    quick_marker_throw(path, 7, 100, "summary statistic");
+    quick_marker_throw(path, 100, 7, "summary statistic");
 
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
-        add_marker_detection(handle, 7, 100);
+        add_marker_detection(handle, 100, 7);
         handle.unlink("marker_detection/results/clusters/2/auc/min");
     }
-    quick_marker_throw(path, 7, 100, "auc");
+    quick_marker_throw(path, 100, 7, "auc");
 }

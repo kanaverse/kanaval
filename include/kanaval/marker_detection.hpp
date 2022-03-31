@@ -22,7 +22,7 @@ inline void validate_parameters(const H5::Group& handle) {
     utils::check_and_open_group(handle, "parameters");
 }
 
-inline void validate_results(const H5::Group& handle, int num_clusters, int num_genes) {
+inline void validate_results(const H5::Group& handle, int num_genes, int num_clusters) {
     auto rhandle = utils::check_and_open_group(handle, "results");
     
     auto chandle = utils::check_and_open_group(rhandle, "clusters");
@@ -84,12 +84,12 @@ inline void validate_results(const H5::Group& handle, int num_clusters, int num_
  *
  * <HR>
  * @param handle An open HDF5 file handle.
- * @param num_clusters Number of clusters produced by previous steps.
  * @param num_genes Number of genes in the dataset.
+ * @param num_clusters Number of clusters produced by previous steps.
  *
  * @return If the format is invalid, an error is raised.
  */
-inline void validate(const H5::Group& handle, int num_clusters, int num_genes) {
+inline void validate(const H5::Group& handle, int num_genes, int num_clusters) {
     auto mhandle = utils::check_and_open_group(handle, "marker_detection");
 
     try {
@@ -99,7 +99,7 @@ inline void validate(const H5::Group& handle, int num_clusters, int num_genes) {
     }
 
     try {
-        validate_results(mhandle, num_clusters, num_genes);
+        validate_results(mhandle, num_genes, num_clusters);
     } catch (std::exception& e) {
         throw utils::combine_errors(e, "failed to retrieve results from 'marker_detection'");
     }
