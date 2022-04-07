@@ -139,7 +139,7 @@ inline ParamDump validate_parameters(const H5::Group& handle, bool embedded, int
             std::unordered_map<std::string, int> expected;
             expected["mtx"] = 0;
             expected["genes"] = 0;
-            expected["annotation"] = 0;
+            expected["annotations"] = 0;
 
             for (auto t : types) {
                 auto it = expected.find(t);
@@ -155,7 +155,7 @@ inline ParamDump validate_parameters(const H5::Group& handle, bool embedded, int
             if (expected["genes"] > 1) {
                 throw std::runtime_error("expected no more than one 'genes' file when format is 'MatrixMarket'");
             }
-            if (expected["annotation"] > 1) {
+            if (expected["annotations"] > 1) {
                 throw std::runtime_error("expected no more than one 'annotation' file when format is 'MatrixMarket'");
             }
             
@@ -284,7 +284,7 @@ inline Details validate_results(const H5::Group& handle, const ParamDump& param_
  *     @v1_1{\[**since version 1.1**\] For multiple matrices, the constraints below apply to all files corresponding to a single matrix.}
  *     - If `format = "MatrixMarket"`, there should be exactly one `type = "mtx"` corresponding to the (possibly Gzipped) `*.mtx` file.
  *       There may be zero or one `type = "genes"`, containing a (possibly Gzipped) TSV file with the Ensembl and gene symbols for each row.
- *       There may be zero or one `type = "annotation"`, containing a (possibly Gzipped) TSV file with the annotations for each column.
+ *       There may be zero or one `type = "annotations"`, containing a (possibly Gzipped) TSV file with the annotations for each column.
  *     - If `format = "10X"` or `"H5AD"`, there should be exactly one `type = "h5"`.
  *     - For other `format`s, any `type` can be used, typically for custom resources.
  *   - `name`: a scalar string specifying the file name as it was provided to **kana**.

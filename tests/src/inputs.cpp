@@ -171,7 +171,7 @@ TEST(SingleInputs, ParametersFail) {
         auto fihandle = handle.openGroup("inputs/parameters/files");
 
         auto fhandle2 = fihandle.createGroup("2");
-        quick_write_dataset(fhandle2, "type", "annotation");
+        quick_write_dataset(fhandle2, "type", "annotations");
         quick_write_dataset(fhandle2, "name", "anno.tsv");
         quick_write_dataset(fhandle2, "size", 2);
         quick_write_dataset(fhandle2, "offset", 1);
@@ -192,7 +192,7 @@ TEST(SingleInputs, ParametersFail) {
         quick_write_dataset(fhandle2, "offset", 10);
 
         auto fhandle3 = fihandle.createGroup("2");
-        quick_write_dataset(fhandle3, "type", "annotation");
+        quick_write_dataset(fhandle3, "type", "annotations");
         quick_write_dataset(fhandle3, "name", "anno.tsv");
         quick_write_dataset(fhandle3, "size", 9);
         quick_write_dataset(fhandle3, "offset", 1);
@@ -249,7 +249,7 @@ TEST(SingleInputs, MatrixMarketFail) {
 
         for (int i = 2; i < 4; ++i) {
             auto fhandle = fihandle.createGroup(std::to_string(i));
-            quick_write_dataset(fhandle, "type", "annotation");
+            quick_write_dataset(fhandle, "type", "annotations");
             quick_write_dataset(fhandle, "name", "annotation.tsv");
             quick_write_dataset(fhandle, "size", 2);
             quick_write_dataset(fhandle, "offset", 1);
