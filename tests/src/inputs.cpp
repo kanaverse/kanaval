@@ -164,6 +164,7 @@ TEST(SingleInputs, ParametersFail) {
     }
     quick_input_throw(path, "'offset' dataset");
 
+    // Checking what happens if we throw in an extra file with overlapping offsets.
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
         add_single_matrix(handle);
@@ -175,7 +176,28 @@ TEST(SingleInputs, ParametersFail) {
         quick_write_dataset(fhandle2, "size", 2);
         quick_write_dataset(fhandle2, "offset", 1);
     }
-    quick_input_throw(path, "not contiguous");
+    quick_input_throw(path, "contiguous");
+
+    // Checking for proper sorting of offsets.
+    {
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        add_single_matrix(handle);
+        auto fihandle = handle.openGroup("inputs/parameters/files");
+        fihandle.unlink("1");
+
+        auto fhandle2 = fihandle.createGroup("1");
+        quick_write_dataset(fhandle2, "type", "genes");
+        quick_write_dataset(fhandle2, "name", "genes.tsv");
+        quick_write_dataset(fhandle2, "size", 4);
+        quick_write_dataset(fhandle2, "offset", 10);
+
+        auto fhandle3 = fihandle.createGroup("2");
+        quick_write_dataset(fhandle3, "type", "annotation");
+        quick_write_dataset(fhandle3, "name", "anno.tsv");
+        quick_write_dataset(fhandle3, "size", 9);
+        quick_write_dataset(fhandle3, "offset", 1);
+    }
+    quick_input_throw(path, "not sorted");
 }
 
 TEST(SingleInputs, MatrixMarketFail) {
@@ -333,20 +355,20 @@ int add_multiple_matrices(H5::H5File& handle, int ngenes = 500, int ncells = 100
     auto fhandle = fihandle.createGroup("0");
     quick_write_dataset(fhandle, "type", "h5");
     quick_write_dataset(fhandle, "name", "foo.h5");
-    quick_write_dataset(fhandle, "size", 1);
-    quick_write_dataset(fhandle, "offset", 3);
+    quick_write_dataset(fhandle, "size", 3);
+    quick_write_dataset(fhandle, "offset", 0);
 
     auto fhandle0 = fihandle.createGroup("1");
     quick_write_dataset(fhandle0, "type", "mtx");
     quick_write_dataset(fhandle0, "name", "foo.mtx");
     quick_write_dataset(fhandle0, "size", 1);
-    quick_write_dataset(fhandle0, "offset", 0);
+    quick_write_dataset(fhandle0, "offset", 3);
 
     auto fhandle1 = fihandle.createGroup("2");
     quick_write_dataset(fhandle1, "type", "genes");
     quick_write_dataset(fhandle1, "name", "genes.tsv");
     quick_write_dataset(fhandle1, "size", 2);
-    quick_write_dataset(fhandle1, "offset", 1);
+    quick_write_dataset(fhandle1, "offset", 4);
 
     auto rhandle = ihandle.createGroup("results");
     quick_write_dataset(rhandle, "dimensions", std::vector<int>{ ngenes, ncells });

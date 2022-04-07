@@ -172,11 +172,10 @@ inline ParamDump validate_parameters(const H5::Group& handle, bool embedded, int
 
     // Checking the files make sense.
     if (embedded) {
-        std::sort(bytes.begin(), bytes.end());
         hsize_t sofar = 0;
         for (const auto& b : bytes) {
             if (b.first != sofar) {
-                throw std::runtime_error("offsets and sizes of 'files' are not contiguous");
+                throw std::runtime_error("offsets and sizes of 'files' are not sorted and contiguous");
             }
             sofar += b.second;
         }
@@ -289,8 +288,16 @@ inline Details validate_results(const H5::Group& handle, const ParamDump& param_
  *     - If `format = "10X"` or `"H5AD"`, there should be exactly one `type = "h5"`.
  *     - For other `format`s, any `type` can be used, typically for custom resources.
  *   - `name`: a scalar string specifying the file name as it was provided to **kana**.
+ *
+ *   If `embedded = true`, we additionally expect:
  *   - `offset`: a scalar integer specifying where the file starts as an offset from the start of the remaining bytes section.
- *   - `size`: a scalar integer specifying the number of bytes in the file.
+ *     The offset for the first file should be zero, and entries in `files` should be ordered by increasing `offset`.
+ *   - `size`: a non-negative scalar integer specifying the number of bytes in the file.
+ *     The offset of each file should be equal to the sum of `size` and `offset` for the preceding file.
+ *
+ *   If `embedded = false`, we expect:
+ *   - `id`: a scalar string containing some unique identifier for this file.
+ *     The interpretation of `id` is application-specific but usually refers to some cache or database.
  *
  * @v1_1{\[**since version 1.1**\] For multiple matrices, `parameters` should also contain:}
  *
