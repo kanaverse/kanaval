@@ -33,6 +33,8 @@ See the next section for details on the expected groups.
 The remaining bytes contain the embedded input files when dealing with an embedded format type.
 Each file can be excised by reading the offsets and sizes in the `inputs` group in the state file.
 
+<img src="https://raw.githubusercontent.com/LTLA/kanaval/master/docs/layout.png" width="500">
+
 ## Structure of the HDF5 state file
 
 Inside the HDF5 state file, each analysis step is represented by a HDF5 group.
