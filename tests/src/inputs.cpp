@@ -33,9 +33,9 @@ void add_single_matrix(H5::H5File& handle, std::string mode = "MatrixMarket", in
     auto rhandle = ihandle.createGroup("results");
     quick_write_dataset(rhandle, "dimensions", std::vector<int>{ ngenes, ncells });
 
-    std::vector<int> permutation(1000);
-    std::iota(permutation.rbegin(), permutation.rend(), 0); // reversed... outta control, bruh.
-    quick_write_dataset(rhandle, "permutation", permutation);
+    std::vector<int> indices(1000);
+    std::iota(indices.rbegin(), indices.rend(), 0); // reversed... outta control, bruh.
+    quick_write_dataset(rhandle, "indices", indices);
 
     return;
 }
@@ -318,29 +318,64 @@ TEST(SingleInputs, ResultsFail) {
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
         add_single_matrix(handle);
-        handle.unlink("inputs/results/permutation");
+        handle.unlink("inputs/results/indices");
         auto rhandle = handle.openGroup("inputs/results");
-        quick_write_dataset(rhandle, "permutation", std::vector<int>{1,2,3});
+        quick_write_dataset(rhandle, "indices", std::vector<int>{1,2,3});
     }
     quick_input_throw(path, "length equal to the number of genes");
 
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
         add_single_matrix(handle);
-        handle.unlink("inputs/results/permutation");
+        handle.unlink("inputs/results/indices");
         auto rhandle = handle.openGroup("inputs/results");
-        quick_write_dataset(rhandle, "permutation", std::vector<int>(1000, -1));
+        quick_write_dataset(rhandle, "indices", std::vector<int>(1000, -1));
     }
-    quick_input_throw(path, "out-of-range");
+    quick_input_throw(path, "negative");
 
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
         add_single_matrix(handle);
-        handle.unlink("inputs/results/permutation");
+        handle.unlink("inputs/results/indices");
+        auto rhandle = handle.openGroup("inputs/results");
+        quick_write_dataset(rhandle, "indices", std::vector<int>(1000));
+    }
+    quick_input_throw(path, "duplicate");
+}
+
+void quick_input_throw(const std::string& path, std::string msg, int version) {
+    quick_throw([&]() -> void {
+        H5::H5File handle(path, H5F_ACC_RDONLY);
+        kanaval::inputs::validate(handle, true, version);
+    }, msg);
+}
+
+TEST(SingleInputs, ResultsFailOld) {
+    const std::string path = "TEST_inputs.h5";
+
+    {
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        add_single_matrix(handle);
+        auto rhandle = handle.openGroup("inputs/results");
+        quick_write_dataset(rhandle, "permutation", std::vector<int>{1,2,3});
+    }
+    quick_input_throw(path, "length equal to the number of genes", 1001000);
+
+    {
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        add_single_matrix(handle);
+        auto rhandle = handle.openGroup("inputs/results");
+        quick_write_dataset(rhandle, "permutation", std::vector<int>(1000, -1));
+    }
+    quick_input_throw(path, "out-of-range", 1001000);
+
+    {
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        add_single_matrix(handle);
         auto rhandle = handle.openGroup("inputs/results");
         quick_write_dataset(rhandle, "permutation", std::vector<int>(1000));
     }
-    quick_input_throw(path, "duplicated");
+    quick_input_throw(path, "duplicated", 1001000);
 }
 
 int add_multiple_matrices(H5::H5File& handle, int ngenes = 500, int ncells = 100) {

@@ -56,7 +56,7 @@ namespace kanaval {
  *
  * @return An error is raised if an invalid structure is detected.
  */
-void validate(const H5::H5File& handle, bool embedded, int version = 1001000) {
+void validate(const H5::H5File& handle, bool embedded, int version = 1002000) {
     auto i_out = inputs::validate(handle, embedded, version);
     auto filtered_cells = quality_control::validate(handle, i_out.num_cells, i_out.num_samples);
 

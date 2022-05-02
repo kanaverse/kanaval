@@ -52,7 +52,7 @@ struct ParamDump {
     bool multi_sample;
 };
 
-inline ParamDump validate_parameters(const H5::Group& handle, bool embedded, int version = 1001000) {
+inline ParamDump validate_parameters(const H5::Group& handle, bool embedded, int version = 1002000) {
     auto phandle = utils::check_and_open_group(handle, "parameters");
     ParamDump output;
 
@@ -192,7 +192,7 @@ inline ParamDump validate_parameters(const H5::Group& handle, bool embedded, int
     return output;
 }
 
-inline Details validate_results(const H5::Group& handle, const ParamDump& param_info, int version = 1001000) {
+inline Details validate_results(const H5::Group& handle, const ParamDump& param_info, int version = 1002000) {
     auto rhandle = utils::check_and_open_group(handle, "results");
     Details output;
 
@@ -221,15 +221,21 @@ inline Details validate_results(const H5::Group& handle, const ParamDump& param_
         }
     }
 
-    if (param_info.multi_matrix) {
+    if (version >= 1002000 || param_info.multi_matrix) {
         auto idx = utils::load_integer_vector<int>(rhandle, "indices");
         if (idx.size() != static_cast<size_t>(dims[0])) {
             throw std::runtime_error("'indices' should have length equal to the number of genes");
         }
+
+        std::unordered_set<int> used;
+        used.reserve(idx.size());
         for (auto i : idx) {
             if (i < 0) {
                 throw std::runtime_error("'indices' contains negative values");
+            } else if (used.find(i) != used.end()) {
+                throw std::runtime_error("'indices' contains duplicate values");
             }
+            used.insert(i);
         }
 
     } else {
@@ -264,7 +270,12 @@ inline Details validate_results(const H5::Group& handle, const ParamDump& param_
  *
  * In this section, a "matrix" refers to one or more files describing a single (count) matrix.
  * This should be exactly one file for HDF5-based formats, or multiple files for MatrixMarket formats, e.g., to include feature information - see below for details.
- * A matrix may contain data for one or more samples.
+ * Multiple matrices may be supplied, in which case each matrix is assumed to contain data for one sample.
+ * Alternatively, a single matrix may contain data for one or more samples as partitioned by a sample factor.
+ * 
+ * The loaded dataset refers to the in-memory representation of the matrix (for single matrix inputs) or the combined matrices (for multiple inputs).
+ * The identities of the rows of the loaded dataset may be a permutation or subset of the rows in the input matrices.
+ * This is especially true for multiple inputs where the loaded dataset only contains the intersection of features across inputs.
  *
  * <HR>
  * `parameters` should contain:
@@ -317,8 +328,12 @@ inline Details validate_results(const H5::Group& handle, const ParamDump& param_
  * `results` should contain:
  * 
  * - `dimensions`: an integer dataset of length 2,
- *   containing the number of features and the number of cells in the dataset.
- *   @v1_1{\[**since version 1.1**\] When dealing with multi-sample inputs, the first entry is instead defined as the size of the intersection of features across all samples.}
+ *   containing the number of features and the number of cells in the loaded dataset.
+ *   @v1_1{\[**since version 1.1**\] When dealing with multiple matrix inputs, the first entry is instead defined as the size of the intersection of features across all matrices.}
+ * - @v1_2{\[**since version 1.2**\] `indices`: a 1-dimensional integer dataset of length equal to the first entry of `dimensions`, containing the identity of each row in the loaded dataset.
+ *   If a single input was provided, `indices` identifies each row in terms of its index in the "original" input matrix (i.e., if it were loaded without any modification).
+ *   If multiple inputs were provided, `indices` contains the intersection of features across inputs, and each value refers to the row index in the original matrix of the first input.
+ *   Indices are parallel to the per-gene results in subsequent steps.}
  *
  * @v1_1{\[**since version 1.1**\] `results` may also contain:}
  *
@@ -326,12 +341,12 @@ inline Details validate_results(const H5::Group& handle, const ParamDump& param_
  *   If absent, this is assumed to be 1.
  *   For multiple matrices, the value listed here should be consistent with the number of samples specified in the paramaters.}
  *
- * If there is only a single matrix, `results` should also contain:
+ * @v1_0{\[**removed in version 1.2**\] If there is only a single matrix, `results` should also contain:}
  *
- * - `permutation`: an integer dataset of length equal to the number of cells,
- *   describing the permutation to be applied to the per-gene results to recover the original row order.
+ * - @v1_0{`permutation`: an integer dataset of length equal to the number of cells,
+ *   describing the permutation to be applied to the per-gene results to recover the original row order.}
  *
- * @v1_1{\[**since version 1.1**\] If there are multiple matrices, `results` should instead contain:}
+ * @v1_1{\[**since version 1.1, removed in version 1.2**\] If there are multiple matrices, `results` should instead contain:}
  *
  * - @v1_1{`indices`: an integer dataset containing the row index of each feature in the intersection.
  *   For each entry, the gene is defined as the indexed row in the first sample _without permutation_.
@@ -352,7 +367,7 @@ inline Details validate_results(const H5::Group& handle, const ParamDump& param_
  * @return Details about the dataset.
  * If the format is invalid, an error is raised instead.
  */
-inline Details validate(const H5::Group& handle, bool embedded = true, int version = 1001000) {
+inline Details validate(const H5::Group& handle, bool embedded = true, int version = 1002000) {
     auto ihandle = utils::check_and_open_group(handle, "inputs");
 
     ParamDump dump; 
