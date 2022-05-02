@@ -128,14 +128,14 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ab088871b4fa7ed68c01da077e01a7dc8"><td class="memItemLeft" align="right" valign="top">Details&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="inputs_8hpp.html#ab088871b4fa7ed68c01da077e01a7dc8">kanaval::inputs::validate</a> (const H5::Group &amp;handle, bool embedded=true, int version=1001000)</td></tr>
-<tr class="separator:ab088871b4fa7ed68c01da077e01a7dc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6acc4c968c54c39289b624ca6eae36b"><td class="memItemLeft" align="right" valign="top">Details&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="inputs_8hpp.html#ab6acc4c968c54c39289b624ca6eae36b">kanaval::inputs::validate</a> (const H5::Group &amp;handle, bool embedded=true, int version=1002000)</td></tr>
+<tr class="separator:ab6acc4c968c54c39289b624ca6eae36b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Validate input contents. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="ab088871b4fa7ed68c01da077e01a7dc8" name="ab088871b4fa7ed68c01da077e01a7dc8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab088871b4fa7ed68c01da077e01a7dc8">&#9670;&nbsp;</a></span>validate()</h2>
+<a id="ab6acc4c968c54c39289b624ca6eae36b" name="ab6acc4c968c54c39289b624ca6eae36b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6acc4c968c54c39289b624ca6eae36b">&#9670;&nbsp;</a></span>validate()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -159,7 +159,7 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>version</em> = <code>1001000</code>&#160;</td>
+          <td class="paramname"><em>version</em> = <code>1002000</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -174,7 +174,8 @@ Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p >Check contents for the input step. Contents are stored inside an <code>inputs</code> HDF5 group at the root of the file. The <code>inputs</code> group itself contains the <code>parameters</code> and <code>results</code> subgroups.</p>
-<p >In this section, a "matrix" refers to one or more files describing a single (count) matrix. This should be exactly one file for HDF5-based formats, or multiple files for MatrixMarket formats, e.g., to include feature information - see below for details. A matrix may contain data for one or more samples.</p>
+<p >In this section, a "matrix" refers to one or more files describing a single (count) matrix. This should be exactly one file for HDF5-based formats, or multiple files for MatrixMarket formats, e.g., to include feature information - see below for details. Multiple matrices may be supplied, in which case each matrix is assumed to contain data for one sample. Alternatively, a single matrix may contain data for one or more samples as partitioned by a sample factor.</p>
+<p >The loaded dataset refers to the in-memory representation of the matrix (for single matrix inputs) or the combined matrices (for multiple inputs). The identities of the rows of the loaded dataset may be a permutation or subset of the rows in the input matrices. This is especially true for multiple inputs where the loaded dataset only contains the intersection of features across inputs.</p>
 <hr  />
 <p> <code>parameters</code> should contain:</p>
 <ul>
@@ -209,25 +210,26 @@ Functions</h2></td></tr>
 <hr  />
 <p> <code>results</code> should contain:</p>
 <ul>
-<li><code>dimensions</code>: an integer dataset of length 2, containing the number of features and the number of cells in the dataset.  <span style="color:purple">[<b>since version 1.1</b>] When dealing with multi-sample inputs, the first entry is instead defined as the size of the intersection of features across all samples. </span></li>
+<li><code>dimensions</code>: an integer dataset of length 2, containing the number of features and the number of cells in the loaded dataset.  <span style="color:purple">[<b>since version 1.1</b>] When dealing with multiple matrix inputs, the first entry is instead defined as the size of the intersection of features across all matrices. </span></li>
+<li> <span style="color:blue">[<b>since version 1.2</b>] <code>indices</code>: a 1-dimensional integer dataset of length equal to the first entry of <code>dimensions</code>, containing the identity of each row in the loaded dataset. If a single input was provided, <code>indices</code> identifies each row in terms of its index in the "original" input matrix (i.e., if it were loaded without any modification). If multiple inputs were provided, <code>indices</code> contains the intersection of features across inputs, and each value refers to the row index in the original matrix of the first input. Indices are parallel to the per-gene results in subsequent steps. </span></li>
 </ul>
 <p > <span style="color:purple">[<b>since version 1.1</b>] <code>results</code> may also contain: </span></p>
 <ul>
 <li> <span style="color:purple"><code>num_samples</code>: an integer scalar dataset specifying the number of samples. If absent, this is assumed to be 1. For multiple matrices, the value listed here should be consistent with the number of samples specified in the paramaters. </span></li>
 </ul>
-<p >If there is only a single matrix, <code>results</code> should also contain:</p>
+<p > <span style="color:brown">[<b>removed in version 1.2</b>] If there is only a single matrix, <code>results</code> should also contain: </span></p>
 <ul>
-<li><code>permutation</code>: an integer dataset of length equal to the number of cells, describing the permutation to be applied to the per-gene results to recover the original row order.</li>
+<li> <span style="color:brown"><code>permutation</code>: an integer dataset of length equal to the number of cells, describing the permutation to be applied to the per-gene results to recover the original row order. </span></li>
 </ul>
-<p > <span style="color:purple">[<b>since version 1.1</b>] If there are multiple matrices, <code>results</code> should instead contain: </span></p>
+<p > <span style="color:purple">[<b>since version 1.1, removed in version 1.2</b>] If there are multiple matrices, <code>results</code> should instead contain: </span></p>
 <ul>
 <li> <span style="color:purple"><code>indices</code>: an integer dataset containing the row index of each feature in the intersection. For each entry, the gene is defined as the indexed row in the first sample <em>without permutation</em>. The <code>indices</code> are parallel to the per-gene results. </span></li>
 </ul>
 <p >All steps that generate per-gene results should use <code>permutation</code> or <code>indices</code> to identify the genes corresponding to the statistics. See the documentation for the functions listed below:</p>
 <ul>
-<li><code><a class="el" href="inputs_8hpp.html#ab088871b4fa7ed68c01da077e01a7dc8">feature_selection::validate()</a></code></li>
-<li><code><a class="el" href="inputs_8hpp.html#ab088871b4fa7ed68c01da077e01a7dc8">marker_detection::validate()</a></code></li>
-<li><code><a class="el" href="inputs_8hpp.html#ab088871b4fa7ed68c01da077e01a7dc8">custom_selections::validate()</a></code></li>
+<li><code><a class="el" href="inputs_8hpp.html#ab6acc4c968c54c39289b624ca6eae36b">feature_selection::validate()</a></code></li>
+<li><code><a class="el" href="inputs_8hpp.html#ab6acc4c968c54c39289b624ca6eae36b">marker_detection::validate()</a></code></li>
+<li><code><a class="el" href="inputs_8hpp.html#ab6acc4c968c54c39289b624ca6eae36b">custom_selections::validate()</a></code></li>
 </ul>
 <hr  />
  <dl class="params"><dt>Parameters</dt><dd>
