@@ -33,9 +33,9 @@ void add_single_matrix(H5::H5File& handle, std::string mode = "MatrixMarket", in
     auto rhandle = ihandle.createGroup("results");
     quick_write_dataset(rhandle, "dimensions", std::vector<int>{ ngenes, ncells });
 
-    std::vector<int> indices(1000);
-    std::iota(indices.rbegin(), indices.rend(), 0); // reversed... outta control, bruh.
-    quick_write_dataset(rhandle, "indices", indices);
+    std::vector<int> identities(1000);
+    std::iota(identities.rbegin(), identities.rend(), 0); // reversed... outta control, bruh.
+    quick_write_dataset(rhandle, "identities", identities);
 
     return;
 }
@@ -318,27 +318,27 @@ TEST(SingleInputs, ResultsFail) {
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
         add_single_matrix(handle);
-        handle.unlink("inputs/results/indices");
+        handle.unlink("inputs/results/identities");
         auto rhandle = handle.openGroup("inputs/results");
-        quick_write_dataset(rhandle, "indices", std::vector<int>{1,2,3});
+        quick_write_dataset(rhandle, "identities", std::vector<int>{1,2,3});
     }
     quick_input_throw(path, "length equal to the number of genes");
 
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
         add_single_matrix(handle);
-        handle.unlink("inputs/results/indices");
+        handle.unlink("inputs/results/identities");
         auto rhandle = handle.openGroup("inputs/results");
-        quick_write_dataset(rhandle, "indices", std::vector<int>(1000, -1));
+        quick_write_dataset(rhandle, "identities", std::vector<int>(1000, -1));
     }
     quick_input_throw(path, "negative");
 
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
         add_single_matrix(handle);
-        handle.unlink("inputs/results/indices");
+        handle.unlink("inputs/results/identities");
         auto rhandle = handle.openGroup("inputs/results");
-        quick_write_dataset(rhandle, "indices", std::vector<int>(1000));
+        quick_write_dataset(rhandle, "identities", std::vector<int>(1000));
     }
     quick_input_throw(path, "duplicate");
 }
@@ -409,9 +409,9 @@ int add_multiple_matrices(H5::H5File& handle, int ngenes = 500, int ncells = 100
     quick_write_dataset(rhandle, "dimensions", std::vector<int>{ ngenes, ncells });
     quick_write_dataset(rhandle, "num_samples", 2);
 
-    std::vector<int> indices(ngenes);
-    std::iota(indices.begin(), indices.end(), 0); 
-    quick_write_dataset(rhandle, "indices", indices);
+    std::vector<int> identities(ngenes);
+    std::iota(identities.begin(), identities.end(), 0); 
+    quick_write_dataset(rhandle, "identities", identities);
 
     return 2;
 }
@@ -495,4 +495,30 @@ TEST(MultipleInputs, ResultsFail) {
         handle.unlink("inputs/results");
     }
     quick_input_throw(path, "'results' group");
+
+    {
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        add_multiple_matrices(handle);
+        auto rhandle = handle.openGroup("inputs/results");
+        quick_write_dataset(rhandle, "indices", std::vector<int>{1,2,3});
+    }
+    quick_input_throw(path, "length equal to the number of genes", 1001000);
+
+    {
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        add_multiple_matrices(handle);
+        auto rhandle = handle.openGroup("inputs/results");
+        quick_write_dataset(rhandle, "indices", std::vector<int>(500, -1));
+    }
+    quick_input_throw(path, "negative", 1001000);
+
+    {
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        add_multiple_matrices(handle);
+        auto rhandle = handle.openGroup("inputs/results");
+        quick_write_dataset(rhandle, "indices", std::vector<int>(500));
+    }
+    quick_input_throw(path, "duplicate", 1001000);
 }
+
+

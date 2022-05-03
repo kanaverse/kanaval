@@ -221,39 +221,57 @@ inline Details validate_results(const H5::Group& handle, const ParamDump& param_
         }
     }
 
-    if (version >= 1002000 || param_info.multi_matrix) {
-        auto idx = utils::load_integer_vector<int>(rhandle, "indices");
+    if (version >= 1002000) {
+        auto idx = utils::load_integer_vector<int>(rhandle, "identities");
         if (idx.size() != static_cast<size_t>(dims[0])) {
-            throw std::runtime_error("'indices' should have length equal to the number of genes");
+            throw std::runtime_error("'identities' should have length equal to the number of genes");
         }
 
         std::unordered_set<int> used;
         used.reserve(idx.size());
         for (auto i : idx) {
             if (i < 0) {
-                throw std::runtime_error("'indices' contains negative values");
+                throw std::runtime_error("'identities' contains negative values");
             } else if (used.find(i) != used.end()) {
-                throw std::runtime_error("'indices' contains duplicate values");
+                throw std::runtime_error("'identities' contains duplicate values");
             }
             used.insert(i);
         }
-
+        
     } else {
-        auto perms = utils::load_integer_vector<int>(rhandle, "permutation");
-        if (perms.size() != static_cast<size_t>(dims[0])) {
-            throw std::runtime_error("'permutation' should have length equal to the number of genes");
-        }
-
-        // Note that the code below implies that all consecutive entries are present,
-        // otherwise we would see duplicates.
-        std::vector<unsigned char> used(perms.size());
-        for (auto p : perms) {
-            if (p < 0 || static_cast<size_t>(p) >= perms.size()) {
-                throw std::runtime_error("'permutation' contains out-of-range values");
-            } else if (used[p]) {
-                throw std::runtime_error("duplicated index in 'permutation'");
+        if (param_info.multi_matrix) {
+            auto idx = utils::load_integer_vector<int>(rhandle, "indices");
+            if (idx.size() != static_cast<size_t>(dims[0])) {
+                throw std::runtime_error("'indices' should have length equal to the number of genes");
             }
-            used[p] = 1;
+
+            std::unordered_set<int> used;
+            used.reserve(idx.size());
+            for (auto i : idx) {
+                if (i < 0) {
+                    throw std::runtime_error("'indices' contains negative values");
+                } else if (used.find(i) != used.end()) {
+                    throw std::runtime_error("'indices' contains duplicate values");
+                }
+                used.insert(i);
+            }
+        } else {
+            auto perms = utils::load_integer_vector<int>(rhandle, "permutation");
+            if (perms.size() != static_cast<size_t>(dims[0])) {
+                throw std::runtime_error("'permutation' should have length equal to the number of genes");
+            }
+
+            // Note that the code below implies that all consecutive entries are present,
+            // otherwise we would see duplicates.
+            std::vector<unsigned char> used(perms.size());
+            for (auto p : perms) {
+                if (p < 0 || static_cast<size_t>(p) >= perms.size()) {
+                    throw std::runtime_error("'permutation' contains out-of-range values");
+                } else if (used[p]) {
+                    throw std::runtime_error("duplicated index in 'permutation'");
+                }
+                used[p] = 1;
+            }
         }
     }
 
@@ -330,10 +348,10 @@ inline Details validate_results(const H5::Group& handle, const ParamDump& param_
  * - `dimensions`: an integer dataset of length 2,
  *   containing the number of features and the number of cells in the loaded dataset.
  *   @v1_1{\[**since version 1.1**\] When dealing with multiple matrix inputs, the first entry is instead defined as the size of the intersection of features across all matrices.}
- * - @v1_2{\[**since version 1.2**\] `indices`: a 1-dimensional integer dataset of length equal to the first entry of `dimensions`, containing the identity of each row in the loaded dataset.
- *   If a single input was provided, `indices` identifies each row in terms of its index in the "original" input matrix (i.e., if it were loaded without any modification).
- *   If multiple inputs were provided, `indices` contains the intersection of features across inputs, and each value refers to the row index in the original matrix of the first input.
- *   Indices are parallel to the per-gene results in subsequent steps.}
+ * - @v1_2{\[**since version 1.2**\] `identities`: a 1-dimensional integer dataset of length equal to the first entry of `dimensions`, containing the identity of each row in the loaded dataset.
+ *   If a single input was provided, `identities` identifies each row in terms of its index in the "original" input matrix (i.e., if it were loaded without any modification).
+ *   If multiple inputs were provided, `identities` contains the intersection of features across inputs, and each value refers to the row index in the original matrix of the _first_ input.
+ *   Row identities are parallel to the per-gene results in subsequent analysis steps.}
  *
  * @v1_1{\[**since version 1.1**\] `results` may also contain:}
  *
