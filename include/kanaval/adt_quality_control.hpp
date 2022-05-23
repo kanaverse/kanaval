@@ -1,19 +1,19 @@
-#ifndef KANAVAL_QUALITY_CONTROL_HPP
-#define KANAVAL_QUALITY_CONTROL_HPP
+#ifndef KANAVAL_ADT_QUALITY_CONTROL_HPP
+#define KANAVAL_ADT_QUALITY_CONTROL_HPP
 
 #include "H5Cpp.h"
 #include <vector>
 #include "utils.hpp"
 
 /**
- * @file quality_control.hpp
+ * @file adt_quality_control.hpp
  *
- * @brief Validate quality control contents.
+ * @brief Validate ADT quality control contents.
  */
 
 namespace kanaval {
 
-namespace quality_control {
+namespace adt_quality_control {
 
 /**
  * @cond
@@ -34,31 +34,34 @@ inline void validate_parameters(const H5::Group& qhandle) {
     return;
 }
 
-inline int validate_results(const H5::Group& qhandle, int num_cells, int num_samples) {
+inline int validate_results(const H5::Group& qhandle, int num_cells, int num_samples, bool adt_in_use) {
     auto rhandle = utils::check_and_open_group(qhandle, "results");
 
-    try {
-        auto mhandle = utils::check_and_open_group(rhandle, "metrics");
-        std::vector<size_t> dims{ static_cast<size_t>(num_cells) };
-        utils::check_and_open_dataset(mhandle, "sums", H5T_FLOAT, dims);
-        utils::check_and_open_dataset(mhandle, "detected", H5T_INTEGER, dims);
-        utils::check_and_open_dataset(mhandle, "igg_total", H5T_FLOAT, dims);
-    } catch (std::exception& e) {
-        throw utils::combine_errors(e, "failed to retrieve metrics from 'results'");
+    int remaining = -1;
+    if (adt_in_use) {
+        try {
+            auto mhandle = utils::check_and_open_group(rhandle, "metrics");
+            std::vector<size_t> dims{ static_cast<size_t>(num_cells) };
+            utils::check_and_open_dataset(mhandle, "sums", H5T_FLOAT, dims);
+            utils::check_and_open_dataset(mhandle, "detected", H5T_INTEGER, dims);
+            utils::check_and_open_dataset(mhandle, "igg_total", H5T_FLOAT, dims);
+        } catch (std::exception& e) {
+            throw utils::combine_errors(e, "failed to retrieve metrics from 'results'");
+        }
+
+        try {
+            auto thandle = utils::check_and_open_group(rhandle, "thresholds");
+
+            std::vector<size_t> dims{ static_cast<size_t>(num_samples) };
+            utils::check_and_open_dataset(thandle, "detected", H5T_FLOAT, dims);
+            utils::check_and_open_dataset(thandle, "igg_total", H5T_FLOAT, dims);
+
+        } catch (std::exception& e) {
+            throw utils::combine_errors(e, "failed to retrieve thresholds from 'results'");
+        }
+
+        remaining = quality_control::check_discard_vector(rhandle, num_cells);
     }
-
-    try {
-        auto thandle = utils::check_and_open_group(rhandle, "thresholds");
-
-        std::vector<size_t> dims{ static_cast<size_t>(num_samples) };
-        utils::check_and_open_dataset(thandle, "detected", H5T_FLOAT, dims);
-        utils::check_and_open_dataset(thandle, "igg_total", H5T_FLOAT, dims);
-
-    } catch (std::exception& e) {
-        throw utils::combine_errors(e, "failed to retrieve thresholds from 'results'");
-    }
-
-    int remaining = quality_control::check_discard_vector(rhandle, num_cells);
 
     return remaining;
 }
@@ -69,7 +72,7 @@ inline int validate_results(const H5::Group& qhandle, int num_cells, int num_sam
 /**
  * Check contents for the ADT-based quality control step.
  * Contents are stored inside an `adt_quality_control` HDF5 group at the root of the file.
- * The `quality_control` group itself contains the `parameters` and `results` subgroups.
+ * The `adt_quality_control` group itself contains the `parameters` and `results` subgroups.
  * 
  * <HR>
  * `parameters` should contain:
@@ -79,7 +82,9 @@ inline int validate_results(const H5::Group& qhandle, int num_cells, int num_sam
  * - `min_detected_drop`: a scalar float specifying the minimum relative drop in the number of detected features before a cel is considered to be low-quality.
  * 
  * <HR>
- * `results` should contain:
+ * If `adt_in_use = false`, `results` should be empty.
+ *
+ * If `adt_in_use = true`, `results` should contain:
  * 
  * - `metrics`, a group containing per-cell QC metrics derived from the RNA count data.
  *   This contains:
@@ -97,14 +102,15 @@ inline int validate_results(const H5::Group& qhandle, int num_cells, int num_sam
  * @param handle An open HDF5 file handle.
  * @param num_cells Number of cells in the dataset before any quality filtering is applied.
  * @param num_samples Number of batches in the dataset.
+ * @param adt_in_use Whether ADTs are being used in this dataset.
  * @param version Version of the format.
  * 
  * @return The number of high-quality cells, according to the ADT-based metrics.
  * Alternatively, if ADTs were not present in the dataset, -1 is returned instead.
  * An error is raised if the format is invalid.
  */ 
-inline int validate(const H5::H5File& handle, int num_cells, int num_samples, int version) {
-    if (version < 2000000) {
+inline int validate(const H5::H5File& handle, int num_cells, int num_samples, bool adt_in_use, int version) {
+    if (version < 2000000) { // didn't exist before v2.
         return -1;
     }
 
@@ -118,9 +124,9 @@ inline int validate(const H5::H5File& handle, int num_cells, int num_samples, in
 
     int remaining = 0;
     try {
-        remaining = validate_results(qhandle, num_cells, num_samples);
+        remaining = validate_results(qhandle, num_cells, num_samples, adt_in_use);
     } catch (std::exception& e) {
-        throw utils::combine_errors(e, "failed to retrieve results from 'quality_control'");
+        throw utils::combine_errors(e, "failed to retrieve results from 'adt_quality_control'");
     }
 
     return remaining;
