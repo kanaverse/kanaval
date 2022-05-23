@@ -210,6 +210,28 @@ std::vector<std::string> load_string_vector(const Object& handle, const std::str
 
 }
 
+namespace quality_control {
+
+template<class Object>
+int check_discard_vector(const Object& rhandle, size_t num_cells) {
+    int remaining = 0;
+    try {
+        std::vector<size_t> dims{ static_cast<size_t>(num_cells) };
+        auto dihandle = utils::check_and_open_dataset(rhandle, "discards", H5T_INTEGER, dims);
+        std::vector<int> discards(num_cells);
+        dihandle.read(discards.data(), H5::PredType::NATIVE_INT);
+        for (auto d : discards) {
+            remaining += (d == 0);
+        }
+
+    } catch (std::exception& e) {
+        throw utils::combine_errors(e, "failed to retrieve discard information from 'results'");
+    }
+    return remaining;
+}
+
+}
+
 namespace markers {
     
 inline const std::vector<std::string> effects { "lfc", "delta_detected", "cohen", "auc" };
