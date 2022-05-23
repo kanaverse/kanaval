@@ -97,7 +97,64 @@ inline void validate_results(const H5::Group& handle, const std::vector<std::str
  * Check contents for the custom selections step.
  * Contents are stored inside a `custom_selections` HDF5 group at the root of the file.
  * The `custom_selections` group itself contains the `parameters` and `results` subgroups.
+ *
+ * This describes the requirements for the latest version of the format.
+ * For pre-v2.0 requirements, see `validate_pre_v2_0()` instead.
+ *
+ * <HR>
+ * `parameters` should contain:
+ *
+ * - `selections`: a group defining the custom selections.
+ *   Each child is named after a user-created selection.
+ *   Each child is an integer dataset of arbitrary length containing the indices of the selected cells.
+ *   Note that indices refer to the dataset after QC filtering and should be less than `num_cells`.
  * 
+ * <HR>
+ * `results` should contain `per_selection`, a group containing the marker results for each selection after a comparison to a group containing all other cells.
+ * Each child of `per_selection` is named after its selection and is itself a group containing children named according to `modalities`.
+ * Each modality-specific child is yet another group containing the statistics for that modality:
+ * - `means`: a float dataset of length equal to the number of features in that modality, containing the mean expression of each gene in the selection.
+ * - `detected`: a float dataset of length equal to the number of features in that modality, containing the proportion of cells with detected expression of each gene in the selection.
+ * - `lfc`: a float dataset of length equal to the number of features in that modality, containing the log-fold change in the selection compared to all other cells.
+ * - `delta_detected`: same as `lfc`, but for the delta-detected (i.e., difference in the percentage of detected expression).
+ * - `cohen`: same as `lfc`, but for Cohen's d.
+ * - `auc`: same as `lfc`, but for the AUCs.
+ *
+ * <HR>
+ * @param handle An open HDF5 file handle.
+ * @param num_cells Number of cells in the dataset after QC filtering.
+ * @param modalities Modalities available in the dataset, should be some combination of `"RNA"` or `"ADT"`.
+ * @param num_genes Number of genes for each modality in `modalities`.
+ *
+ * @return If the format is invalid, an error is raised.
+ */
+inline void validate(const H5::Group& handle, int num_cells, const std::vector<std::string>& modalities, const std::vector<std::string>& num_genes) {
+    auto mhandle = utils::check_and_open_group(handle, "custom_selections");
+
+    std::vector<std::string> collected;
+    try {
+        collected = validate_parameters(mhandle, num_cells);
+    } catch (std::exception& e) {
+        throw utils::combine_errors(e, "failed to retrieve parameters from 'custom_selections'");
+    }
+
+    try {
+        validate_results(mhandle, collected, modalities, num_genes);
+    } catch (std::exception& e) {
+        throw utils::combine_errors(e, "failed to retrieve results from 'custom_selections'");
+    }
+
+    return;
+}
+
+/*
+ * Check contents for the custom selections step.
+ * Contents are stored inside a `custom_selections` HDF5 group at the root of the file.
+ * The `custom_selections` group itself contains the `parameters` and `results` subgroups.
+ * 
+ * This describes the requirements for the pre-v2.0 format.
+ * For the latest requirements, see `validate()` instead.
+ *
  * <HR>
  * `parameters` should contain:
  *
@@ -125,7 +182,7 @@ inline void validate_results(const H5::Group& handle, const std::vector<std::str
  *
  * @return If the format is invalid, an error is raised.
  */
-inline void validate(const H5::Group& handle, int num_cells, const std::vector<std::string>& modalities, const std::vector<std::string>& num_genes) {
+inline void validate_pre_v2_0(const H5::Group& handle, int num_genes, int num_cells);
     auto mhandle = utils::check_and_open_group(handle, "custom_selections");
 
     std::vector<std::string> collected;
@@ -136,17 +193,14 @@ inline void validate(const H5::Group& handle, int num_cells, const std::vector<s
     }
 
     try {
-        if (version < 2000000) {
-            validate_results(mhandle, collected, num_genes[0]);
-        } else {
-            validate_results(mhandle, collected, modalities, num_genes);
-        }
+        validate_results(mhandle, collected, num_genes);
     } catch (std::exception& e) {
         throw utils::combine_errors(e, "failed to retrieve results from 'custom_selections'");
     }
 
     return;
 }
+
 
 }
 

@@ -3,6 +3,7 @@
 
 #include "H5Cpp.h"
 #include <vector>
+#include <numeric>
 #include "utils.hpp"
 
 /**
@@ -32,10 +33,11 @@ inline void validate_parameters(const H5::Group& handle, const std::vector<std::
     return;
 }
 
-inline void validate_results(const H5::Group& handle, int num_cells, const std::vector<std::string>& modalities, int total_pcs) {
+inline void validate_results(const H5::Group& handle, int num_cells, const std::vector<std::string>& modalities, const std::vector<int>& num_pcs) {
     auto rhandle = utils::check_and_open_group(handle, "results");
 
     if (modalities.size() > 1) {
+        auto total_pcs = std::accumulate(num_pcs.begin(), num_pcs.end(), 0);
         std::vector<size_t> pdims { static_cast<size_t>(num_cells), static_cast<size_t>(total_pcs) };
         utils::check_and_open_dataset(rhandle, "combined", H5T_FLOAT, pdims);
     }
@@ -47,41 +49,35 @@ inline void validate_results(const H5::Group& handle, int num_cells, const std::
  */
 
 /**
- * Check contents for the PCA step.
- * Contents are stored inside an `pca` HDF5 group at the root of the file.
- * The `pca` group itself contains the `parameters` and `results` subgroups.
+ * Check contents for the combined embeddings step.
+ * Contents are stored inside a `combined_embedding` HDF5 group at the root of the file.
+ * The `combined_embedding` group itself contains the `parameters` and `results` subgroups.
+ *
+ * Only a single embedding was generated prior to version 2.0 of the format, so the `combined_embeddings` group may be absent in pre-v2.0 files.
  *
  * <HR>
- * `parameters` should contain:
- *
- * - `num_hvgs`: a scalar integer containing the number of highly variable genes to use to compute the PCA.
- * - `num_pcs`: a scalar integer containing the number of PCs to compute.
- * - \v1_1{\[**since version 1.1**\] `block_method`: a scalar string specifying the method to use when dealing with multiple blocks in the dataset.
- *   This may be `"none"`, `"regress"` or `"mnn"`.}
+ * `parameters` should be empty.
  *
  * <HR>
- * `results` should contain:
+ * If `modalities.size() > 1`, `results` should contain:
  *
- * - `pcs`: a 2-dimensional float dataset containing the PC coordinates in a row-major layout.
+ * - `combined`: a 2-dimensional float dataset containing the combined embeddings in a row-major layout.
  *   Each row corresponds to a cell (after QC filtering) and each column corresponds to a PC.
- *   Note that this is deliberately transposed from the Javascript/Wasm representation for easier storage.
- *   \v1_1{\[**since version 1.1**\] If `block_type = "mnn"`, the PCs will be computed using a weighted method that adjusts for differences in the number of cells across blocks.
- *   If `block_type = "regress"`, the PCs will be computed on the residuals after regressing out the block-wise effects.}
- * - `var_exp`: a float dataset of length equal to the number of PCs, containing the percentage of variance explained by each PC.
  *
- * \v1_1{\[**since version 1.1**\] If `block_type = "mnn"`, the `results` group will also contain:}
- *
- * - \v1_1{`corrected`, a float dataset with the same dimensions as `pcs`, containing the MNN-corrected PCs for each cell.}
+ * Otherwise, `combined` may be missing, in which case it is implicitly defined from the `pcs` of the PCA group of the available modality, 
+ * see `pca::validate()` or `adt_pca::validate()`.
  *
  * <HR>
  * @param handle An open HDF5 file handle.
  * @param num_cells Number of cells in the dataset after any quality filtering is applied.
+ * @param modalities Vector of strings containing the names of the modalities to be combined.
+ * Currently, this may be any combination of `"RNA"` or `"ADT"`.
+ * @param num_pcs Vector of integers containing the number of PCs for each modality in `modalities`. 
  * @param version Version of the state file.
  *
- * @return The number of cells remaining after QC filtering.
- * If the format is invalid, an error is raised instead.
+ * @return If the format is invalid, an error is raised.
  */
-inline void validate(const H5::H5File& handle, int num_cells, const std::vector<std::string>& modalities, int total_pcs, int version) {
+inline void validate(const H5::H5File& handle, int num_cells, const std::vector<std::string>& modalities, const std::vector<int>& num_pcs, int version) {
     if (version < 2000000) {
         return;
     }
@@ -95,7 +91,7 @@ inline void validate(const H5::H5File& handle, int num_cells, const std::vector<
     }
 
     try {
-        validate_results(phandle, num_cells, modalities, total_pcs);
+        validate_results(phandle, num_cells, modalities, num_pcs);
     } catch (std::exception& e) {
         throw utils::combine_errors(e, "failed to retrieve results from 'combine_embeddings'");
     }

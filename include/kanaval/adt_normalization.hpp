@@ -49,6 +49,8 @@ inline bool validate_results(const H5::Group& handle, size_t num_cells, bool adt
  * Contents are stored inside a `adt_normalization` HDF5 group at the root of the file.
  * The `adt_normalization` group itself contains the `parameters` and `results` subgroups.
  *
+ * No ADT data was available prior to version 2.0 of the format, so the `adt_normalization` group may be absent in pre-v2.0 files.
+ *
  * <HR>
  * No contents are mandated for `parameters`.
  *
@@ -59,7 +61,6 @@ inline bool validate_results(const H5::Group& handle, size_t num_cells, bool adt
  *
  * - `size_factors`, a float dataset of length equal to the number of cells, containing the size factor for each cell.
  *
- * Alternatively, if the dataset does not contain ADTs, `size_factors` may be absent.
  * <HR>
  * @param handle An open HDF5 file handle.
  * @param num_cells Number of cells in the dataset.
