@@ -3,6 +3,8 @@
 
 #include "H5Cpp.h"
 
+static constexpr int latest = 2000000;
+
 template<class Object>
 void quick_write_dataset(Object& handle, std::string name, int val) {
     H5::DataSpace space;

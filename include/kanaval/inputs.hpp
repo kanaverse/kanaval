@@ -271,7 +271,7 @@ inline Details validate_results(const H5::Group& handle, const ParamDump& param_
 
     } else if (version >= 1002000) {
         auto idx = utils::load_integer_vector<int>(rhandle, "identities");
-        if (idx.size() != static_cast<size_t>(dims[0])) {
+        if (idx.size() != static_cast<size_t>(output.num_features[0])) {
             throw std::runtime_error("'identities' should have length equal to the number of genes");
         }
         check_unique(idx, "'identities'");
@@ -279,14 +279,14 @@ inline Details validate_results(const H5::Group& handle, const ParamDump& param_
     } else {
         if (param_info.multi_matrix) {
             auto idx = utils::load_integer_vector<int>(rhandle, "indices");
-            if (idx.size() != static_cast<size_t>(dims[0])) {
+            if (idx.size() != static_cast<size_t>(output.num_features[0])) {
                 throw std::runtime_error("'indices' should have length equal to the number of genes");
             }
             check_unique(idx, "'indices'");
 
         } else {
             auto perms = utils::load_integer_vector<int>(rhandle, "permutation");
-            if (perms.size() != static_cast<size_t>(dims[0])) {
+            if (perms.size() != static_cast<size_t>(output.num_features[0])) {
                 throw std::runtime_error("'permutation' should have length equal to the number of genes");
             }
 
