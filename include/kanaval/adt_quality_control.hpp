@@ -93,8 +93,8 @@ inline int validate_results(const H5::Group& qhandle, int num_cells, int num_sam
  *   - `igg_total`: a float dataset of length equal to the number of cells, containing the total count in IgG features.
  * - `thresholds`, a group containing thresholds on the metrics for each batch.
  *   This contains:
- *   - `detected`:  an integer dataset of length equal to the number of batches, containing the threshold on the total number of detected features for each batch.
- *   - `proportion`: a float dataset of length equal to the number of batches, containing the threshold on the total counts in IgG features for each batch.
+ *   - `detected`:  a float dataset of length equal to the number of batches, containing the threshold on the total number of detected features for each batch.
+ *   - `igg_total`: a float dataset of length equal to the number of batches, containing the threshold on the total counts in IgG features for each batch.
  * - `discards`: an integer dataset of length equal to the number of cells.
  *   Each value is interpreted as a boolean and specifies whether the corresponding cell would be discarded by the ADT-based filter thresholds.
  *

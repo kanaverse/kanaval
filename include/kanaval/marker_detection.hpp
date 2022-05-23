@@ -22,12 +22,9 @@ inline void validate_parameters(const H5::Group& handle) {
     utils::check_and_open_group(handle, "parameters");
 }
 
-inline void validate_results(const H5::Group& handle, int num_genes, int num_clusters) {
-    auto rhandle = utils::check_and_open_group(handle, "results");
-    
-    auto chandle = utils::check_and_open_group(rhandle, "clusters");
+inline void validate_markers(const H5::Group& chandle, int num_genes, int num_clusters, std::string parent) {
     if (chandle.getNumObjs() != num_clusters) {
-        throw std::runtime_error("number of groups in 'clusters' is not consistent with the expected number of clusters");
+        throw std::runtime_error("number of groups in '" + parent + "' is not consistent with the expected number of clusters");
     }
 
     for (int i = 0; i < num_clusters; ++i) {
@@ -48,7 +45,7 @@ inline void validate_results(const H5::Group& handle, int num_genes, int num_clu
                 }
             }
         } catch (std::exception& e) {
-            throw utils::combine_errors(e, "failed to retrieve statistics for cluster " + std::to_string(i) + " in 'results/clusters'");
+            throw utils::combine_errors(e, "failed to retrieve statistics for cluster " + std::to_string(i) + " in '" + parent + "'");
         }
     }
     return;
@@ -89,7 +86,7 @@ inline void validate_results(const H5::Group& handle, int num_genes, int num_clu
  *
  * @return If the format is invalid, an error is raised.
  */
-inline void validate(const H5::Group& handle, int num_genes, int num_clusters) {
+inline void validate(const H5::Group& handle, const std::vector<int>& num_genes, int num_clusters, const std::vector<std::string>& modalities, int version) {
     auto mhandle = utils::check_and_open_group(handle, "marker_detection");
 
     try {
@@ -99,7 +96,17 @@ inline void validate(const H5::Group& handle, int num_genes, int num_clusters) {
     }
 
     try {
-        validate_results(mhandle, num_genes, num_clusters);
+        auto rhandle = utils::check_and_open_group(mhandle, "results");
+        if (version < 2000000) {
+            auto chandle = utils::check_and_open_group(rhandle, "clusters");
+            validate_markers(chandle, num_genes[0], num_clusters, "clusters");
+        } else {
+            auto chandle = utils::check_and_open_group(rhandle, "per_cluster");
+            for (size_t m = 0; m < modalities.size(); ++m) {
+                auto mohandle = utils::check_and_open_group(chandle, modalities[m]);
+                validate_markers(mohandle, num_genes[m], num_clusters, "per_cluster/" + modalities[m]);
+            }
+        }
     } catch (std::exception& e) {
         throw utils::combine_errors(e, "failed to retrieve results from 'marker_detection'");
     }

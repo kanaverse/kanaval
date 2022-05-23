@@ -38,9 +38,17 @@ inline std::vector<std::string> validate_parameters(const H5::Group& handle, int
     return output;
 }
 
+inline void validate_custom_markers(const H5::Group& shandle, int num_genes) {
+    std::vector<size_t> dims{ static_cast<size_t>(num_genes) };
+    utils::check_and_open_dataset(shandle, "means", H5T_FLOAT, dims);
+    utils::check_and_open_dataset(shandle, "detected", H5T_FLOAT, dims);
+    for (const auto& eff : markers::effects) {
+        utils::check_and_open_dataset(shandle, eff, H5T_FLOAT, dims);
+    }
+}
+
 inline void validate_results(const H5::Group& handle, const std::vector<std::string>& selections, int num_genes) {
     auto rhandle = utils::check_and_open_group(handle, "results");
-    
     auto mhandle = utils::check_and_open_group(rhandle, "markers");
     if (mhandle.getNumObjs() != selections.size()) {
         throw std::runtime_error("number of groups in 'markers' is not consistent with the expected number of selections");
@@ -49,14 +57,34 @@ inline void validate_results(const H5::Group& handle, const std::vector<std::str
     for (const auto& s : selections) {
         try {
             auto shandle = utils::check_and_open_group(mhandle, s);
-            std::vector<size_t> dims{ static_cast<size_t>(num_genes) };
-            utils::check_and_open_dataset(shandle, "means", H5T_FLOAT, dims);
-            utils::check_and_open_dataset(shandle, "detected", H5T_FLOAT, dims);
-            for (const auto& eff : markers::effects) {
-                utils::check_and_open_dataset(shandle, eff, H5T_FLOAT, dims);
-            }
+            validate_custom_markers(shandle, num_genes);
         } catch (std::exception& e) {
             throw utils::combine_errors(e, "failed to retrieve statistics for selection '" + s + "' in 'results/markers'");
+        }
+    }
+    return;
+}
+
+inline void validate_results(const H5::Group& handle, const std::vector<std::string>& selections, const std::vector<std::string>& modalities, const std::vector<int>& num_genes) {
+    auto rhandle = utils::check_and_open_group(handle, "results");
+    auto mhandle = utils::check_and_open_group(rhandle, "per_selection");
+    if (mhandle.getNumObjs() != selections.size()) {
+        throw std::runtime_error("number of groups in 'per_selection' is not consistent with the expected number of selections");
+    }
+
+    for (const auto& s : selections) {
+        try {
+            auto shandle = utils::check_and_open_group(mhandle, s);
+            for (size_t a = 0; a < modalities.size(); ++a) {
+                try {
+                    auto ahandle = utils::check_and_open_group(shandle, modalities[a]);
+                    validate_custom_markers(ahandle, num_genes[a]);
+                } catch (std::exception& e) {
+                    throw utils::combine_errors(e, "failed to retrieve statistics for modality '" + modalities[a] + "'");
+                }
+            }
+        } catch (std::exception& e) {
+            throw utils::combine_errors(e, "failed to retrieve statistics for selection '" + s + "' in 'results/per_selection'");
         }
     }
     return;
@@ -97,7 +125,7 @@ inline void validate_results(const H5::Group& handle, const std::vector<std::str
  *
  * @return If the format is invalid, an error is raised.
  */
-inline void validate(const H5::Group& handle, int num_genes, int num_cells) {
+inline void validate(const H5::Group& handle, int num_cells, const std::vector<std::string>& modalities, const std::vector<std::string>& num_genes) {
     auto mhandle = utils::check_and_open_group(handle, "custom_selections");
 
     std::vector<std::string> collected;
@@ -108,7 +136,11 @@ inline void validate(const H5::Group& handle, int num_genes, int num_cells) {
     }
 
     try {
-        validate_results(mhandle, collected, num_genes);
+        if (version < 2000000) {
+            validate_results(mhandle, collected, num_genes[0]);
+        } else {
+            validate_results(mhandle, collected, modalities, num_genes);
+        }
     } catch (std::exception& e) {
         throw utils::combine_errors(e, "failed to retrieve results from 'custom_selections'");
     }

@@ -70,7 +70,7 @@ inline bool validate_results(const H5::Group& handle, size_t num_cells, bool adt
  */
 inline void validate(const H5::H5File& handle, size_t num_cells, bool adt_in_use, int version) {
     if (version < 2000000) { // didn't exist before v2.
-        return -1;
+        return;
     }
 
     auto nhandle = utils::check_and_open_group(handle, "adt_normalization");
