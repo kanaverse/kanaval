@@ -72,17 +72,17 @@ TEST(AdtNormalization, ParametersFailed) {
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
         add_adt_normalization(handle, 100);
-        handle.unlink("adt_normalization/num_pcs");
+        handle.unlink("adt_normalization/parameters/num_pcs");
     }
     quick_adt_norm_throw(path, 100, "num_pcs");
 
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
         add_adt_normalization(handle, 100);
-        handle.unlink("adt_normalization/num_clusters");
-        quick_write_dataset(handle, "adt_normalization/num_clusters", -1);
+        handle.unlink("adt_normalization/parameters/num_clusters");
+        quick_write_dataset(handle, "adt_normalization/parameters/num_clusters", -1);
     }
-    quick_adt_norm_throw(path, 100, "num_clusters");
+    quick_adt_norm_throw(path, 100, "positive");
 }
 
 TEST(AdtNormalization, ResultsFailed) {
