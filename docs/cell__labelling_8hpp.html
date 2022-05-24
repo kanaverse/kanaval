@@ -162,7 +162,7 @@ Functions</h2></td></tr>
 <hr  />
 <p> <code>results</code> should contain:</p>
 <ul>
-<li><code>per_reference</code>: a group containing the label assignments for each cluster in each reference. Each child is named after its corresponding reference, and is a string dataset of length equal to the number of clusters. Entries of the dataset contain the assigned label for the corresponding cluster.</li>
+<li><code>per_reference</code>: a group containing the label assignments for each cluster in each reference. Each child is named after its corresponding reference listed in <code>parameters</code> (though not all references listed in <code>parameters</code> need to be present here). Each child is a string dataset of length equal to the number of clusters, where each entry contains the assigned label for the corresponding cluster.</li>
 </ul>
 <p >For multiple references of the relevant species, <code>results</code> will also contain:</p>
 <ul>
