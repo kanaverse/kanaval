@@ -58,7 +58,7 @@ struct ParamDump {
     bool multi_sample;
 };
 
-inline ParamDump validate_parameters(const H5::Group& handle, bool embedded, int version = 1002000) {
+inline ParamDump validate_parameters(const H5::Group& handle, bool embedded, int version) {
     auto phandle = utils::check_and_open_group(handle, "parameters");
     ParamDump output;
 
@@ -198,7 +198,7 @@ inline ParamDump validate_parameters(const H5::Group& handle, bool embedded, int
     return output;
 }
 
-inline Details validate_results(const H5::Group& handle, const ParamDump& param_info, int version = 1002000) {
+inline Details validate_results(const H5::Group& handle, const ParamDump& param_info, int version) {
     auto rhandle = utils::check_and_open_group(handle, "results");
     Details output;
 
