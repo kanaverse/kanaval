@@ -58,9 +58,6 @@ inline void validate_markers(const H5::Group& chandle, int num_genes, int num_cl
  * Check contents for the marker detection step.
  * Contents are stored inside an `marker_detection` HDF5 group at the root of the file.
  * The `marker_detection` group itself contains the `parameters` and `results` subgroups.
- * 
- * This describes the requirements for the latest version of the format.
- * For pre-v2.0 requirements, see `validate_pre_v2_0()` instead.
  *
  * <HR>
  * `parameters` should be empty.
@@ -81,49 +78,9 @@ inline void validate_markers(const H5::Group& chandle, int num_genes, int num_cl
  * - `cohen`: same as `lfc`, but for Cohen's d.
  * - `auc`: same as `lfc`, but for the AUCs.
  *
- * <HR>
- * @param handle An open HDF5 file handle.
- * @param num_clusters Number of clusters produced by previous steps.
- * @param modalities Available modalities in the dataset.
- * @param num_genes Number of features for each modality.
- *
- * @return If the format is invalid, an error is raised.
- */
-inline void validate(const H5::Group& handle, int num_clusters, const std::vector<std::string>& modalities, const std::vector<int>& num_genes) {
-    auto mhandle = utils::check_and_open_group(handle, "marker_detection");
-
-    try {
-        validate_parameters(mhandle);
-    } catch (std::exception& e) {
-        throw utils::combine_errors(e, "failed to retrieve parameters from 'marker_detection'");
-    }
-
-    try {
-        auto rhandle = utils::check_and_open_group(mhandle, "results");
-        auto chandle = utils::check_and_open_group(rhandle, "per_cluster");
-        for (size_t m = 0; m < modalities.size(); ++m) {
-            auto mohandle = utils::check_and_open_group(chandle, modalities[m]);
-            validate_markers(mohandle, num_genes[m], num_clusters, "per_cluster/" + modalities[m]);
-        }
-    } catch (std::exception& e) {
-        throw utils::combine_errors(e, "failed to retrieve results from 'marker_detection'");
-    }
-
-    return;
-}
-
-/**
- * Check contents for the marker detection step.
- * Contents are stored inside an `marker_detection` HDF5 group at the root of the file.
- * The `marker_detection` group itself contains the `parameters` and `results` subgroups.
- * 
- * This describes the requirements for the pre-v2.0 format.
- * For the latest requirements, see `validate()` instead.
- *
- * <HR>
- * `parameters` should be empty.
- * 
- * <HR>
+ * <DIV style="color:blue">
+ * <details>
+ * <summary>For versions 1.0-1.2</summary>
  * `results` should contain:
  *
  * - `clusters`: a group representing an array of length equal to the number of clusters.
@@ -139,15 +96,21 @@ inline void validate(const H5::Group& handle, int num_clusters, const std::vecto
  *   - `delta_detected`: same as `lfc`, but for the delta-detected (i.e., difference in the percentage of detected expression).
  *   - `cohen`: same as `lfc`, but for Cohen's d.
  *   - `auc`: same as `lfc`, but for the AUCs.
+ * </details>
+ * </DIV>
  *
  * <HR>
  * @param handle An open HDF5 file handle.
- * @param num_genes Number of genes in the dataset.
  * @param num_clusters Number of clusters produced by previous steps.
+ * @param modalities Available modalities in the dataset.
+ * Ignored for `version < 2000000`.
+ * @param num_genes Number of features for each modality.
+ * Should only contain a single value for `version < 2000000`.
+ * @param version Version of the format.
  *
  * @return If the format is invalid, an error is raised.
  */
-inline void validate_pre_v2_0(const H5::Group& handle, int num_genes, int num_clusters) {
+inline void validate(const H5::Group& handle, int num_clusters, const std::vector<std::string>& modalities, const std::vector<int>& num_genes, int version = 2000000) {
     auto mhandle = utils::check_and_open_group(handle, "marker_detection");
 
     try {
@@ -158,8 +121,17 @@ inline void validate_pre_v2_0(const H5::Group& handle, int num_genes, int num_cl
 
     try {
         auto rhandle = utils::check_and_open_group(mhandle, "results");
-        auto chandle = utils::check_and_open_group(rhandle, "clusters");
-        validate_markers(chandle, num_genes, num_clusters, "clusters");
+        if (version >= 2000000) {
+            auto chandle = utils::check_and_open_group(rhandle, "per_cluster");
+            for (size_t m = 0; m < modalities.size(); ++m) {
+                auto mohandle = utils::check_and_open_group(chandle, modalities[m]);
+                validate_markers(mohandle, num_genes[m], num_clusters, "per_cluster/" + modalities[m]);
+            }
+        } else {
+            auto chandle = utils::check_and_open_group(rhandle, "clusters");
+            validate_markers(chandle, num_genes[0], num_clusters, "clusters");
+        }
+
     } catch (std::exception& e) {
         throw utils::combine_errors(e, "failed to retrieve results from 'marker_detection'");
     }
