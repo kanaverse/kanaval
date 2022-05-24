@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['feature_5fselection_2ehpp_0',['feature_selection.hpp',['../feature__selection_8hpp.html',1,'']]]
+  ['batch_5fcorrection_2ehpp_0',['batch_correction.hpp',['../batch__correction_8hpp.html',1,'']]]
 ];

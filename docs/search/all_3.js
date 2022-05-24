@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['inputs_2ehpp_0',['inputs.hpp',['../inputs_8hpp.html',1,'']]]
+  ['details_0',['Details',['../structkanaval_1_1inputs_1_1Details.html',1,'kanaval::inputs']]]
 ];

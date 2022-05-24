@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['cell_5flabelling_2ehpp_0',['cell_labelling.hpp',['../cell__labelling_8hpp.html',1,'']]],
-  ['choose_5fclustering_2ehpp_1',['choose_clustering.hpp',['../choose__clustering_8hpp.html',1,'']]],
-  ['custom_5fselections_2ehpp_2',['custom_selections.hpp',['../custom__selections_8hpp.html',1,'']]]
+  ['adt_5fnormalization_2ehpp_0',['adt_normalization.hpp',['../adt__normalization_8hpp.html',1,'']]],
+  ['adt_5fpca_2ehpp_1',['adt_pca.hpp',['../adt__pca_8hpp.html',1,'']]],
+  ['adt_5fquality_5fcontrol_2ehpp_2',['adt_quality_control.hpp',['../adt__quality__control_8hpp.html',1,'']]]
 ];

@@ -1,4 +1,5 @@
 var searchData=
 [
-  ['quality_5fcontrol_2ehpp_0',['quality_control.hpp',['../quality__control_8hpp.html',1,'']]]
+  ['neighbor_5findex_2ehpp_0',['neighbor_index.hpp',['../neighbor__index_8hpp.html',1,'']]],
+  ['normalization_2ehpp_1',['normalization.hpp',['../normalization_8hpp.html',1,'']]]
 ];

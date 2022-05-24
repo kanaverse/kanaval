@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['details_0',['Details',['../structkanaval_1_1inputs_1_1Details.html',1,'kanaval::inputs']]]
+  ['batch_5fcorrection_2ehpp_0',['batch_correction.hpp',['../batch__correction_8hpp.html',1,'']]]
 ];
