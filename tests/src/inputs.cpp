@@ -31,11 +31,14 @@ void add_single_matrix(H5::H5File& handle, std::string mode = "MatrixMarket", in
     }
 
     auto rhandle = ihandle.createGroup("results");
-    quick_write_dataset(rhandle, "dimensions", std::vector<int>{ ngenes, ncells });
+    quick_write_dataset(rhandle, "num_cells", ncells);
+    auto fehandle = rhandle.createGroup("num_features");
+    quick_write_dataset(fehandle, "RNA", ngenes);
 
+    auto idhandle = rhandle.createGroup("identities");
     std::vector<int> identities(1000);
     std::iota(identities.rbegin(), identities.rend(), 0); // reversed... outta control, bruh.
-    quick_write_dataset(rhandle, "identities", identities);
+    quick_write_dataset(idhandle, "RNA", identities);
 
     return;
 }
@@ -50,8 +53,8 @@ TEST(SingleInputs, AllOK) {
     }
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        auto output = kanaval::inputs::validate(handle);
-        EXPECT_EQ(output.num_genes, 1000);
+        auto output = kanaval::inputs::validate(handle, true, latest);
+        EXPECT_EQ(output.num_features[0], 1000);
         EXPECT_EQ(output.num_cells, 100);
         EXPECT_EQ(output.num_samples, 1);
     }
@@ -63,8 +66,8 @@ TEST(SingleInputs, AllOK) {
     }
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        auto output = kanaval::inputs::validate(handle);
-        EXPECT_EQ(output.num_genes, 1000);
+        auto output = kanaval::inputs::validate(handle, true, latest);
+        EXPECT_EQ(output.num_features[0], 1000);
         EXPECT_EQ(output.num_cells, 100);
         EXPECT_EQ(output.num_samples, 1);
     }
@@ -78,8 +81,8 @@ TEST(SingleInputs, AllOK) {
     }
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        auto output = kanaval::inputs::validate(handle);
-        EXPECT_EQ(output.num_genes, 1000);
+        auto output = kanaval::inputs::validate(handle, true, latest);
+        EXPECT_EQ(output.num_features[0], 1000);
         EXPECT_EQ(output.num_cells, 100);
         EXPECT_EQ(output.num_samples, 1);
     }
@@ -94,8 +97,8 @@ TEST(SingleInputs, AllOK) {
     }
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        auto output = kanaval::inputs::validate(handle);
-        EXPECT_EQ(output.num_genes, 1000);
+        auto output = kanaval::inputs::validate(handle, true, latest);
+        EXPECT_EQ(output.num_features[0], 1000);
         EXPECT_EQ(output.num_cells, 100);
         EXPECT_EQ(output.num_samples, 5);
     }
@@ -113,8 +116,35 @@ TEST(SingleInputs, AllOK) {
     }
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        auto output = kanaval::inputs::validate(handle, false);
-        EXPECT_EQ(output.num_genes, 1000);
+        auto output = kanaval::inputs::validate(handle, false, latest);
+        EXPECT_EQ(output.num_features[0], 1000);
+        EXPECT_EQ(output.num_cells, 100);
+        EXPECT_EQ(output.num_samples, 1);
+    }
+}
+
+TEST(SingleInputs, MultiModalOK) {
+    const std::string path = "TEST_inputs.h5";
+
+    {
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        add_single_matrix(handle);
+        auto rhandle = handle.openGroup("inputs/results");
+        quick_write_dataset(rhandle, "num_features/ADT", 4);
+        quick_write_dataset(rhandle, "identities/ADT", std::vector<int>{2,4,6,8});
+    }
+    {
+        H5::H5File handle(path, H5F_ACC_RDONLY);
+        auto output = kanaval::inputs::validate(handle, true, latest);
+
+        auto rna_it = find(output.modalities.begin(), output.modalities.end(), std::string("RNA"));
+        EXPECT_FALSE(rna_it == output.modalities.end());
+        EXPECT_EQ(output.num_features[rna_it - output.modalities.begin()], 1000);
+
+        auto adt_it = find(output.modalities.begin(), output.modalities.end(), std::string("ADT"));
+        EXPECT_FALSE(adt_it == output.modalities.end());
+        EXPECT_EQ(output.num_features[adt_it - output.modalities.begin()], 4);
+
         EXPECT_EQ(output.num_cells, 100);
         EXPECT_EQ(output.num_samples, 1);
     }
@@ -123,7 +153,7 @@ TEST(SingleInputs, AllOK) {
 void quick_input_throw(const std::string& path, std::string msg) {
     quick_throw([&]() -> void {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        kanaval::inputs::validate(handle);
+        kanaval::inputs::validate(handle, true, latest);
     }, msg);
 }
 
@@ -301,11 +331,9 @@ TEST(SingleInputs, ResultsFail) {
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
         add_single_matrix(handle);
-        handle.unlink("inputs/results/dimensions");
-        auto rhandle = handle.openGroup("inputs/results");
-        quick_write_dataset(rhandle, "dimensions", std::vector<int>{1,2,3});
+        handle.unlink("inputs/results/num_features/RNA");
     }
-    quick_input_throw(path, "dataset of length 2");
+    quick_input_throw(path, "number of modalities");
 
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
@@ -318,27 +346,34 @@ TEST(SingleInputs, ResultsFail) {
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
         add_single_matrix(handle);
-        handle.unlink("inputs/results/identities");
-        auto rhandle = handle.openGroup("inputs/results");
-        quick_write_dataset(rhandle, "identities", std::vector<int>{1,2,3});
+        handle.unlink("inputs/results/identities/RNA");
     }
-    quick_input_throw(path, "length equal to the number of genes");
+    quick_input_throw(path, "RNA");
 
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
         add_single_matrix(handle);
-        handle.unlink("inputs/results/identities");
-        auto rhandle = handle.openGroup("inputs/results");
-        quick_write_dataset(rhandle, "identities", std::vector<int>(1000, -1));
+        handle.unlink("inputs/results/identities/RNA");
+        auto rhandle = handle.openGroup("inputs/results/identities");
+        quick_write_dataset(rhandle, "RNA", std::vector<int>{1,2,3});
+    }
+    quick_input_throw(path, "number of features");
+
+    {
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        add_single_matrix(handle);
+        handle.unlink("inputs/results/identities/RNA");
+        auto rhandle = handle.openGroup("inputs/results/identities");
+        quick_write_dataset(rhandle, "RNA", std::vector<int>(1000, -1));
     }
     quick_input_throw(path, "negative");
 
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
         add_single_matrix(handle);
-        handle.unlink("inputs/results/identities");
-        auto rhandle = handle.openGroup("inputs/results");
-        quick_write_dataset(rhandle, "identities", std::vector<int>(1000));
+        handle.unlink("inputs/results/identities/RNA");
+        auto rhandle = handle.openGroup("inputs/results/identities");
+        quick_write_dataset(rhandle, "RNA", std::vector<int>(1000));
     }
     quick_input_throw(path, "duplicate");
 }
@@ -350,32 +385,33 @@ void quick_input_throw(const std::string& path, std::string msg, int version) {
     }, msg);
 }
 
-TEST(SingleInputs, ResultsFailOld) {
+TEST(SingleInputs, ResultsOldOk) {
     const std::string path = "TEST_inputs.h5";
 
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
         add_single_matrix(handle);
         auto rhandle = handle.openGroup("inputs/results");
-        quick_write_dataset(rhandle, "permutation", std::vector<int>{1,2,3});
+        quick_write_dataset(rhandle, "dimensions", std::vector<int>{3, 10});
+        quick_write_dataset(rhandle, "permutation", std::vector<int>{0,1,2});
     }
-    quick_input_throw(path, "length equal to the number of genes", 1001000);
+    {
+        H5::H5File handle(path, H5F_ACC_RDONLY);
+        kanaval::inputs::validate(handle, true, 1001000);
+    }
 
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
         add_single_matrix(handle);
         auto rhandle = handle.openGroup("inputs/results");
-        quick_write_dataset(rhandle, "permutation", std::vector<int>(1000, -1));
+        quick_write_dataset(rhandle, "dimensions", std::vector<int>{3, 10});
+        rhandle.unlink("identities");
+        quick_write_dataset(rhandle, "identities", std::vector<int>{4,5,6});
     }
-    quick_input_throw(path, "out-of-range", 1001000);
-
     {
-        H5::H5File handle(path, H5F_ACC_TRUNC);
-        add_single_matrix(handle);
-        auto rhandle = handle.openGroup("inputs/results");
-        quick_write_dataset(rhandle, "permutation", std::vector<int>(1000));
+        H5::H5File handle(path, H5F_ACC_RDONLY);
+        kanaval::inputs::validate(handle, true, 1002000);
     }
-    quick_input_throw(path, "duplicated", 1001000);
 }
 
 int add_multiple_matrices(H5::H5File& handle, int ngenes = 500, int ncells = 100) {
@@ -406,12 +442,15 @@ int add_multiple_matrices(H5::H5File& handle, int ngenes = 500, int ncells = 100
     quick_write_dataset(fhandle1, "offset", 4);
 
     auto rhandle = ihandle.createGroup("results");
-    quick_write_dataset(rhandle, "dimensions", std::vector<int>{ ngenes, ncells });
+    quick_write_dataset(rhandle, "num_cells", ncells);
+    auto ghandle = rhandle.createGroup("num_features");
+    quick_write_dataset(ghandle, "RNA", ngenes);
     quick_write_dataset(rhandle, "num_samples", 2);
 
+    auto idhandle = rhandle.createGroup("identities");
     std::vector<int> identities(ngenes);
     std::iota(identities.begin(), identities.end(), 0); 
-    quick_write_dataset(rhandle, "identities", identities);
+    quick_write_dataset(idhandle, "RNA", identities);
 
     return 2;
 }
@@ -425,8 +464,8 @@ TEST(MultipleInputs, AllOK) {
     }
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        auto output = kanaval::inputs::validate(handle);
-        EXPECT_EQ(output.num_genes, 500);
+        auto output = kanaval::inputs::validate(handle, true, latest);
+        EXPECT_EQ(output.num_features[0], 500);
         EXPECT_EQ(output.num_cells, 100);
         EXPECT_EQ(output.num_samples, 2);
     }
@@ -492,33 +531,21 @@ TEST(MultipleInputs, ResultsFail) {
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
         add_multiple_matrices(handle);
-        handle.unlink("inputs/results");
+        handle.unlink("inputs/results/num_samples");
+        quick_write_dataset(handle, "inputs/results/num_samples", 1);
     }
-    quick_input_throw(path, "'results' group");
+    quick_input_throw(path, "'num_samples' should be equal");
+}
+
+TEST(MultipleInputs, ResultsOldFail) {
+    const std::string path = "TEST_inputs.h5";
 
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
         add_multiple_matrices(handle);
         auto rhandle = handle.openGroup("inputs/results");
+        quick_write_dataset(rhandle, "dimensions", std::vector<int>{5, 10});
         quick_write_dataset(rhandle, "indices", std::vector<int>{1,2,3});
     }
     quick_input_throw(path, "length equal to the number of genes", 1001000);
-
-    {
-        H5::H5File handle(path, H5F_ACC_TRUNC);
-        add_multiple_matrices(handle);
-        auto rhandle = handle.openGroup("inputs/results");
-        quick_write_dataset(rhandle, "indices", std::vector<int>(500, -1));
-    }
-    quick_input_throw(path, "negative", 1001000);
-
-    {
-        H5::H5File handle(path, H5F_ACC_TRUNC);
-        add_multiple_matrices(handle);
-        auto rhandle = handle.openGroup("inputs/results");
-        quick_write_dataset(rhandle, "indices", std::vector<int>(500));
-    }
-    quick_input_throw(path, "duplicate", 1001000);
 }
-
-

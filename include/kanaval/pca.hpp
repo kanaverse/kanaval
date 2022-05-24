@@ -4,6 +4,7 @@
 #include "H5Cpp.h"
 #include <vector>
 #include "utils.hpp"
+#include "misc.hpp"
 
 /**
  * @file pca.hpp
@@ -42,22 +43,18 @@ inline std::pair<int, std::string> validate_parameters(const H5::Group& handle, 
     return std::make_pair(npcs, method);
 }
 
-inline void validate_results(const H5::Group& handle, int num_pcs, std::string block_method, int num_cells, int version) {
+inline int validate_results(const H5::Group& handle, int max_pcs, std::string block_method, int num_cells, int version) {
     auto rhandle = utils::check_and_open_group(handle, "results");
 
-    std::vector<size_t> pdims { static_cast<size_t>(num_cells), static_cast<size_t>(num_pcs) };
-    utils::check_and_open_dataset(rhandle, "pcs", H5T_FLOAT, pdims);
-
-    std::vector<size_t> vdims { static_cast<size_t>(num_pcs) };
-    utils::check_and_open_dataset(rhandle, "var_exp", H5T_FLOAT, vdims);
+    int obs_pcs = check_pca_contents(rhandle, max_pcs, num_cells);
 
     if (version >= 1001000) {
         if (block_method == "mnn") {
-            utils::check_and_open_dataset(rhandle, "corrected", H5T_FLOAT, pdims);
+            utils::check_and_open_dataset(rhandle, "corrected", H5T_FLOAT, { static_cast<size_t>(num_cells), static_cast<size_t>(obs_pcs) });
         }
     }
 
-    return;
+    return obs_pcs;
 }
 /**
  * @endcond
@@ -95,10 +92,10 @@ inline void validate_results(const H5::Group& handle, int num_pcs, std::string b
  * @param num_cells Number of cells in the dataset after any quality filtering is applied.
  * @param version Version of the state file.
  *
- * @return The number of cells remaining after QC filtering.
+ * @return The number of computed PCs.
  * If the format is invalid, an error is raised instead.
  */
-inline void validate(const H5::H5File& handle, int num_cells, int version = 1001000) {
+inline int validate(const H5::H5File& handle, int num_cells, int version = 1001000) {
     auto phandle = utils::check_and_open_group(handle, "pca");
 
     int npcs;
@@ -111,13 +108,14 @@ inline void validate(const H5::H5File& handle, int num_cells, int version = 1001
         throw utils::combine_errors(e, "failed to retrieve parameters from 'pca'");
     }
 
+    int obs_pcs;
     try {
-        validate_results(phandle, npcs, bmethod, num_cells, version);
+        obs_pcs = validate_results(phandle, npcs, bmethod, num_cells, version);
     } catch (std::exception& e) {
         throw utils::combine_errors(e, "failed to retrieve results from 'pca'");
     }
 
-    return;
+    return obs_pcs;
 }
 
 }

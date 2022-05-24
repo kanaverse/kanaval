@@ -210,12 +210,6 @@ std::vector<std::string> load_string_vector(const Object& handle, const std::str
 
 }
 
-namespace markers {
-    
-inline const std::vector<std::string> effects { "lfc", "delta_detected", "cohen", "auc" };
-
-}
-
 }
 
 #endif
