@@ -41,12 +41,6 @@ inline void validate_results(const H5::Group& handle, const std::unordered_set<s
     auto rhandle = utils::check_and_open_group(handle, "results");
     auto perhandle = utils::check_and_open_group(rhandle, "per_reference");
 
-    for (const auto& a : available) {
-        if (!perhandle.exists(a)) {
-            throw std::runtime_error("reference '" + a + "' in parameters not listed in 'results/per_reference'");
-        }
-    }
-
     size_t nchilds = perhandle.getNumObjs();
     std::vector<size_t> dims { static_cast<size_t>(num_clusters) };
     for (size_t a = 0; a < nchilds; ++a) {
@@ -57,7 +51,7 @@ inline void validate_results(const H5::Group& handle, const std::unordered_set<s
         utils::check_and_open_dataset(perhandle, name, H5T_STRING, dims);
     }
 
-    if (available.size() > 1) {
+    if (nchilds > 1) {
         auto integrated = utils::load_string_vector(rhandle, "integrated");
         if (integrated.size() != num_clusters) {
             throw std::runtime_error("'integrated' should have length equal to the number of clusters"); 
@@ -92,8 +86,8 @@ inline void validate_results(const H5::Group& handle, const std::unordered_set<s
  * `results` should contain:
  * 
  * - `per_reference`: a group containing the label assignments for each cluster in each reference.
- *   Each child is named after its corresponding reference, and is a string dataset of length equal to the number of clusters.
- *   Entries of the dataset contain the assigned label for the corresponding cluster.
+ *   Each child is named after its corresponding reference listed in `parameters` (though not all references listed in `parameters` need to be present here).
+ *   Each child is a string dataset of length equal to the number of clusters, where each entry contains the assigned label for the corresponding cluster.
  * 
  * For multiple references of the relevant species, `results` will also contain:
  * 

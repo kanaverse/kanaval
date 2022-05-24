@@ -34,6 +34,17 @@ TEST(CellLabelling, AllOK) {
         H5::H5File handle(path, H5F_ACC_RDONLY);
         EXPECT_NO_THROW(kanaval::cell_labelling::validate(handle, 3));
     }
+
+    // Still works if one of the references isn't used; that's okay.
+    {
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        add_cell_labelling(handle);
+        handle.unlink("cell_labelling/results/per_reference/ImmGen");
+    }
+    {
+        H5::H5File handle(path, H5F_ACC_RDONLY);
+        EXPECT_NO_THROW(kanaval::cell_labelling::validate(handle, 3));
+    }
 }
 
 void quick_label_throw(const std::string& path, int num_clusters, std::string msg) {
@@ -73,13 +84,6 @@ TEST(CellLabelling, ResultsFailed) {
         handle.unlink("cell_labelling/results");
     }
     quick_label_throw(path, 3, "'results' group");
-
-    {
-        H5::H5File handle(path, H5F_ACC_TRUNC);
-        add_cell_labelling(handle);
-        handle.unlink("cell_labelling/results/per_reference/ImmGen");
-    }
-    quick_label_throw(path, 3, "ImmGen");
 
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
