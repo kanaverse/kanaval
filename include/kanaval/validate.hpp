@@ -30,6 +30,8 @@
 #include "custom_selections.hpp"
 #include "cell_labelling.hpp"
 
+#include <algorithm>
+
 /**
  * @file validate.hpp
  *
@@ -78,16 +80,20 @@ namespace kanaval {
 void validate(const H5::H5File& handle, bool embedded, int version) {
     auto i_out = inputs::validate(handle, embedded, version);
 
-    size_t rna_idx = std::find(i_out.modalities.begin(), i_out.modalities.end(), std::string("RNA")) - i_out.modalities.end();
-    size_t adt_idx = std::find(i_out.modalities.begin(), i_out.modalities.end(), std::string("ADT")) - i_out.modalities.end();
+    size_t rna_idx = std::find(i_out.modalities.begin(), i_out.modalities.end(), std::string("RNA")) - i_out.modalities.begin();
+    size_t adt_idx = std::find(i_out.modalities.begin(), i_out.modalities.end(), std::string("ADT")) - i_out.modalities.begin();
     bool rna_in_use = rna_idx != i_out.modalities.size();
     bool adt_in_use = adt_idx != i_out.modalities.size();
 
     // Quality control.
-    quality_control::validate(handle, i_out.num_cells, i_out.num_samples);
-    adt_quality_control::validate(handle, i_out.num_cells, i_out.num_samples, adt_in_use, version);
+    auto rna_filtered = quality_control::validate(handle, i_out.num_cells, i_out.num_samples);
+    auto adt_filtered = adt_quality_control::validate(handle, i_out.num_cells, i_out.num_samples, adt_in_use, version);
     auto filtered_cells = cell_filtering::validate(handle, i_out.num_cells, i_out.modalities.size(), version);
+    if (filtered_cells < 0) {
+        filtered_cells = std::max(rna_filtered, adt_filtered);
+    }
 
+    // Normalization.
     normalization::validate(handle);
     adt_normalization::validate(handle, filtered_cells, adt_in_use, version);
 
@@ -103,6 +109,7 @@ void validate(const H5::H5File& handle, bool embedded, int version) {
 
     neighbor_index::validate(handle);
 
+    // Clustering.
     auto cluster_method = choose_clustering::validate(handle);
     int nclusters = 0;
 

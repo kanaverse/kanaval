@@ -3,7 +3,7 @@
 #include "utils.h"
 #include <iostream>
 
-void add_adt_normalization(H5::H5File& handle, size_t ncells) {
+void add_adt_normalization(H5::H5File& handle, int ncells) {
     auto qhandle = handle.createGroup("adt_normalization");
     auto phandle = qhandle.createGroup("parameters");
     quick_write_dataset(phandle, "num_clusters", 20);
