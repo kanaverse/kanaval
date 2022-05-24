@@ -13,13 +13,13 @@ template<class Object>
 size_t check_pca_contents(const Object& rhandle, int max_pcs, int num_cells) {
     auto vhandle = utils::check_and_open_dataset(rhandle, "var_exp", H5T_FLOAT);
     auto dspace = vhandle.getSpace();
-    if (dspace.getSimpleExtentNdims() != 0) {
+    if (dspace.getSimpleExtentNdims() != 1) {
         throw std::runtime_error("'var_exp' dataset does not have the expected dimensions");
     }
 
     hsize_t observed;
     dspace.getSimpleExtentDims(&observed);
-    if (static_cast<int>(observed) <= max_pcs) {
+    if (static_cast<int>(observed) > max_pcs) {
         throw std::runtime_error("length of 'var_exp' dataset exceeds the requested number of PCs");
     }
     

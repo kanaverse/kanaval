@@ -28,7 +28,7 @@ inline void validate_parameters(const H5::Group& qhandle) {
         throw std::runtime_error("number of MADs in 'nmads' should be non-negative");
     }
 
-    auto mindrop = utils::load_float_scalar<>(phandle, "min_deected_drop");
+    auto mindrop = utils::load_float_scalar<>(phandle, "min_detected_drop");
     if (mindrop < 0 || mindrop >= 1) {
         throw std::runtime_error("minimum detected drop should lie in [0, 1)");
     }
