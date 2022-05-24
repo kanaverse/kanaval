@@ -55,7 +55,13 @@ inline void validate_results(const H5::Group& handle, int num_cells, const std::
  * Only a single embedding was generated prior to version 2.0 of the format, so the `combined_embeddings` group may be absent in pre-v2.0 files.
  *
  * <HR>
- * `parameters` should be empty.
+ * `parameters` should contain:
+ *
+ * - `approximate`: an integer scalar to be interpreted as a boolean,
+ *   indicating whether an approximate neighbor search was used to compute the per-embedding scaling factors.
+ * - `weights`: a group containing the (scaling) weights to apply to each modality.
+ *   If empty, weights are implicitly assumed to be equal to unity for all modalities.
+ *   Otherwise, the group should contain a float dataset named after each modality in `modalities`.
  *
  * <HR>
  * If `modalities.size() > 1`, `results` should contain:

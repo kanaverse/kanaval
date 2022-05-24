@@ -16,6 +16,7 @@ add_executable(
 
     src/quality_control.cpp
     src/adt_quality_control.cpp
+    src/cell_filtering.cpp
 
     src/normalization.cpp
     src/adt_normalization.cpp
@@ -24,6 +25,8 @@ add_executable(
 
     src/pca.cpp
     src/adt_pca.cpp
+    src/combine_embeddings.cpp
+    src/batch_correction.cpp
 
     src/neighbor_index.cpp
     src/tsne.cpp

@@ -4,6 +4,7 @@
 #include "H5Cpp.h"
 #include <vector>
 #include "utils.hpp"
+#include "misc.hpp"
 
 /**
  * @file cell_filtering.hpp
@@ -19,7 +20,7 @@ namespace cell_filtering {
  * @cond
  */
 inline int validate_results(const H5::Group& qhandle, int num_cells, int num_modalities) {
-    auto rhandle = qhandle.openGroup("results");
+    auto rhandle = utils::check_and_open_group(qhandle, "results");
     int remaining = -1;
     if (num_modalities > 1) {
         remaining = quality_control::check_discard_vector(rhandle, num_cells);
@@ -65,6 +66,8 @@ inline int validate(const H5::H5File& handle, int num_cells, int num_modalities,
     }
 
     auto qhandle = utils::check_and_open_group(handle, "cell_filtering");
+    utils::check_and_open_group(qhandle, "parameters");
+
     int remaining = 0;
     try {
         remaining = validate_results(qhandle, num_cells, num_modalities);
