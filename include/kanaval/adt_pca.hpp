@@ -4,6 +4,7 @@
 #include "H5Cpp.h"
 #include <vector>
 #include "utils.hpp"
+#include "misc.hpp"
 
 /**
  * @file adt_pca.hpp
@@ -34,25 +35,12 @@ inline int validate_parameters(const H5::Group& handle) {
     return npcs;
 }
 
-inline int validate_results(const H5::Group& handle, int num_pcs, int num_cells, bool adt_in_use) {
+inline int validate_results(const H5::Group& handle, int max_pcs, int num_cells, bool adt_in_use) {
     auto rhandle = utils::check_and_open_group(handle, "results");
+
     int obs_pcs = -1;
-
     if (adt_in_use) {
-        auto vhandle = utils::check_and_open_dataset(rhandle, "var_exp", H5T_FLOAT);
-        auto dspace = dhandle.getSpace();
-        if (dspace.getSimpleExtentNdims() != 0) {
-            throw std::runtime_error("'var_exp' dataset does not have the expected dimensions");
-        }
-
-        hsize_t observed;
-        dspace.getSimpleExtentDims(&observed);
-        if (static_cast<int>(observed) <= num_pcs) {
-            throw std::runtime_error("length of 'var_exp' dataset exceeds the requested number of PCs");
-        }
-        
-        utils::check_and_open_dataset(rhandle, "pcs", H5T_FLOAT, { static_cast<size_t>(num_cells), static_cast<size_t>(observed) });
-        obs_pcs = observed;
+        obs_pcs = pca::check_pca_contents(rhandle, max_pcs, num_cells);
     }
 
     return obs_pcs;

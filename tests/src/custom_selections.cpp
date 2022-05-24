@@ -25,7 +25,7 @@ void add_custom_selection_result_base(H5::Group& handle, int ngenes) {
     }
 }
 
-void add_custom_selections(H5::Group& handle, const std::vector<std::string>& modalities, const std::vector<int>& ngenes, int ncells = 10) {
+void add_custom_selections(H5::H5File& handle, const std::vector<std::string>& modalities, const std::vector<int>& ngenes, int ncells = 10) {
     auto qhandle = handle.createGroup("custom_selections");
     auto selections = add_custom_selection_parameters(qhandle, ncells);
 
@@ -40,11 +40,11 @@ void add_custom_selections(H5::Group& handle, const std::vector<std::string>& mo
     }
 }
 
-void add_custom_selections(H5::Group& handle, int ngenes, int ncells = 10) {
+void add_custom_selections(H5::H5File& handle, int ngenes, int ncells = 10) {
     add_custom_selections(handle, { "RNA" }, { ngenes }, ncells);
 }
 
-void add_custom_selections_legacy(H5::Group& handle, int ngenes, int ncells = 10) {
+void add_custom_selections_legacy(H5::H5File& handle, int ngenes, int ncells = 10) {
     auto qhandle = handle.createGroup("custom_selections");
     auto selections = add_custom_selection_parameters(qhandle, ncells);
 

@@ -4,6 +4,7 @@
 #include "H5Cpp.h"
 #include <vector>
 #include "utils.hpp"
+#include "misc.hpp"
 
 /**
  * @file marker_detection.hpp
@@ -110,7 +111,7 @@ inline void validate_markers(const H5::Group& chandle, int num_genes, int num_cl
  *
  * @return If the format is invalid, an error is raised.
  */
-inline void validate(const H5::Group& handle, int num_clusters, const std::vector<std::string>& modalities, const std::vector<int>& num_genes, int version = 2000000) {
+inline void validate(const H5::Group& handle, int num_clusters, const std::vector<std::string>& modalities, const std::vector<int>& num_genes, int version) {
     auto mhandle = utils::check_and_open_group(handle, "marker_detection");
 
     try {

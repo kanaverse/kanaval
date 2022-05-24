@@ -14,7 +14,10 @@ TEST(Overall, Basic) {
     int num_clusters = 5;
 
     add_single_matrix(handle, "MatrixMarket", num_genes, num_cells);
+
     add_quality_control(handle, num_cells, num_samples, num_cells - filtered_cells);
+    add_adt_quality_control(handle, num_cells, num_samples, num_cells - filtered_cells);
+
     add_normalization(handle);
     add_feature_selection(handle, num_genes);
     add_pca(handle, 50, filtered_cells);
@@ -31,7 +34,7 @@ TEST(Overall, Basic) {
     add_cell_labelling(handle, num_clusters);
     add_custom_selections(handle, num_genes, filtered_cells);
 
-    EXPECT_NO_THROW(kanaval::validate(handle, true));
+    EXPECT_NO_THROW(kanaval::validate(handle, true, latest));
 }
 
 TEST(Overall, Multiple) {
@@ -60,5 +63,5 @@ TEST(Overall, Multiple) {
     add_cell_labelling(handle, num_clusters);
     add_custom_selections(handle, num_genes, filtered_cells);
 
-    EXPECT_NO_THROW(kanaval::validate(handle, true));
+    EXPECT_NO_THROW(kanaval::validate(handle, true, latest));
 }

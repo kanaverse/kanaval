@@ -13,7 +13,7 @@
 
 namespace kanaval {
 
-namespace pca {
+namespace batch_correction {
 
 /**
  * @cond

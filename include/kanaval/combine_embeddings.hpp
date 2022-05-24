@@ -33,11 +33,10 @@ inline void validate_parameters(const H5::Group& handle, const std::vector<std::
     return;
 }
 
-inline void validate_results(const H5::Group& handle, int num_cells, const std::vector<std::string>& modalities, const std::vector<int>& num_pcs) {
+inline void validate_results(const H5::Group& handle, int num_cells, const std::vector<std::string>& modalities, int total_pcs) {
     auto rhandle = utils::check_and_open_group(handle, "results");
 
     if (modalities.size() > 1) {
-        auto total_pcs = std::accumulate(num_pcs.begin(), num_pcs.end(), 0);
         std::vector<size_t> pdims { static_cast<size_t>(num_cells), static_cast<size_t>(total_pcs) };
         utils::check_and_open_dataset(rhandle, "combined", H5T_FLOAT, pdims);
     }
@@ -72,12 +71,12 @@ inline void validate_results(const H5::Group& handle, int num_cells, const std::
  * @param num_cells Number of cells in the dataset after any quality filtering is applied.
  * @param modalities Vector of strings containing the names of the modalities to be combined.
  * Currently, this may be any combination of `"RNA"` or `"ADT"`.
- * @param num_pcs Vector of integers containing the number of PCs for each modality in `modalities`. 
+ * @param total_pcs Total number of PCs across all modalities in `modalities`. 
  * @param version Version of the state file.
  *
  * @return If the format is invalid, an error is raised.
  */
-inline void validate(const H5::H5File& handle, int num_cells, const std::vector<std::string>& modalities, const std::vector<int>& num_pcs, int version) {
+inline void validate(const H5::H5File& handle, int num_cells, const std::vector<std::string>& modalities, int total_pcs, int version) {
     if (version < 2000000) {
         return;
     }
@@ -91,7 +90,7 @@ inline void validate(const H5::H5File& handle, int num_cells, const std::vector<
     }
 
     try {
-        validate_results(phandle, num_cells, modalities, num_pcs);
+        validate_results(phandle, num_cells, modalities, total_pcs);
     } catch (std::exception& e) {
         throw utils::combine_errors(e, "failed to retrieve results from 'combine_embeddings'");
     }

@@ -33,12 +33,12 @@ inline void validate_parameters(const H5::Group& handle) {
     return;
 }
 
-inline bool validate_results(const H5::Group& handle, size_t num_cells, bool adt_in_use) {
+inline void validate_results(const H5::Group& handle, size_t num_cells, bool adt_in_use) {
     auto rhandle = utils::check_and_open_group(handle, "results");
     if (adt_in_use) {
         utils::check_and_open_dataset(rhandle, "size_factors", H5T_FLOAT, { num_cells });
     }
-    return in_use;
+    return;
 }
 /**
  * @endcond

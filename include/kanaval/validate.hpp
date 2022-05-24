@@ -2,16 +2,30 @@
 #define KANAVAL_VALIDATE_HPP
 
 #include "inputs.hpp"
+
 #include "quality_control.hpp"
+#include "adt_quality_control.hpp"
+#include "cell_filtering.hpp"
+
 #include "normalization.hpp"
+#include "adt_normalization.hpp"
+
 #include "feature_selection.hpp"
+
 #include "pca.hpp"
+#include "adt_pca.hpp"
+#include "combine_embeddings.hpp"
+#include "batch_correction.hpp"
+
 #include "neighbor_index.hpp"
+
 #include "choose_clustering.hpp"
 #include "kmeans_cluster.hpp"
 #include "snn_graph_cluster.hpp"
+
 #include "tsne.hpp"
 #include "umap.hpp"
+
 #include "marker_detection.hpp"
 #include "custom_selections.hpp"
 #include "cell_labelling.hpp"
@@ -35,9 +49,14 @@ namespace kanaval {
  *
  * - `inputs::validate()`
  * - `quality_control::validate()`
+ * - `adt_quality_control::validate()`
  * - `normalization::validate()`
+ * - `adt_normalization::validate()`
  * - `feature_selection::validate()`
  * - `pca::validate()`
+ * - `adt_pca::validate()`
+ * - `combine_embeddings::validate()`
+ * - `batch_correction::validate()`
  * - `neighbor_index::validate()`
  * - `choose_clustering::validate()`
  * - `kmeans_cluster::validate()`
@@ -56,13 +75,32 @@ namespace kanaval {
  *
  * @return An error is raised if an invalid structure is detected.
  */
-void validate(const H5::H5File& handle, bool embedded, int version = 1002000) {
+void validate(const H5::H5File& handle, bool embedded, int version) {
     auto i_out = inputs::validate(handle, embedded, version);
-    auto filtered_cells = quality_control::validate(handle, i_out.num_cells, i_out.num_samples);
+
+    size_t rna_idx = std::find(i_out.modalities.begin(), i_out.modalities.end(), std::string("RNA")) - i_out.modalities.end();
+    size_t adt_idx = std::find(i_out.modalities.begin(), i_out.modalities.end(), std::string("ADT")) - i_out.modalities.end();
+    bool rna_in_use = rna_idx != i_out.modalities.size();
+    bool adt_in_use = adt_idx != i_out.modalities.size();
+
+    // Quality control.
+    quality_control::validate(handle, i_out.num_cells, i_out.num_samples);
+    adt_quality_control::validate(handle, i_out.num_cells, i_out.num_samples, adt_in_use, version);
+    auto filtered_cells = cell_filtering::validate(handle, i_out.num_cells, i_out.modalities.size(), version);
 
     normalization::validate(handle);
-    feature_selection::validate(handle, i_out.num_genes);
-    pca::validate(handle, filtered_cells, version);
+    adt_normalization::validate(handle, filtered_cells, adt_in_use, version);
+
+    feature_selection::validate(handle, i_out.num_features[rna_idx]);
+
+    // Dimensionality reduction.
+    auto rna_pcs = pca::validate(handle, filtered_cells, version);
+    auto adt_pcs = adt_pca::validate(handle, filtered_cells, adt_in_use, version);
+
+    int total_pcs = (rna_in_use ? rna_pcs : 0) + (adt_in_use ? adt_pcs : 0);
+    kanaval::combine_embeddings::validate(handle, filtered_cells, i_out.modalities, total_pcs, version);
+    batch_correction::validate(handle, total_pcs, filtered_cells, i_out.num_samples, version);
+
     neighbor_index::validate(handle);
 
     auto cluster_method = choose_clustering::validate(handle);
@@ -87,8 +125,8 @@ void validate(const H5::H5File& handle, bool embedded, int version = 1002000) {
     tsne::validate(handle, filtered_cells);
     umap::validate(handle, filtered_cells);
 
-    marker_detection::validate(handle, i_out.num_genes, nclusters);
-    custom_selections::validate(handle, i_out.num_genes, filtered_cells);
+    marker_detection::validate(handle, nclusters, i_out.modalities, i_out.num_features, version);
+    custom_selections::validate(handle, filtered_cells, i_out.modalities, i_out.num_features, version);
     cell_labelling::validate(handle, nclusters);
 }
 

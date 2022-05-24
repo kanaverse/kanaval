@@ -4,6 +4,7 @@
 #include "H5Cpp.h"
 #include <vector>
 #include "utils.hpp"
+#include "misc.hpp"
 
 /**
  * @file quality_control.hpp

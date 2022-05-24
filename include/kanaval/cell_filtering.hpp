@@ -1,5 +1,5 @@
-#ifndef KANAVAL_QUALITY_CONTROL_HPP
-#define KANAVAL_QUALITY_CONTROL_HPP
+#ifndef KANAVAL_CELL_FILTERING_HPP
+#define KANAVAL_CELL_FILTERING_HPP
 
 #include "H5Cpp.h"
 #include <vector>
@@ -19,7 +19,7 @@ namespace cell_filtering {
  * @cond
  */
 inline int validate_results(const H5::Group& qhandle, int num_cells, int num_modalities) {
-    auto rhandle = qhandle.open("results");
+    auto rhandle = qhandle.openGroup("results");
     int remaining = -1;
     if (num_modalities > 1) {
         remaining = quality_control::check_discard_vector(rhandle, num_cells);
