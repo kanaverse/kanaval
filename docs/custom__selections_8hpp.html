@@ -113,14 +113,14 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:adaefb7415393522687939b55696507b2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="custom__selections_8hpp.html#adaefb7415393522687939b55696507b2">kanaval::custom_selections::validate</a> (const H5::Group &amp;handle, int num_cells, const std::vector&lt; std::string &gt; &amp;modalities, const std::vector&lt; int &gt; &amp;num_genes, int version)</td></tr>
-<tr class="separator:adaefb7415393522687939b55696507b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a565a2c5f2b4cb8665feef4ba38927d31"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="custom__selections_8hpp.html#a565a2c5f2b4cb8665feef4ba38927d31">kanaval::custom_selections::validate</a> (const H5::Group &amp;handle, int num_cells, const std::vector&lt; std::string &gt; &amp;modalities, const std::vector&lt; int &gt; &amp;num_features, int version)</td></tr>
+<tr class="separator:a565a2c5f2b4cb8665feef4ba38927d31"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Validate custom selection contents. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="adaefb7415393522687939b55696507b2" name="adaefb7415393522687939b55696507b2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adaefb7415393522687939b55696507b2">&#9670;&nbsp;</a></span>validate()</h2>
+<a id="a565a2c5f2b4cb8665feef4ba38927d31" name="a565a2c5f2b4cb8665feef4ba38927d31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a565a2c5f2b4cb8665feef4ba38927d31">&#9670;&nbsp;</a></span>validate()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -150,7 +150,7 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::vector&lt; int &gt; &amp;&#160;</td>
-          <td class="paramname"><em>num_genes</em>, </td>
+          <td class="paramname"><em>num_features</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -206,9 +206,9 @@ Functions</h2></td></tr>
  <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">handle</td><td>An open HDF5 file handle. </td></tr>
-    <tr><td class="paramname">num_cells</td><td>Number of cells in the dataset after QC filtering. </td></tr>
-    <tr><td class="paramname">modalities</td><td>Modalities available in the dataset, should be some combination of <code>"RNA"</code> or <code>"ADT"</code>. If <code>version &lt; 2000000</code>, this is ignored. </td></tr>
-    <tr><td class="paramname">num_genes</td><td>Number of genes for each modality in <code>modalities</code>. If <code>version &lt; 2000000</code>, only the first value is used. </td></tr>
+    <tr><td class="paramname">num_cells</td><td>Number of high-quality cells in the dataset, i.e., after any quality-based filtering has been applied. </td></tr>
+    <tr><td class="paramname">modalities</td><td>Modalities available in the dataset, should be some combination of <code>"RNA"</code> or <code>"ADT"</code>. If <code>version &lt; 2000000</code>, this is ignored and an RNA modality is always assumed. </td></tr>
+    <tr><td class="paramname">num_features</td><td>Number of features for each modality in <code>modalities</code>. If <code>version &lt; 2000000</code>, only the first value is used and is assumed to refer to the number of genes for the RNA modality. </td></tr>
     <tr><td class="paramname">version</td><td>Version of the format.</td></tr>
   </table>
   </dd>

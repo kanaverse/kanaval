@@ -164,7 +164,7 @@ Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p >Check contents for the PCA step on the ADT log-normalized matrix. Contents are stored inside an <code>adt_pca</code> HDF5 group at the root of the file. The <code>adt_pca</code> group itself contains the <code>parameters</code> and <code>results</code> subgroups.</p>
+<p >Check contents for the PCA step on the ADT log-normalized abundance matrix. Contents are stored inside an <code>adt_pca</code> HDF5 group at the root of the file. The <code>adt_pca</code> group itself contains the <code>parameters</code> and <code>results</code> subgroups.</p>
 <p >No ADT data was available prior to version 2.0 of the format, so the <code>adt_pca</code> group may be absent in pre-v2.0 files.</p>
 <hr  />
 <p> <code>parameters</code> should contain:</p>
@@ -183,7 +183,7 @@ Functions</h2></td></tr>
  <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">handle</td><td>An open HDF5 file handle. </td></tr>
-    <tr><td class="paramname">num_cells</td><td>Number of cells in the dataset after any quality filtering is applied. </td></tr>
+    <tr><td class="paramname">num_cells</td><td>Number of high-quality cells in the dataset, i.e., after any quality-based filtering has been applied. </td></tr>
     <tr><td class="paramname">adt_in_use</td><td>Whether ADTs are being used in this dataset. </td></tr>
     <tr><td class="paramname">version</td><td>Version of the state file.</td></tr>
   </table>
