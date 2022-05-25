@@ -31,8 +31,8 @@ struct Details {
     std::vector<std::string> modalities;
 
     /**
-     * Number of features in each modality listed in `modalities`.
-     * For multi-sample datasets, this considers all genes in the intersection of feature spaces across all samples.
+     * Number of features for each modality listed in `modalities`.
+     * For datasets containing multiple samples, each entry contains the number of features in the intersection of feature spaces across all samples.
      */
     std::vector<int> num_features;
 

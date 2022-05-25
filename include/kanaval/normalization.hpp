@@ -31,7 +31,7 @@ inline void validate_results(const H5::Group& handle) {
  */
 
 /**
- * Check contents for the normalization step.
+ * Check contents for the normalization step on the RNA count matrix.
  * Contents are stored inside a `normalization` HDF5 group at the root of the file.
  * The `normalization` group itself contains the `parameters` and `results` subgroups.
  *

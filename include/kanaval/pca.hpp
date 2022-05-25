@@ -61,7 +61,7 @@ inline int validate_results(const H5::Group& handle, int max_pcs, std::string bl
  */
 
 /**
- * Check contents for the PCA step.
+ * Check contents for the PCA step on the RNA log-expression matrix.
  * Contents are stored inside an `pca` HDF5 group at the root of the file.
  * The `pca` group itself contains the `parameters` and `results` subgroups.
  *

@@ -45,7 +45,7 @@ inline void validate_results(const H5::Group& handle, size_t num_cells, bool adt
  */
 
 /**
- * Check contents for the ADT normalization step.
+ * Check contents for the normalization step on the ADT count matrix.
  * Contents are stored inside a `adt_normalization` HDF5 group at the root of the file.
  * The `adt_normalization` group itself contains the `parameters` and `results` subgroups.
  *
@@ -63,7 +63,7 @@ inline void validate_results(const H5::Group& handle, size_t num_cells, bool adt
  *
  * <HR>
  * @param handle An open HDF5 file handle.
- * @param num_cells Number of cells in the dataset.
+ * @param num_cells Number of high-quality cells in the dataset, i.e., after any quality-based filtering has been applied.
  * @param adt_in_use Whether ADTs are being used in this dataset.
  * @param version Version of the format.
  * 

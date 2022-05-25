@@ -39,8 +39,8 @@ inline std::vector<std::string> validate_parameters(const H5::Group& handle, int
     return output;
 }
 
-inline void validate_custom_markers(const H5::Group& shandle, int num_genes) {
-    std::vector<size_t> dims{ static_cast<size_t>(num_genes) };
+inline void validate_custom_markers(const H5::Group& shandle, int num_features) {
+    std::vector<size_t> dims{ static_cast<size_t>(num_features) };
     utils::check_and_open_dataset(shandle, "means", H5T_FLOAT, dims);
     utils::check_and_open_dataset(shandle, "detected", H5T_FLOAT, dims);
     for (const auto& eff : markers::effects) {
@@ -48,7 +48,7 @@ inline void validate_custom_markers(const H5::Group& shandle, int num_genes) {
     }
 }
 
-inline void validate_results(const H5::Group& handle, const std::vector<std::string>& selections, int num_genes) {
+inline void validate_results(const H5::Group& handle, const std::vector<std::string>& selections, int num_features) {
     auto rhandle = utils::check_and_open_group(handle, "results");
     auto mhandle = utils::check_and_open_group(rhandle, "markers");
     if (mhandle.getNumObjs() != selections.size()) {
@@ -58,7 +58,7 @@ inline void validate_results(const H5::Group& handle, const std::vector<std::str
     for (const auto& s : selections) {
         try {
             auto shandle = utils::check_and_open_group(mhandle, s);
-            validate_custom_markers(shandle, num_genes);
+            validate_custom_markers(shandle, num_features);
         } catch (std::exception& e) {
             throw utils::combine_errors(e, "failed to retrieve statistics for selection '" + s + "' in 'results/markers'");
         }
@@ -66,7 +66,7 @@ inline void validate_results(const H5::Group& handle, const std::vector<std::str
     return;
 }
 
-inline void validate_results(const H5::Group& handle, const std::vector<std::string>& selections, const std::vector<std::string>& modalities, const std::vector<int>& num_genes) {
+inline void validate_results(const H5::Group& handle, const std::vector<std::string>& selections, const std::vector<std::string>& modalities, const std::vector<int>& num_features) {
     auto rhandle = utils::check_and_open_group(handle, "results");
     auto mhandle = utils::check_and_open_group(rhandle, "per_selection");
     if (mhandle.getNumObjs() != selections.size()) {
@@ -79,7 +79,7 @@ inline void validate_results(const H5::Group& handle, const std::vector<std::str
             for (size_t a = 0; a < modalities.size(); ++a) {
                 try {
                     auto ahandle = utils::check_and_open_group(shandle, modalities[a]);
-                    validate_custom_markers(ahandle, num_genes[a]);
+                    validate_custom_markers(ahandle, num_features[a]);
                 } catch (std::exception& e) {
                     throw utils::combine_errors(e, "failed to retrieve statistics for modality '" + modalities[a] + "'");
                 }
@@ -137,16 +137,16 @@ inline void validate_results(const H5::Group& handle, const std::vector<std::str
  *
  * <HR>
  * @param handle An open HDF5 file handle.
- * @param num_cells Number of cells in the dataset after QC filtering.
+ * @param num_cells Number of high-quality cells in the dataset, i.e., after any quality-based filtering has been applied.
  * @param modalities Modalities available in the dataset, should be some combination of `"RNA"` or `"ADT"`.
- * If `version < 2000000`, this is ignored.
- * @param num_genes Number of genes for each modality in `modalities`.
- * If `version < 2000000`, only the first value is used.
+ * If `version < 2000000`, this is ignored and an RNA modality is always assumed.
+ * @param num_features Number of features for each modality in `modalities`.
+ * If `version < 2000000`, only the first value is used and is assumed to refer to the number of genes for the RNA modality.
  * @param version Version of the format.
  *
  * @return If the format is invalid, an error is raised.
  */
-inline void validate(const H5::Group& handle, int num_cells, const std::vector<std::string>& modalities, const std::vector<int>& num_genes, int version) {
+inline void validate(const H5::Group& handle, int num_cells, const std::vector<std::string>& modalities, const std::vector<int>& num_features, int version) {
     auto mhandle = utils::check_and_open_group(handle, "custom_selections");
 
     std::vector<std::string> collected;
@@ -158,9 +158,9 @@ inline void validate(const H5::Group& handle, int num_cells, const std::vector<s
 
     try {
         if (version >= 2000000) {
-            validate_results(mhandle, collected, modalities, num_genes);
+            validate_results(mhandle, collected, modalities, num_features);
         } else {
-            validate_results(mhandle, collected, num_genes[0]);
+            validate_results(mhandle, collected, num_features[0]);
         }
     } catch (std::exception& e) {
         throw utils::combine_errors(e, "failed to retrieve results from 'custom_selections'");

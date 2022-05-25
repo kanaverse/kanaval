@@ -42,9 +42,10 @@ inline void validate_results(const H5::Group& handle, int num_genes) {
  */
 
 /**
- * Check contents for the feature selection step.
+ * Check contents for the feature selection step on the log-expression matrix.
  * Contents are stored inside a `feature_selection` HDF5 group at the root of the file.
  * The `feature_selection` group itself contains the `parameters` and `results` subgroups.
+ * In multi-modal contexts, the results here are only relevant for the RNA modality.
  * 
  * <HR>
  * `parameters` should contain:
@@ -66,6 +67,7 @@ inline void validate_results(const H5::Group& handle, int num_genes) {
  * <HR>
  * @param handle An open HDF5 file handle.
  * @param num_genes Number of genes in the dataset.
+ * For multi-modal contexts, this should refer to the RNA modality only.
  *
  * @return If the format is invalid, an error is raised.
  */

@@ -64,7 +64,7 @@ inline int validate_results(const H5::Group& qhandle, int num_cells, int num_sam
  */
 
 /**
- * Check contents for the RNA-based quality control step.
+ * Check contents for the quality control step on the RNA count matrix.
  * Contents are stored inside a `quality_control` HDF5 group at the root of the file.
  * The `quality_control` group itself contains the `parameters` and `results` subgroups.
  * 

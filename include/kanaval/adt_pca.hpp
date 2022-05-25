@@ -50,7 +50,7 @@ inline int validate_results(const H5::Group& handle, int max_pcs, int num_cells,
  */
 
 /**
- * Check contents for the PCA step on the ADT log-normalized matrix.
+ * Check contents for the PCA step on the ADT log-normalized abundance matrix.
  * Contents are stored inside an `adt_pca` HDF5 group at the root of the file.
  * The `adt_pca` group itself contains the `parameters` and `results` subgroups.
  *
@@ -77,7 +77,7 @@ inline int validate_results(const H5::Group& handle, int max_pcs, int num_cells,
  *
  * <HR>
  * @param handle An open HDF5 file handle.
- * @param num_cells Number of cells in the dataset after any quality filtering is applied.
+ * @param num_cells Number of high-quality cells in the dataset, i.e., after any quality-based filtering has been applied.
  * @param adt_in_use Whether ADTs are being used in this dataset.
  * @param version Version of the state file.
  *

@@ -86,8 +86,8 @@ inline void validate_results(const H5::Group& handle, const std::unordered_set<s
  * `results` should contain:
  * 
  * - `per_reference`: a group containing the label assignments for each cluster in each reference.
- *   Each child is named after its corresponding reference listed in `parameters` (though not all references listed in `parameters` need to be present here).
- *   Each child is a string dataset of length equal to the number of clusters, where each entry contains the assigned label for the corresponding cluster.
+ *   Each child is named after its corresponding reference as listed in `parameters` (though not all references listed in `parameters` need to be present here).
+ *   Each child is a 1-dimensional string dataset of length equal to the number of clusters, where each entry contains the assigned label for the corresponding cluster.
  * 
  * For multiple references of the relevant species, `results` will also contain:
  * 

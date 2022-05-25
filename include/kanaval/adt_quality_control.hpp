@@ -71,14 +71,11 @@ inline int validate_results(const H5::Group& qhandle, int num_cells, int num_sam
  */
 
 /**
- * Check contents for the ADT-based quality control step.
+ * Check contents for the quality control step on the ADT count matrix.
  * Contents are stored inside an `adt_quality_control` HDF5 group at the root of the file.
  * The `adt_quality_control` group itself contains the `parameters` and `results` subgroups.
  * 
- * <details>
- * <summary>Prior to version 2.0</summary>
  * No ADT data was available prior to version 2.0 of the format, so the `adt_quality_control` group may be absent in such files.
- * </details>
  *
  * <HR>
  * `parameters` should contain:
@@ -97,17 +94,17 @@ inline int validate_results(const H5::Group& qhandle, int num_cells, int num_sam
  *   - `sums`: a float dataset of length equal to the number of cells, containing the total count for each cell.
  *   - `detected`:  an integer dataset of length equal to the number of cells, containing the total number of detected features for each cell.
  *   - `igg_total`: a float dataset of length equal to the number of cells, containing the total count in IgG features.
- * - `thresholds`, a group containing thresholds on the metrics for each batch.
+ * - `thresholds`, a group containing thresholds on the metrics for each sample.
  *   This contains:
- *   - `detected`:  a float dataset of length equal to the number of batches, containing the threshold on the total number of detected features for each batch.
- *   - `igg_total`: a float dataset of length equal to the number of batches, containing the threshold on the total counts in IgG features for each batch.
+ *   - `detected`:  a float dataset of length equal to the number of samples, containing the threshold on the total number of detected features for each sample.
+ *   - `igg_total`: a float dataset of length equal to the number of samples, containing the threshold on the total counts in IgG features for each sample.
  * - `discards`: an integer dataset of length equal to the number of cells.
  *   Each value is interpreted as a boolean and specifies whether the corresponding cell would be discarded by the ADT-based filter thresholds.
  *
  * <HR>
  * @param handle An open HDF5 file handle.
- * @param num_cells Number of cells in the dataset before any quality filtering is applied.
- * @param num_samples Number of batches in the dataset.
+ * @param num_cells Number of cells in the dataset before any quality control is applied.
+ * @param num_samples Number of samples in the dataset.
  * @param adt_in_use Whether ADTs are being used in this dataset.
  * @param version Version of the format.
  * 
