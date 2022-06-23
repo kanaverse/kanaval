@@ -99,55 +99,53 @@ $(function() {
 <div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    std::string method;</div>
 <div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordflow">if</span> (version &gt;= 1001000) {</div>
 <div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>        method = utils::load_string(phandle, <span class="stringliteral">&quot;block_method&quot;</span>);</div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keywordflow">if</span> (method != <span class="stringliteral">&quot;none&quot;</span> &amp;&amp; method != <span class="stringliteral">&quot;regress&quot;</span> &amp;&amp; method != <span class="stringliteral">&quot;mnn&quot;</span>) {</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;unrecognized value &#39;&quot;</span> + method + <span class="stringliteral">&quot;&#39; for the &#39;block_method&#39;&quot;</span>);</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>        }</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    }</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    <span class="keywordflow">return</span> std::make_pair(npcs, method);</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>}</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="keyword">inline</span> <span class="keywordtype">int</span> validate_results(<span class="keyword">const</span> H5::Group&amp; handle, <span class="keywordtype">int</span> max_pcs, std::string block_method, <span class="keywordtype">int</span> num_cells, <span class="keywordtype">int</span> version) {</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keyword">auto</span> rhandle = utils::check_and_open_group(handle, <span class="stringliteral">&quot;results&quot;</span>);</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        check_block_method(method, version);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    }</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordflow">return</span> std::make_pair(npcs, method);</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>}</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span><span class="keyword">inline</span> <span class="keywordtype">int</span> validate_results(<span class="keyword">const</span> H5::Group&amp; handle, <span class="keywordtype">int</span> max_pcs, std::string block_method, <span class="keywordtype">int</span> num_cells, <span class="keywordtype">int</span> version) {</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    <span class="keyword">auto</span> rhandle = utils::check_and_open_group(handle, <span class="stringliteral">&quot;results&quot;</span>);</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordtype">int</span> obs_pcs = check_pca_contents(rhandle, max_pcs, num_cells);</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordtype">int</span> obs_pcs = check_pca_contents(rhandle, max_pcs, num_cells);</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span> </div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <span class="keywordflow">if</span> (version &gt;= 1001000) {</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        <span class="keywordflow">if</span> (block_method == <span class="stringliteral">&quot;mnn&quot;</span>) {</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>            utils::check_and_open_dataset(rhandle, <span class="stringliteral">&quot;corrected&quot;</span>, H5T_FLOAT, { <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(num_cells), <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(obs_pcs) });</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>        }</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    }</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordflow">return</span> obs_pcs;</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>}</div>
-<div class="line"><a id="l00098" name="l00098"></a><span class="lineno"><a class="line" href="pca_8hpp.html#aa698cfe5b88abb540eb7321e05399b21">   98</a></span><span class="keyword">inline</span> <span class="keywordtype">int</span> <a class="code hl_function" href="namespacekanaval.html#ab7f88e5ced956c8f906dd57493f12f16">validate</a>(<span class="keyword">const</span> H5::H5File&amp; handle, <span class="keywordtype">int</span> num_cells, <span class="keywordtype">int</span> version = 1001000) {</div>
-<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keyword">auto</span> phandle = utils::check_and_open_group(handle, <span class="stringliteral">&quot;pca&quot;</span>);</div>
-<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
-<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keywordtype">int</span> npcs;</div>
-<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>    std::string bmethod;</div>
-<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>    <span class="keywordflow">try</span> {</div>
-<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        <span class="keyword">auto</span> pout = validate_parameters(phandle, version);</div>
-<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>        npcs = pout.first;</div>
-<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        bmethod = pout.second;</div>
-<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    } <span class="keywordflow">catch</span> (std::exception&amp; e) {</div>
-<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        <span class="keywordflow">throw</span> utils::combine_errors(e, <span class="stringliteral">&quot;failed to retrieve parameters from &#39;pca&#39;&quot;</span>);</div>
-<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    }</div>
-<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span> </div>
-<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>    <span class="keywordtype">int</span> obs_pcs;</div>
-<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    <span class="keywordflow">try</span> {</div>
-<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        obs_pcs = validate_results(phandle, npcs, bmethod, num_cells, version);</div>
-<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    } <span class="keywordflow">catch</span> (std::exception&amp; e) {</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span>        <span class="keywordflow">throw</span> utils::combine_errors(e, <span class="stringliteral">&quot;failed to retrieve results from &#39;pca&#39;&quot;</span>);</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    }</div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    <span class="keywordflow">return</span> obs_pcs;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    <span class="keywordflow">if</span> (version &gt;= 1001000 &amp;&amp; version &lt; 2000000) {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>        <span class="keywordflow">if</span> (block_method == <span class="stringliteral">&quot;mnn&quot;</span>) {</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>            utils::check_and_open_dataset(rhandle, <span class="stringliteral">&quot;corrected&quot;</span>, H5T_FLOAT, { <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(num_cells), <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(obs_pcs) });</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>        }</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    }</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    <span class="keywordflow">return</span> obs_pcs;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>}</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno"><a class="line" href="pca_8hpp.html#aa698cfe5b88abb540eb7321e05399b21">   96</a></span><span class="keyword">inline</span> <span class="keywordtype">int</span> <a class="code hl_function" href="namespacekanaval.html#ab7f88e5ced956c8f906dd57493f12f16">validate</a>(<span class="keyword">const</span> H5::H5File&amp; handle, <span class="keywordtype">int</span> num_cells, <span class="keywordtype">int</span> version = 1001000) {</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    <span class="keyword">auto</span> phandle = utils::check_and_open_group(handle, <span class="stringliteral">&quot;pca&quot;</span>);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>    <span class="keywordtype">int</span> npcs;</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span>    std::string bmethod;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno">  102</span>        <span class="keyword">auto</span> pout = validate_parameters(phandle, version);</div>
+<div class="line"><a id="l00103" name="l00103"></a><span class="lineno">  103</span>        npcs = pout.first;</div>
+<div class="line"><a id="l00104" name="l00104"></a><span class="lineno">  104</span>        bmethod = pout.second;</div>
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno">  105</span>    } <span class="keywordflow">catch</span> (std::exception&amp; e) {</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>        <span class="keywordflow">throw</span> utils::combine_errors(e, <span class="stringliteral">&quot;failed to retrieve parameters from &#39;pca&#39;&quot;</span>);</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>    }</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span> </div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>    <span class="keywordtype">int</span> obs_pcs;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>        obs_pcs = validate_results(phandle, npcs, bmethod, num_cells, version);</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    } <span class="keywordflow">catch</span> (std::exception&amp; e) {</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>        <span class="keywordflow">throw</span> utils::combine_errors(e, <span class="stringliteral">&quot;failed to retrieve results from &#39;pca&#39;&quot;</span>);</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span>    }</div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span> </div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keywordflow">return</span> obs_pcs;</div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>}</div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span> </div>
 <div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>}</div>
 <div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span> </div>
 <div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>}</div>
 <div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span> </div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>}</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="anamespacekanaval_html"><div class="ttname"><a href="namespacekanaval.html">kanaval</a></div><div class="ttdoc">Utilities for validating kana files.</div><div class="ttdef"><b>Definition:</b> adt_normalization.hpp:13</div></div>
 <div class="ttc" id="anamespacekanaval_html_ab7f88e5ced956c8f906dd57493f12f16"><div class="ttname"><a href="namespacekanaval.html#ab7f88e5ced956c8f906dd57493f12f16">kanaval::validate</a></div><div class="ttdeci">void validate(const H5::H5File &amp;handle, bool embedded, int version)</div><div class="ttdef"><b>Definition:</b> validate.hpp:80</div></div>
 </div><!-- fragment --></div><!-- contents -->
