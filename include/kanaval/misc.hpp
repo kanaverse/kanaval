@@ -27,6 +27,27 @@ size_t check_pca_contents(const Object& rhandle, int max_pcs, int num_cells) {
     return observed;
 }
 
+inline void check_block_method(const std::string& method, int version) {
+    std::vector<std::string> options{ "none", "regress" };
+    if (version < 2000000) {
+        options.push_back("mnn");
+    } else {
+        options.push_back("weight");
+    }
+
+    bool found = false;
+    for (const auto& o : options) {
+        if (o == method) {
+            found = true;
+            break;
+        }
+    }
+
+    if (!found) {
+        throw std::runtime_error("unrecognized value '" + method + "' for the 'block_method'");
+    }
+}
+
 }
 
 namespace quality_control {

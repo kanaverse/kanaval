@@ -126,4 +126,9 @@ TEST(PCA, ResultsFailed) {
         quick_write_dataset(phandle, "block_method", "mnn");
     }
     quick_pca_throw(path, 1000, "'corrected' dataset");
+
+    quick_throw([&]() -> void { // Different error at a later version.
+        H5::H5File handle(path, H5F_ACC_RDONLY);
+        kanaval::pca::validate(handle, 1000, 2000000);
+    }, "unrecognized value 'mnn'");
 }

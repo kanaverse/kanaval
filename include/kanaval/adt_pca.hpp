@@ -19,7 +19,7 @@ namespace adt_pca {
 /**
  * @cond
  */
-inline int validate_parameters(const H5::Group& handle) {
+inline int validate_parameters(const H5::Group& handle, int version) {
     auto phandle = utils::check_and_open_group(handle, "parameters");
 
     auto npcs = utils::load_integer_scalar<>(phandle, "num_pcs");
@@ -28,9 +28,7 @@ inline int validate_parameters(const H5::Group& handle) {
     }
 
     std::string method = utils::load_string(phandle, "block_method");
-    if (method != "none" && method != "regress" && method != "weight") {
-        throw std::runtime_error("unrecognized value '" + method + "' for the 'block_method'");
-    }
+    pca::check_block_method(method, version);
 
     return npcs;
 }
@@ -93,7 +91,7 @@ inline int validate(const H5::H5File& handle, int num_cells, bool adt_in_use, in
 
     int num_pcs;
     try {
-        num_pcs = validate_parameters(phandle);
+        num_pcs = validate_parameters(phandle, version);
     } catch (std::exception& e) {
         throw utils::combine_errors(e, "failed to retrieve parameters from 'adt_pca'");
     }

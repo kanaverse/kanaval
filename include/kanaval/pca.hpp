@@ -35,9 +35,7 @@ inline std::pair<int, std::string> validate_parameters(const H5::Group& handle, 
     std::string method;
     if (version >= 1001000) {
         method = utils::load_string(phandle, "block_method");
-        if (method != "none" && method != "regress" && method != "mnn") {
-            throw std::runtime_error("unrecognized value '" + method + "' for the 'block_method'");
-        }
+        check_block_method(method, version);
     }
 
     return std::make_pair(npcs, method);
@@ -48,7 +46,7 @@ inline int validate_results(const H5::Group& handle, int max_pcs, std::string bl
 
     int obs_pcs = check_pca_contents(rhandle, max_pcs, num_cells);
 
-    if (version >= 1001000) {
+    if (version >= 1001000 && version < 2000000) {
         if (block_method == "mnn") {
             utils::check_and_open_dataset(rhandle, "corrected", H5T_FLOAT, { static_cast<size_t>(num_cells), static_cast<size_t>(obs_pcs) });
         }
