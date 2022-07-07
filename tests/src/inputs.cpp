@@ -549,3 +549,68 @@ TEST(MultipleInputs, ResultsOldFail) {
     }
     quick_input_throw(path, "length equal to the number of genes", 1001000);
 }
+
+TEST(SingleInputs, Subsetting) {
+    const std::string path = "TEST_inputs.h5";
+
+    // Works correctly.
+    {
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        add_single_matrix(handle);
+        auto ihandle = handle.openGroup("inputs");
+        auto phandle = ihandle.openGroup("parameters");
+        auto subhandle = phandle.createGroup("subset");
+        quick_write_dataset(subhandle, "indices", std::vector<int>{1,2,3});
+
+        auto rhandle = ihandle.openGroup("results");
+        rhandle.unlink("num_cells");
+        quick_write_dataset(rhandle, "num_cells", 3);
+    }
+
+    {
+        H5::H5File handle(path, H5F_ACC_RDONLY);
+        auto output = kanaval::inputs::validate(handle, true, latest);
+        EXPECT_EQ(output.num_cells, 3);
+    }
+
+    // Fails if the number of cells is not right.
+    {
+        H5::H5File handle(path, H5F_ACC_RDWR);
+        auto rhandle = handle.openGroup("inputs/results");
+        rhandle.unlink("num_cells");
+        quick_write_dataset(rhandle, "num_cells", 100);
+    }
+    quick_input_throw(path, "inconsistent number of cells", latest);
+
+    // Fails if the indices are negative.
+    {
+        H5::H5File handle(path, H5F_ACC_RDWR);
+        auto subhandle = handle.openGroup("inputs/parameters/subset");
+        subhandle.unlink("indices");
+        quick_write_dataset(subhandle, "indices", std::vector<int>{-1,0,1});
+    }
+    quick_input_throw(path, "negative", latest);
+
+    // No check on the number of cells if we're using field and value.
+    {
+        H5::H5File handle(path, H5F_ACC_RDWR);
+        auto subhandle = handle.openGroup("inputs/parameters/subset");
+        subhandle.unlink("indices");
+        quick_write_dataset(subhandle, "field", "FOO");
+        quick_write_dataset(subhandle, "values", std::vector<std::string>{"BAR"});
+    }
+
+    {
+        H5::H5File handle(path, H5F_ACC_RDONLY);
+        auto output = kanaval::inputs::validate(handle, true, latest);
+        EXPECT_EQ(output.num_cells, 100);
+    }
+
+    // Fails if field or value are missing.
+    {
+        H5::H5File handle(path, H5F_ACC_RDWR);
+        auto subhandle = handle.openGroup("inputs/parameters/subset");
+        subhandle.unlink("values");
+    }
+    quick_input_throw(path, "values", latest);
+}

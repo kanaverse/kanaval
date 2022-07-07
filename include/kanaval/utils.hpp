@@ -42,22 +42,28 @@ H5::DataSet check_and_open_dataset(const Object& handle, const std::string& name
 }
 
 template<class Object>
+std::vector<hsize_t> load_dataset_dimensions(const Object& handle) {
+    auto space = handle.getSpace();
+    size_t ndims = space.getSimpleExtentNdims();
+    std::vector<hsize_t> observed(ndims);
+    if (ndims) {
+        space.getSimpleExtentDims(observed.data());
+    }
+    return observed;
+}
+
+template<class Object>
 H5::DataSet check_and_open_dataset(const Object& handle, const std::string& name, H5T_class_t expected_type, const std::vector<size_t>& expected_dims) {
     auto dhandle = check_and_open_dataset(handle, name, expected_type);
-    auto dspace = dhandle.getSpace();
 
-    size_t ndims = dspace.getSimpleExtentNdims();
-    if (ndims != expected_dims.size()) {
+    auto observed_dims = load_dataset_dimensions(dhandle);
+    if (observed_dims.size() != expected_dims.size()) {
         throw std::runtime_error("'" + name + "' dataset does not have the expected dimensions");
     }
 
-    if (ndims) {
-        std::vector<hsize_t> observed(ndims);
-        dspace.getSimpleExtentDims(observed.data());
-        for (size_t i = 0; i < ndims; ++i) {
-            if (observed[i] != expected_dims[i]) {
-                throw std::runtime_error("'" + name + "' dataset does not have the expected dimensions");
-            }
+    for (size_t i = 0, ndims = observed_dims.size(); i < ndims; ++i) {
+        if (observed_dims[i] != expected_dims[i]) {
+            throw std::runtime_error("'" + name + "' dataset does not have the expected dimensions");
         }
     }
 

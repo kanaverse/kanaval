@@ -56,6 +56,7 @@ struct ParamDump {
     int num_matrices;
     bool multi_matrix;
     bool multi_sample;
+    int subset_num;
 };
 
 inline ParamDump validate_parameters(const H5::Group& handle, bool embedded, int version) {
@@ -195,6 +196,30 @@ inline ParamDump validate_parameters(const H5::Group& handle, bool embedded, int
         output.multi_sample = output.multi_matrix;
     }
 
+    // Checking if there's a subset group.
+    output.subset_num = -1;
+
+    if (phandle.exists("subset")) {
+        auto subhandle = utils::check_and_open_group(phandle, "subset");
+
+        if (subhandle.exists("indices")) {
+            auto idims = utils::load_integer_vector(subhandle, "indices");
+            for (auto i : idims) {
+                if (i < 0) {
+                    throw std::runtime_error("indices in 'subset/indices' should be non-negative");
+                }
+            }
+            output.subset_num = idims.size();
+        } else {
+            utils::check_and_open_dataset(subhandle, "field", H5T_STRING, {});
+            auto vhandle = utils::check_and_open_dataset(subhandle, "values", H5T_STRING);
+            auto vdims = utils::load_dataset_dimensions(vhandle);
+            if (vdims.size() != 1) {
+                throw std::runtime_error("'subset/values' should be a 1-dimensional string dataset");
+            }
+        }
+    }
+
     return output;
 }
 
@@ -304,6 +329,12 @@ inline Details validate_results(const H5::Group& handle, const ParamDump& param_
         }
     }
 
+    if (param_info.subset_num > -1) {
+        if (param_info.subset_num != output.num_cells) {
+            throw std::runtime_error("inconsistent number of cells in 'parameters/subset/indices' and 'results/num_cells'");
+        }
+    }
+
     return output;
 }
 /**
@@ -323,6 +354,7 @@ inline Details validate_results(const H5::Group& handle, const ParamDump& param_
  * The loaded dataset refers to the in-memory representation of the matrix (for single matrix inputs) or the combined matrices (for multiple inputs).
  * The identities of the rows of the loaded dataset may be a permutation or subset of the rows in the input matrices.
  * This is especially true for multiple inputs where the loaded dataset only contains the intersection of features across inputs.
+ * For multiple matrices, the loaded dataset is assumed to be a column-wise concatenation of the individual matrices after sorting them by `sample_names`.
  *
  * <HR>
  * `parameters` should contain:
@@ -356,6 +388,16 @@ inline Details validate_results(const H5::Group& handle, const ParamDump& param_
  *   If `embedded = false`, we expect:
  *   - `id`: a scalar string containing some unique identifier for this file.
  *     The interpretation of `id` is application-specific but usually refers to some cache or database.
+ *
+ * Optionally, `parameters` may contain a `subset` group, specifying the subset of cells to be used in downstream steps.
+ * This group should either contain:
+ *
+ * - `indices`, a 1-dimensional integer dataset specifying the indices of the cells to retain.
+ *   Indices should be relative to the loaded dataset before subsetting.
+ *   The length of this dataset should be equal to the number of cells in `results/dimensions`.
+ * - `field`, a string scalar specifying the field of the column annotations to use for filtering.
+ *   This should be accompanied by `values`, a 1-dimensional string dataset specifying the allowable values for this field.
+ *   The subset is defined as all cells with a `field` value in `values`.
  *
  * For multiple matrices, `parameters` should also contain:
  *
