@@ -53,20 +53,31 @@ inline void check_block_method(const std::string& method, int version) {
 namespace quality_control {
 
 template<class Object>
-int check_discard_vector(const Object& rhandle, size_t num_cells) {
+int check_discard_vector(const Object& rhandle, size_t num_cells, bool skip) {
     int remaining = 0;
-    try {
-        std::vector<size_t> dims{ static_cast<size_t>(num_cells) };
-        auto dihandle = utils::check_and_open_dataset(rhandle, "discards", H5T_INTEGER, dims);
-        std::vector<int> discards(num_cells);
-        dihandle.read(discards.data(), H5::PredType::NATIVE_INT);
-        for (auto d : discards) {
-            remaining += (d == 0);
-        }
 
-    } catch (std::exception& e) {
-        throw utils::combine_errors(e, "failed to retrieve discard information from 'results'");
+    if (!skip || rhandle.exists("discards")) {
+        try {
+            std::vector<size_t> dims{ static_cast<size_t>(num_cells) };
+            auto dihandle = utils::check_and_open_dataset(rhandle, "discards", H5T_INTEGER, dims);
+
+            if (!skip) {
+                std::vector<int> discards(num_cells);
+                dihandle.read(discards.data(), H5::PredType::NATIVE_INT);
+                for (auto d : discards) {
+                    remaining += (d == 0);
+                }
+            } else {
+                remaining = num_cells;
+            }
+
+        } catch (std::exception& e) {
+            throw utils::combine_errors(e, "failed to retrieve discard information from 'results'");
+        }
+    } else {
+        remaining = num_cells;
     }
+
     return remaining;
 }
 

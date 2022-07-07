@@ -23,7 +23,7 @@ inline int validate_results(const H5::Group& qhandle, int num_cells, int num_mod
     auto rhandle = utils::check_and_open_group(qhandle, "results");
     int remaining = -1;
     if (num_modalities > 1) {
-        remaining = quality_control::check_discard_vector(rhandle, num_cells);
+        remaining = quality_control::check_discard_vector(rhandle, num_cells, false);
     }
     return remaining;
 }
@@ -56,7 +56,8 @@ inline int validate_results(const H5::Group& qhandle, int num_cells, int num_mod
  * @param handle An open HDF5 file handle.
  * @param num_cells Number of cells in the dataset before any quality filtering is applied.
  * @param num_modalities Number of modalities present in the dataset.
- * Note that only QC-relevant modalities need to be counted here.
+ * Note that only QC-relevant modalities need to be counted here;
+ * if QC was skipped for a modality, it should not be included in this count.
  * @param version Version of the state file.
  *
  * @return The number of cells remaining after filtering, or -1 if `discards` is absent.

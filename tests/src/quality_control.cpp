@@ -10,6 +10,7 @@ void add_quality_control(H5::H5File& handle, int num_cells, int num_samples, int
     quick_write_dataset(phandle, "use_mito_default", int(0));
     quick_write_dataset(phandle, "mito_prefix", "foobar");
     quick_write_dataset(phandle, "nmads", 3.0);
+    quick_write_dataset(phandle, "skip", 0);
 
     auto rhandle = qhandle.createGroup("results");
 
@@ -39,7 +40,9 @@ TEST(QualityControl, AllOK) {
     }
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        EXPECT_EQ(kanaval::quality_control::validate(handle, 100, 1), 90);
+        auto out = kanaval::quality_control::validate(handle, 100, 1, latest);
+        EXPECT_FALSE(out.first);
+        EXPECT_EQ(out.second, 90);
     }
 
     // Works with more batches.
@@ -49,14 +52,16 @@ TEST(QualityControl, AllOK) {
     }
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        EXPECT_EQ(kanaval::quality_control::validate(handle, 200, 2), 190);
+        auto out = kanaval::quality_control::validate(handle, 200, 2, latest);
+        EXPECT_FALSE(out.first);
+        EXPECT_EQ(out.second, 190);
     }
 }
 
 void quick_qc_throw(const std::string& path, int num_cells, int num_samples, std::string msg) {
     quick_throw([&]() -> void {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        kanaval::quality_control::validate(handle, num_cells, num_samples);
+        kanaval::quality_control::validate(handle, num_cells, num_samples, latest);
     }, msg);
 }
 
@@ -122,3 +127,67 @@ TEST(QualityControl, ResultsFailed) {
     }
     quick_qc_throw(path, 100, 1, "failed to retrieve thresholds");
 }
+
+TEST(QualityControl, SkipOK) {
+    const std::string path = "TEST_quality_control.h5";
+
+    {
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        add_quality_control(handle, 100, 1);
+        auto phandle = handle.openGroup("quality_control/parameters");
+        phandle.unlink("skip");
+        quick_write_dataset(phandle, "skip", 1);
+    }
+
+    {
+        H5::H5File handle(path, H5F_ACC_RDONLY);
+        auto out = kanaval::quality_control::validate(handle, 100, 1, latest);
+        EXPECT_TRUE(out.first);
+        EXPECT_EQ(out.second, 100);
+    }
+
+    // Tolerates loss of all the values.
+    {
+        H5::H5File handle(path, H5F_ACC_RDWR);
+        handle.unlink("quality_control/results/metrics");
+        handle.unlink("quality_control/results/thresholds");
+        handle.unlink("quality_control/results/discards");
+    }
+
+    {
+        H5::H5File handle(path, H5F_ACC_RDONLY);
+        auto out = kanaval::quality_control::validate(handle, 100, 1, latest);
+        EXPECT_TRUE(out.first);
+        EXPECT_EQ(out.second, 100);
+    }
+
+    // Throws an error correctly if values are present but weird.
+    {
+        H5::H5File handle(path, H5F_ACC_RDWR);
+        auto rhandle = handle.openGroup("quality_control/results");
+        quick_write_dataset(rhandle, "discards", 987654321);
+    }
+
+    quick_qc_throw(path, 100, 1, "discards");
+}
+
+TEST(QualityControl, LegacySkipOK) {
+    const std::string path = "TEST_quality_control.h5";
+
+    {
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        add_quality_control(handle, 200, 2);
+        handle.unlink("quality_control/parameters/skip");
+    }
+
+    quick_qc_throw(path, 200, 2, "skip");
+
+    {
+        H5::H5File handle(path, H5F_ACC_RDONLY);
+        auto out = kanaval::quality_control::validate(handle, 200, 2, 2000000);
+        EXPECT_FALSE(out.first);
+        EXPECT_EQ(out.second, 190);
+    }
+}
+
+

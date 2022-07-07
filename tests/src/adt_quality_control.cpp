@@ -10,6 +10,7 @@ void add_adt_quality_control(H5::H5File& handle, int num_cells, int num_samples,
     quick_write_dataset(phandle, "igg_prefix", "foobar");
     quick_write_dataset(phandle, "nmads", 3.0);
     quick_write_dataset(phandle, "min_detected_drop", 0.1);
+    quick_write_dataset(phandle, "skip", 0);
 
     auto rhandle = qhandle.createGroup("results");
 
@@ -38,7 +39,9 @@ TEST(AdtQualityControl, AllOK) {
     }
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        EXPECT_EQ(kanaval::adt_quality_control::validate(handle, 100, 1, true, latest), 90);
+        auto out = kanaval::adt_quality_control::validate(handle, 100, 1, true, latest);
+        EXPECT_FALSE(out.first);
+        EXPECT_EQ(out.second, 90);
     }
 
     // Works with more batches.
@@ -48,7 +51,9 @@ TEST(AdtQualityControl, AllOK) {
     }
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        EXPECT_EQ(kanaval::adt_quality_control::validate(handle, 200, 2, true, latest), 190);
+        auto out = kanaval::adt_quality_control::validate(handle, 200, 2, true, latest);
+        EXPECT_FALSE(out.first);
+        EXPECT_EQ(out.second, 190);
     }
 }
 
@@ -61,7 +66,9 @@ TEST(AdtQualityControl, NoOp) {
     }
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        EXPECT_EQ(kanaval::adt_quality_control::validate(handle, 100, 1, true, 1000000), -1);
+        auto out = kanaval::adt_quality_control::validate(handle, 100, 1, true, 1000000);
+        EXPECT_FALSE(out.first);
+        EXPECT_EQ(out.second, -1);
     }
 
     // Skipping results if ADTs are not involved.
@@ -73,7 +80,9 @@ TEST(AdtQualityControl, NoOp) {
     }
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        EXPECT_EQ(kanaval::adt_quality_control::validate(handle, 200, 2, false, latest), -1);
+        auto out = kanaval::adt_quality_control::validate(handle, 200, 2, false, latest);
+        EXPECT_FALSE(out.first);
+        EXPECT_EQ(out.second, -1);
     }
 }
 
@@ -139,4 +148,66 @@ TEST(AdtQualityControl, ResultsFailed) {
         add_adt_quality_control(handle, 100, 2);
     }
     quick_adt_qc_throw(path, 100, 1, "failed to retrieve thresholds");
+}
+
+TEST(AdtQualityControl, SkipOK) {
+    const std::string path = "TEST_adt_quality_control.h5";
+
+    {
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        add_adt_quality_control(handle, 100, 1);
+        auto phandle = handle.openGroup("adt_quality_control/parameters");
+        phandle.unlink("skip");
+        quick_write_dataset(phandle, "skip", 1);
+    }
+
+    {
+        H5::H5File handle(path, H5F_ACC_RDONLY);
+        auto out = kanaval::adt_quality_control::validate(handle, 100, 1, true, latest);
+        EXPECT_TRUE(out.first);
+        EXPECT_EQ(out.second, 100);
+    }
+
+    // Tolerates loss of all the values.
+    {
+        H5::H5File handle(path, H5F_ACC_RDWR);
+        handle.unlink("adt_quality_control/results/metrics");
+        handle.unlink("adt_quality_control/results/thresholds");
+        handle.unlink("adt_quality_control/results/discards");
+    }
+
+    {
+        H5::H5File handle(path, H5F_ACC_RDONLY);
+        auto out = kanaval::adt_quality_control::validate(handle, 100, 1, true, latest);
+        EXPECT_TRUE(out.first);
+        EXPECT_EQ(out.second, 100);
+    }
+
+    // Throws an error correctly if values are present but weird.
+    {
+        H5::H5File handle(path, H5F_ACC_RDWR);
+        auto rhandle = handle.openGroup("adt_quality_control/results");
+        quick_write_dataset(rhandle, "discards", 987654321);
+    }
+
+    quick_adt_qc_throw(path, 100, 1, "discards");
+}
+
+TEST(AdtQualityControl, LegacySkipOK) {
+    const std::string path = "TEST_adt_quality_control.h5";
+
+    {
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        add_adt_quality_control(handle, 200, 2);
+        handle.unlink("adt_quality_control/parameters/skip");
+    }
+
+    quick_adt_qc_throw(path, 200, 2, "skip");
+
+    {
+        H5::H5File handle(path, H5F_ACC_RDONLY);
+        auto out = kanaval::adt_quality_control::validate(handle, 200, 2, true, 2000000);
+        EXPECT_FALSE(out.first);
+        EXPECT_EQ(out.second, 190);
+    }
 }

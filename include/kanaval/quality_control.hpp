@@ -19,43 +19,53 @@ namespace quality_control {
 /**
  * @cond
  */
-inline void validate_parameters(const H5::Group& qhandle) {
+inline bool validate_parameters(const H5::Group& qhandle, int version) {
     auto phandle = utils::check_and_open_group(qhandle, "parameters");
     utils::check_and_open_scalar(phandle, "use_mito_default", H5T_INTEGER);
     utils::check_and_open_scalar(phandle, "mito_prefix", H5T_STRING);
+
     auto nmads = utils::load_float_scalar<>(phandle, "nmads");
     if (nmads < 0) {
         throw std::runtime_error("number of MADs in 'nmads' should be non-negative");
     }
-    return;
+
+    bool skip = false;
+    if (version >= 2001000) {
+        skip = utils::load_integer_scalar(phandle, "skip");
+    }
+    return skip;
 }
 
-inline int validate_results(const H5::Group& qhandle, int num_cells, int num_samples) {
+inline int validate_results(const H5::Group& qhandle, int num_cells, int num_samples, bool skip) {
     auto rhandle = utils::check_and_open_group(qhandle, "results");
 
-    try {
-        auto mhandle = utils::check_and_open_group(rhandle, "metrics");
-        std::vector<size_t> dims{ static_cast<size_t>(num_cells) };
-        utils::check_and_open_dataset(mhandle, "sums", H5T_FLOAT, dims);
-        utils::check_and_open_dataset(mhandle, "detected", H5T_INTEGER, dims);
-        utils::check_and_open_dataset(mhandle, "proportion", H5T_FLOAT, dims);
-    } catch (std::exception& e) {
-        throw utils::combine_errors(e, "failed to retrieve metrics from 'results'");
+    if (!skip || rhandle.exists("metrics")) {
+        try {
+            auto mhandle = utils::check_and_open_group(rhandle, "metrics");
+            std::vector<size_t> dims{ static_cast<size_t>(num_cells) };
+            utils::check_and_open_dataset(mhandle, "sums", H5T_FLOAT, dims);
+            utils::check_and_open_dataset(mhandle, "detected", H5T_INTEGER, dims);
+            utils::check_and_open_dataset(mhandle, "proportion", H5T_FLOAT, dims);
+        } catch (std::exception& e) {
+            throw utils::combine_errors(e, "failed to retrieve metrics from 'results'");
+        }
     }
 
-    try {
-        auto thandle = utils::check_and_open_group(rhandle, "thresholds");
+    if (!skip || rhandle.exists("thresholds")) {
+        try {
+            auto thandle = utils::check_and_open_group(rhandle, "thresholds");
 
-        std::vector<size_t> dims{ static_cast<size_t>(num_samples) };
-        utils::check_and_open_dataset(thandle, "sums", H5T_FLOAT, dims);
-        utils::check_and_open_dataset(thandle, "detected", H5T_FLOAT, dims);
-        utils::check_and_open_dataset(thandle, "proportion", H5T_FLOAT, dims);
+            std::vector<size_t> dims{ static_cast<size_t>(num_samples) };
+            utils::check_and_open_dataset(thandle, "sums", H5T_FLOAT, dims);
+            utils::check_and_open_dataset(thandle, "detected", H5T_FLOAT, dims);
+            utils::check_and_open_dataset(thandle, "proportion", H5T_FLOAT, dims);
 
-    } catch (std::exception& e) {
-        throw utils::combine_errors(e, "failed to retrieve thresholds from 'results'");
+        } catch (std::exception& e) {
+            throw utils::combine_errors(e, "failed to retrieve thresholds from 'results'");
+        }
     }
 
-    int remaining = check_discard_vector(rhandle, num_cells);
+    int remaining = check_discard_vector(rhandle, num_cells, skip);
 
     return remaining;
 }
@@ -75,6 +85,18 @@ inline int validate_results(const H5::Group& qhandle, int num_cells, int num_sam
  *   This specifies whether to use the default mitochondrial gene list.
  * - `mito_prefix`: a scalar string containing the expected prefix for mitochondrial gene symbols.
  * - `nmads`: a scalar float specifying the number of MADs to use to define the QC thresholds.
+ * - `skip`: a scalar integer indicating whether quality control should be skipped.
+ *
+ * <DIV style="color:blue">
+ * <details>
+ * <summary>For versions before 2.1</summary> 
+ * `parameters` should contain:
+ * - `use_mito_default`: a scalar integer to be interpreted as a boolean.
+ *   This specifies whether to use the default mitochondrial gene list.
+ * - `mito_prefix`: a scalar string containing the expected prefix for mitochondrial gene symbols.
+ * - `nmads`: a scalar float specifying the number of MADs to use to define the QC thresholds.
+ * </details>
+ * </DIV>
  * 
  * <HR>
  * `results` should contain:
@@ -92,31 +114,57 @@ inline int validate_results(const H5::Group& qhandle, int num_cells, int num_sam
  * - `discards`: an integer dataset of length equal to the number of cells.
  *   Each value is interpreted as a boolean and specifies whether the corresponding cell would be discarded by the RNA-based filter thresholds.
  *
+ * If `skip = true`, `results` may be an empty group.
+ * However, if any of `metrics`, `thresholds` or `discards` is present, they should follow the requirements listed above.
+ *
+ * <DIV style="color:blue">
+ * <details>
+ * <summary>For versions before 2.1</summary> 
+ * `results` should contain:
+ * 
+ * - `metrics`, a group containing per-cell QC metrics derived from the RNA count data.
+ *   This contains:
+ *   - `sums`: a float dataset of length equal to the number of cells, containing the total count for each cell.
+ *   - `detected`:  an integer dataset of length equal to the number of cells, containing the total number of detected genes for each cell.
+ *   - `proportion`: a float dataset of length equal to the number of cells, containing the percentage of counts in (mitochondrial) genes.
+ * - `thresholds`, a group containing thresholds on the metrics for each batch.
+ *   This contains:
+ *   - `sums`: a float dataset of length equal to the number of batches, containing the total count threshold for each batch.
+ *   - `detected`:  an integer dataset of length equal to the number of batches, containing the threshold on the total number of detected genes for each batch.
+ *   - `proportion`: a float dataset of length equal to the number of batches, containing the threshold on the percentage of counts in (mitochondrial) genes for each batch.
+ * - `discards`: an integer dataset of length equal to the number of cells.
+ *   Each value is interpreted as a boolean and specifies whether the corresponding cell would be discarded by the RNA-based filter thresholds.
+ * </details>
+ * </DIV>
+ *
  * <HR>
  * @param handle An open HDF5 file handle.
  * @param num_cells Number of cells in the dataset before any quality filtering is applied.
  * @param num_samples Number of batches in the dataset.
+ * @param version Version of the kana file.
  * 
- * @return The number of high-quality cells, according to the RNA-based metrics.
+ * @return A pair where the first element specifies whether this QC step was skipped,
+ * and the second element contains the number of high-quality cells according to the RNA-based metrics.
  * If the format is invalid, an error is raised instead.
  */ 
-inline int validate(const H5::H5File& handle, int num_cells, int num_samples) {
+inline std::pair<bool, int> validate(const H5::H5File& handle, int num_cells, int num_samples, int version) {
     auto qhandle = utils::check_and_open_group(handle, "quality_control");
 
+    bool skip;
     try {
-        validate_parameters(qhandle);
+        skip = validate_parameters(qhandle, version);
     } catch (std::exception& e) {
         throw utils::combine_errors(e, "failed to retrieve parameters from 'quality_control'");
     }
 
-    int remaining = 0;
+    int remaining;
     try {
-        remaining = validate_results(qhandle, num_cells, num_samples);
+        remaining = validate_results(qhandle, num_cells, num_samples, skip);
     } catch (std::exception& e) {
         throw utils::combine_errors(e, "failed to retrieve results from 'quality_control'");
     }
 
-    return remaining;
+    return std::make_pair(skip, remaining);
 }
 
 }
