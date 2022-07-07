@@ -175,7 +175,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 <p >Check contents for the input step. Contents are stored inside an <code>inputs</code> HDF5 group at the root of the file. The <code>inputs</code> group itself contains the <code>parameters</code> and <code>results</code> subgroups.</p>
 <p >In this section, a "matrix" refers to one or more files describing a single (count) matrix. This should be exactly one file for HDF5-based formats, or multiple files for MatrixMarket formats, e.g., to include feature information - see below for details. Multiple matrices may be supplied, in which case each matrix is assumed to contain data for one sample. Alternatively, a single matrix may contain data for one or more samples as partitioned by a sample factor.</p>
-<p >The loaded dataset refers to the in-memory representation of the matrix (for single matrix inputs) or the combined matrices (for multiple inputs). The identities of the rows of the loaded dataset may be a permutation or subset of the rows in the input matrices. This is especially true for multiple inputs where the loaded dataset only contains the intersection of features across inputs.</p>
+<p >The loaded dataset refers to the in-memory representation of the matrix (for single matrix inputs) or the combined matrices (for multiple inputs). The identities of the rows of the loaded dataset may be a permutation or subset of the rows in the input matrices. This is especially true for multiple inputs where the loaded dataset only contains the intersection of features across inputs. For multiple matrices, the loaded dataset is assumed to be a column-wise concatenation of the individual matrices after sorting them by <code>sample_names</code>.</p>
 <hr  />
 <p> <code>parameters</code> should contain:</p>
 <ul>
@@ -197,6 +197,11 @@ Functions</h2></td></tr>
 <li><code>id</code>: a scalar string containing some unique identifier for this file. The interpretation of <code>id</code> is application-specific but usually refers to some cache or database.</li>
 </ul>
 </li>
+</ul>
+<p >Optionally, <code>parameters</code> may contain a <code>subset</code> group, specifying the subset of cells to be used in downstream steps. This group should either contain:</p>
+<ul>
+<li><code>indices</code>, a 1-dimensional integer dataset specifying the indices of the cells to retain. Indices should be relative to the loaded dataset before subsetting. The length of this dataset should be equal to the number of cells in <code>results/dimensions</code>.</li>
+<li><code>field</code>, a string scalar specifying the field of the column annotations to use for filtering. This should be accompanied by <code>values</code>, a 1-dimensional string dataset specifying the allowable values for this field. The subset is defined as all cells with a <code>field</code> value in <code>values</code>.</li>
 </ul>
 <p >For multiple matrices, <code>parameters</code> should also contain:</p>
 <ul>
