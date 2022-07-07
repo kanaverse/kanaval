@@ -23,7 +23,7 @@ void spawn(H5::H5File& handle, bool multi_matrix = false, bool include_adts = fa
     }
 
     add_quality_control(handle, num_cells, num_samples, num_cells - filtered_cells);
-    add_adt_quality_control(handle, num_cells, num_samples, num_cells - filtered_cells);
+    add_adt_quality_control(handle, num_cells, num_samples, num_cells - filtered_cells - 1); // small difference to check for differences in handling between RNA/ADT.
     add_cell_filtering(handle, num_cells, num_cells - filtered_cells);
 
     add_normalization(handle);

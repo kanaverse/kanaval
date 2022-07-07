@@ -89,7 +89,7 @@ void validate(const H5::H5File& handle, bool embedded, int version) {
     auto rna_filtered = quality_control::validate(handle, i_out.num_cells, i_out.num_samples, version);
     auto adt_filtered = adt_quality_control::validate(handle, i_out.num_cells, i_out.num_samples, adt_in_use, version);
 
-    int num_qc_modalities = (rna_in_use && rna_filtered.first) + (adt_in_use && adt_filtered.first);
+    int num_qc_modalities = (rna_in_use && !rna_filtered.first) + (adt_in_use && !adt_filtered.first); // in use, not skipped.
     auto filtered_cells = cell_filtering::validate(handle, i_out.num_cells, num_qc_modalities, version);
     if (filtered_cells < 0) {
         filtered_cells = std::max(rna_filtered.second, adt_filtered.second);
