@@ -113,14 +113,14 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a08585e2452b7e8c4015f810f08d7c288"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="adt__quality__control_8hpp.html#a08585e2452b7e8c4015f810f08d7c288">kanaval::adt_quality_control::validate</a> (const H5::H5File &amp;handle, int num_cells, int num_samples, bool adt_in_use, int version)</td></tr>
-<tr class="separator:a08585e2452b7e8c4015f810f08d7c288"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d8a2635c6341b5224e6cf8a6e74dcfc"><td class="memItemLeft" align="right" valign="top">std::pair&lt; bool, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="adt__quality__control_8hpp.html#a9d8a2635c6341b5224e6cf8a6e74dcfc">kanaval::adt_quality_control::validate</a> (const H5::H5File &amp;handle, int num_cells, int num_samples, bool adt_in_use, int version)</td></tr>
+<tr class="separator:a9d8a2635c6341b5224e6cf8a6e74dcfc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Validate ADT quality control contents. </p>
 </div><h2 class="groupheader">Function Documentation</h2>
-<a id="a08585e2452b7e8c4015f810f08d7c288" name="a08585e2452b7e8c4015f810f08d7c288"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a08585e2452b7e8c4015f810f08d7c288">&#9670;&nbsp;</a></span>validate()</h2>
+<a id="a9d8a2635c6341b5224e6cf8a6e74dcfc" name="a9d8a2635c6341b5224e6cf8a6e74dcfc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d8a2635c6341b5224e6cf8a6e74dcfc">&#9670;&nbsp;</a></span>validate()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -129,7 +129,7 @@ Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">int kanaval::adt_quality_control::validate </td>
+          <td class="memname">std::pair&lt; bool, int &gt; kanaval::adt_quality_control::validate </td>
           <td>(</td>
           <td class="paramtype">const H5::H5File &amp;&#160;</td>
           <td class="paramname"><em>handle</em>, </td>
@@ -179,9 +179,21 @@ Functions</h2></td></tr>
 <li><code>nmads</code>: a scalar float specifying the number of MADs to use to define the QC thresholds.</li>
 <li><code>min_detected_drop</code>: a scalar float specifying the minimum relative drop in the number of detected features before a cell is considered to be low-quality.</li>
 </ul>
+<div style="color:blue"> <details>
+ <summary>For versions before 2.1</summary> <code>parameters</code> should contain:</details>
+</div><div style="color:blue"><details>
+<ul>
+<li><code>igg_prefix</code>: a scalar string containing the expected prefix for IgG features.</li>
+<li><code>nmads</code>: a scalar float specifying the number of MADs to use to define the QC thresholds.</li>
+<li><code>min_detected_drop</code>: a scalar float specifying the minimum relative drop in the number of detected features before a cell is considered to be low-quality.  </li>
+</ul>
+</details>
+</div><div style="color:blue"><details>
 <hr  />
-<p> If <code>adt_in_use = false</code>, <code>results</code> should be empty.</p>
-<p >If <code>adt_in_use = true</code>, <code>results</code> should contain:</p>
+ If <code>adt_in_use = false</code>, <code>results</code> should be empty.</details>
+</div><div style="color:blue"><details>
+If <code>adt_in_use = true</code>, <code>results</code> should contain:</details>
+</div><div style="color:blue"><details>
 <ul>
 <li><code>metrics</code>, a group containing per-cell QC metrics derived from the RNA count data. This contains:<ul>
 <li><code>sums</code>: a float dataset of length equal to the number of cells, containing the total count for each cell.</li>
@@ -196,6 +208,37 @@ Functions</h2></td></tr>
 </li>
 <li><code>discards</code>: an integer dataset of length equal to the number of cells. Each value is interpreted as a boolean and specifies whether the corresponding cell would be discarded by the ADT-based filter thresholds.</li>
 </ul>
+</details>
+</div><div style="color:blue"><details>
+If <code>adt_in_use = true</code> and <code>skip = true</code>, <code>results</code> may be an empty group. However, if any of <code>metrics</code>, <code>thresholds</code> or <code>discards</code> is present, they should follow the requirements listed above.</details>
+</div><div style="color:blue"><details>
+<div style="color:blue"> <details>
+ <summary>For versions before 2.1</summary> If <code>adt_in_use = false</code>, <code>results</code> should be empty.</details>
+</div><p></details>
+</div><div style="color:blue"><details>
+<div style="color:blue"><details>
+If <code>adt_in_use = true</code>, <code>results</code> should contain:</details>
+</div><p></details>
+</div><div style="color:blue"><details>
+<div style="color:blue"><details>
+<ul>
+<li><code>metrics</code>, a group containing per-cell QC metrics derived from the RNA count data. This contains:<ul>
+<li><code>sums</code>: a float dataset of length equal to the number of cells, containing the total count for each cell.</li>
+<li><code>detected</code>: an integer dataset of length equal to the number of cells, containing the total number of detected features for each cell.</li>
+<li><code>igg_total</code>: a float dataset of length equal to the number of cells, containing the total count in IgG features.</li>
+</ul>
+</li>
+<li><code>thresholds</code>, a group containing thresholds on the metrics for each sample. This contains:<ul>
+<li><code>detected</code>: a float dataset of length equal to the number of samples, containing the threshold on the total number of detected features for each sample.</li>
+<li><code>igg_total</code>: a float dataset of length equal to the number of samples, containing the threshold on the total counts in IgG features for each sample.</li>
+</ul>
+</li>
+<li><code>discards</code>: an integer dataset of length equal to the number of cells. Each value is interpreted as a boolean and specifies whether the corresponding cell would be discarded by the ADT-based filter thresholds.  </li>
+</ul>
+</details>
+</div><p></details>
+</div><div style="color:blue"><details>
+<div style="color:blue"><details>
 <hr  />
  <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -203,12 +246,14 @@ Functions</h2></td></tr>
     <tr><td class="paramname">num_cells</td><td>Number of cells in the dataset before any quality control is applied. </td></tr>
     <tr><td class="paramname">num_samples</td><td>Number of samples in the dataset. </td></tr>
     <tr><td class="paramname">adt_in_use</td><td>Whether ADTs are being used in this dataset. </td></tr>
-    <tr><td class="paramname">version</td><td>Version of the format.</td></tr>
+    <tr><td class="paramname">version</td><td>Version of the kana file.</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>The number of high-quality cells, according to the ADT-based metrics. Alternatively, if ADTs were not present in the dataset, -1 is returned instead. An error is raised if the format is invalid. </dd></dl>
-
+<dl class="section return"><dt>Returns</dt><dd>A pair where the first element specifies whether this QC step was skipped, and the second element contains the number of high-quality cells according to the ADT-based metrics. If ADTs were not present in the dataset, -1 is returned in the second element instead. An error is raised if the format is invalid. </dd></dl>
+</details>
+</div><p></details>
+</div>
 </div>
 </div>
 </div><!-- contents -->

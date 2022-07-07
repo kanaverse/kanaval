@@ -83,7 +83,7 @@ $(function() {
 <div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span> </div>
 <div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span><span class="keyword">namespace </span>adt_quality_control {</div>
 <div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span> </div>
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">inline</span> <span class="keywordtype">void</span> validate_parameters(<span class="keyword">const</span> H5::Group&amp; qhandle) {</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span><span class="keyword">inline</span> <span class="keywordtype">bool</span> validate_parameters(<span class="keyword">const</span> H5::Group&amp; qhandle, <span class="keywordtype">int</span> version) {</div>
 <div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>    <span class="keyword">auto</span> phandle = utils::check_and_open_group(qhandle, <span class="stringliteral">&quot;parameters&quot;</span>);</div>
 <div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    utils::check_and_open_scalar(phandle, <span class="stringliteral">&quot;igg_prefix&quot;</span>, H5T_STRING);</div>
 <div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
@@ -96,68 +96,78 @@ $(function() {
 <div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>    <span class="keywordflow">if</span> (mindrop &lt; 0 || mindrop &gt;= 1) {</div>
 <div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;minimum detected drop should lie in [0, 1)&quot;</span>);</div>
 <div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    }</div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    <span class="keywordflow">return</span>;</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>}</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="keyword">inline</span> <span class="keywordtype">int</span> validate_results(<span class="keyword">const</span> H5::Group&amp; qhandle, <span class="keywordtype">int</span> num_cells, <span class="keywordtype">int</span> num_samples, <span class="keywordtype">bool</span> adt_in_use) {</div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    <span class="keyword">auto</span> rhandle = utils::check_and_open_group(qhandle, <span class="stringliteral">&quot;results&quot;</span>);</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keywordtype">int</span> remaining = -1;</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>    <span class="keywordflow">if</span> (adt_in_use) {</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>        <span class="keywordflow">try</span> {</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>            <span class="keyword">auto</span> mhandle = utils::check_and_open_group(rhandle, <span class="stringliteral">&quot;metrics&quot;</span>);</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>            std::vector&lt;size_t&gt; dims{ <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(num_cells) };</div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>            utils::check_and_open_dataset(mhandle, <span class="stringliteral">&quot;sums&quot;</span>, H5T_FLOAT, dims);</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>            utils::check_and_open_dataset(mhandle, <span class="stringliteral">&quot;detected&quot;</span>, H5T_INTEGER, dims);</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>            utils::check_and_open_dataset(mhandle, <span class="stringliteral">&quot;igg_total&quot;</span>, H5T_FLOAT, dims);</div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>        } <span class="keywordflow">catch</span> (std::exception&amp; e) {</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>            <span class="keywordflow">throw</span> utils::combine_errors(e, <span class="stringliteral">&quot;failed to retrieve metrics from &#39;results&#39;&quot;</span>);</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>        }</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span> </div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>        <span class="keywordflow">try</span> {</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>            <span class="keyword">auto</span> thandle = utils::check_and_open_group(rhandle, <span class="stringliteral">&quot;thresholds&quot;</span>);</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>            std::vector&lt;size_t&gt; dims{ <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(num_samples) };</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            utils::check_and_open_dataset(thandle, <span class="stringliteral">&quot;detected&quot;</span>, H5T_FLOAT, dims);</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>            utils::check_and_open_dataset(thandle, <span class="stringliteral">&quot;igg_total&quot;</span>, H5T_FLOAT, dims);</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span> </div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keywordtype">bool</span> skip = <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>    <span class="keywordflow">if</span> (version &gt;= 2001000) {</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        skip = utils::load_integer_scalar(phandle, <span class="stringliteral">&quot;skip&quot;</span>);</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    }</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span>    <span class="keywordflow">return</span> skip;</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>}</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span> </div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span><span class="keyword">inline</span> <span class="keywordtype">int</span> validate_results(<span class="keyword">const</span> H5::Group&amp; qhandle, <span class="keywordtype">int</span> num_cells, <span class="keywordtype">int</span> num_samples, <span class="keywordtype">bool</span> skip, <span class="keywordtype">bool</span> adt_in_use) {</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    <span class="keyword">auto</span> rhandle = utils::check_and_open_group(qhandle, <span class="stringliteral">&quot;results&quot;</span>);</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordtype">int</span> remaining = -1;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordflow">if</span> (adt_in_use) {</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>        <span class="keywordflow">if</span> (!skip || rhandle.exists(<span class="stringliteral">&quot;metrics&quot;</span>)) {</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>            <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>                <span class="keyword">auto</span> mhandle = utils::check_and_open_group(rhandle, <span class="stringliteral">&quot;metrics&quot;</span>);</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>                std::vector&lt;size_t&gt; dims{ <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(num_cells) };</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>                utils::check_and_open_dataset(mhandle, <span class="stringliteral">&quot;sums&quot;</span>, H5T_FLOAT, dims);</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>                utils::check_and_open_dataset(mhandle, <span class="stringliteral">&quot;detected&quot;</span>, H5T_INTEGER, dims);</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>                utils::check_and_open_dataset(mhandle, <span class="stringliteral">&quot;igg_total&quot;</span>, H5T_FLOAT, dims);</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>            } <span class="keywordflow">catch</span> (std::exception&amp; e) {</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>                <span class="keywordflow">throw</span> utils::combine_errors(e, <span class="stringliteral">&quot;failed to retrieve metrics from &#39;results&#39;&quot;</span>);</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>            }</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>        }</div>
 <div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span> </div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        } <span class="keywordflow">catch</span> (std::exception&amp; e) {</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            <span class="keywordflow">throw</span> utils::combine_errors(e, <span class="stringliteral">&quot;failed to retrieve thresholds from &#39;results&#39;&quot;</span>);</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        }</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <span class="keywordflow">if</span> (!skip || rhandle.exists(<span class="stringliteral">&quot;thresholds&quot;</span>)) {</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                <span class="keyword">auto</span> thandle = utils::check_and_open_group(rhandle, <span class="stringliteral">&quot;thresholds&quot;</span>);</div>
 <div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>        remaining = quality_control::check_discard_vector(rhandle, num_cells);</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    }</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    <span class="keywordflow">return</span> remaining;</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>}</div>
-<div class="line"><a id="l00115" name="l00115"></a><span class="lineno"><a class="line" href="adt__quality__control_8hpp.html#a08585e2452b7e8c4015f810f08d7c288">  115</a></span><span class="keyword">inline</span> <span class="keywordtype">int</span> <a class="code hl_function" href="namespacekanaval.html#ab7f88e5ced956c8f906dd57493f12f16">validate</a>(<span class="keyword">const</span> H5::H5File&amp; handle, <span class="keywordtype">int</span> num_cells, <span class="keywordtype">int</span> num_samples, <span class="keywordtype">bool</span> adt_in_use, <span class="keywordtype">int</span> version) {</div>
-<div class="line"><a id="l00116" name="l00116"></a><span class="lineno">  116</span>    <span class="keywordflow">if</span> (version &lt; 2000000) { <span class="comment">// didn&#39;t exist before v2.</span></div>
-<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span>        <span class="keywordflow">return</span> -1;</div>
-<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span>    }</div>
-<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span> </div>
-<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>    <span class="keyword">auto</span> qhandle = utils::check_and_open_group(handle, <span class="stringliteral">&quot;adt_quality_control&quot;</span>);</div>
-<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
-<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>    <span class="keywordflow">try</span> {</div>
-<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>        validate_parameters(qhandle);</div>
-<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>    } <span class="keywordflow">catch</span> (std::exception&amp; e) {</div>
-<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>        <span class="keywordflow">throw</span> utils::combine_errors(e, <span class="stringliteral">&quot;failed to retrieve parameters from &#39;adt_quality_control&#39;&quot;</span>);</div>
-<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    }</div>
-<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span> </div>
-<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span>    <span class="keywordtype">int</span> remaining = 0;</div>
-<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keywordflow">try</span> {</div>
-<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>        remaining = validate_results(qhandle, num_cells, num_samples, adt_in_use);</div>
-<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>    } <span class="keywordflow">catch</span> (std::exception&amp; e) {</div>
-<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span>        <span class="keywordflow">throw</span> utils::combine_errors(e, <span class="stringliteral">&quot;failed to retrieve results from &#39;adt_quality_control&#39;&quot;</span>);</div>
-<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    }</div>
-<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span> </div>
-<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>    <span class="keywordflow">return</span> remaining;</div>
-<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span>}</div>
-<div class="line"><a id="l00137" name="l00137"></a><span class="lineno">  137</span> </div>
-<div class="line"><a id="l00138" name="l00138"></a><span class="lineno">  138</span>}</div>
-<div class="line"><a id="l00139" name="l00139"></a><span class="lineno">  139</span> </div>
-<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span>}</div>
-<div class="line"><a id="l00141" name="l00141"></a><span class="lineno">  141</span> </div>
-<div class="line"><a id="l00142" name="l00142"></a><span class="lineno">  142</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>                std::vector&lt;size_t&gt; dims{ <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(num_samples) };</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                utils::check_and_open_dataset(thandle, <span class="stringliteral">&quot;detected&quot;</span>, H5T_FLOAT, dims);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                utils::check_and_open_dataset(thandle, <span class="stringliteral">&quot;igg_total&quot;</span>, H5T_FLOAT, dims);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span> </div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>            } <span class="keywordflow">catch</span> (std::exception&amp; e) {</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                <span class="keywordflow">throw</span> utils::combine_errors(e, <span class="stringliteral">&quot;failed to retrieve thresholds from &#39;results&#39;&quot;</span>);</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            }</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>        }</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>        remaining = quality_control::check_discard_vector(rhandle, num_cells, skip);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    }</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span> </div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordflow">return</span> remaining;</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>}</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno"><a class="line" href="adt__quality__control_8hpp.html#a9d8a2635c6341b5224e6cf8a6e74dcfc">  160</a></span><span class="keyword">inline</span> std::pair&lt;bool, int&gt; <a class="code hl_function" href="namespacekanaval.html#ab7f88e5ced956c8f906dd57493f12f16">validate</a>(<span class="keyword">const</span> H5::H5File&amp; handle, <span class="keywordtype">int</span> num_cells, <span class="keywordtype">int</span> num_samples, <span class="keywordtype">bool</span> adt_in_use, <span class="keywordtype">int</span> version) {</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span>    <span class="keywordflow">if</span> (version &lt; 2000000) { <span class="comment">// didn&#39;t exist before v2.</span></div>
+<div class="line"><a id="l00162" name="l00162"></a><span class="lineno">  162</span>        <span class="keywordflow">return</span> std::make_pair(<span class="keyword">false</span>, -1);</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno">  163</span>    }</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span> </div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>    <span class="keyword">auto</span> qhandle = utils::check_and_open_group(handle, <span class="stringliteral">&quot;adt_quality_control&quot;</span>);</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span> </div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno">  167</span>    <span class="keywordtype">bool</span> skip;</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00169" name="l00169"></a><span class="lineno">  169</span>        skip = validate_parameters(qhandle, version);</div>
+<div class="line"><a id="l00170" name="l00170"></a><span class="lineno">  170</span>    } <span class="keywordflow">catch</span> (std::exception&amp; e) {</div>
+<div class="line"><a id="l00171" name="l00171"></a><span class="lineno">  171</span>        <span class="keywordflow">throw</span> utils::combine_errors(e, <span class="stringliteral">&quot;failed to retrieve parameters from &#39;adt_quality_control&#39;&quot;</span>);</div>
+<div class="line"><a id="l00172" name="l00172"></a><span class="lineno">  172</span>    }</div>
+<div class="line"><a id="l00173" name="l00173"></a><span class="lineno">  173</span> </div>
+<div class="line"><a id="l00174" name="l00174"></a><span class="lineno">  174</span>    <span class="keywordtype">int</span> remaining;</div>
+<div class="line"><a id="l00175" name="l00175"></a><span class="lineno">  175</span>    <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno">  176</span>        remaining = validate_results(qhandle, num_cells, num_samples, skip, adt_in_use);</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>    } <span class="keywordflow">catch</span> (std::exception&amp; e) {</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span>        <span class="keywordflow">throw</span> utils::combine_errors(e, <span class="stringliteral">&quot;failed to retrieve results from &#39;adt_quality_control&#39;&quot;</span>);</div>
+<div class="line"><a id="l00179" name="l00179"></a><span class="lineno">  179</span>    }</div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno">  180</span> </div>
+<div class="line"><a id="l00181" name="l00181"></a><span class="lineno">  181</span>    <span class="keywordflow">return</span> std::make_pair(skip, remaining);</div>
+<div class="line"><a id="l00182" name="l00182"></a><span class="lineno">  182</span>}</div>
+<div class="line"><a id="l00183" name="l00183"></a><span class="lineno">  183</span> </div>
+<div class="line"><a id="l00184" name="l00184"></a><span class="lineno">  184</span>}</div>
+<div class="line"><a id="l00185" name="l00185"></a><span class="lineno">  185</span> </div>
+<div class="line"><a id="l00186" name="l00186"></a><span class="lineno">  186</span>}</div>
+<div class="line"><a id="l00187" name="l00187"></a><span class="lineno">  187</span> </div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno">  188</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="anamespacekanaval_html"><div class="ttname"><a href="namespacekanaval.html">kanaval</a></div><div class="ttdoc">Utilities for validating kana files.</div><div class="ttdef"><b>Definition:</b> adt_normalization.hpp:13</div></div>
 <div class="ttc" id="anamespacekanaval_html_ab7f88e5ced956c8f906dd57493f12f16"><div class="ttname"><a href="namespacekanaval.html#ab7f88e5ced956c8f906dd57493f12f16">kanaval::validate</a></div><div class="ttdeci">void validate(const H5::H5File &amp;handle, bool embedded, int version)</div><div class="ttdef"><b>Definition:</b> validate.hpp:80</div></div>
 </div><!-- fragment --></div><!-- contents -->

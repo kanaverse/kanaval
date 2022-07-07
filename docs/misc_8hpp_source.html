@@ -126,34 +126,45 @@ $(function() {
 <div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span><span class="keyword">namespace </span>quality_control {</div>
 <div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
 <div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span><span class="keyword">template</span>&lt;<span class="keyword">class</span> Object&gt;</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span><span class="keywordtype">int</span> check_discard_vector(<span class="keyword">const</span> Object&amp; rhandle, <span class="keywordtype">size_t</span> num_cells) {</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span><span class="keywordtype">int</span> check_discard_vector(<span class="keyword">const</span> Object&amp; rhandle, <span class="keywordtype">size_t</span> num_cells, <span class="keywordtype">bool</span> skip) {</div>
 <div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span>    <span class="keywordtype">int</span> remaining = 0;</div>
-<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span>    <span class="keywordflow">try</span> {</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>        std::vector&lt;size_t&gt; dims{ <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(num_cells) };</div>
-<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <span class="keyword">auto</span> dihandle = utils::check_and_open_dataset(rhandle, <span class="stringliteral">&quot;discards&quot;</span>, H5T_INTEGER, dims);</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>        std::vector&lt;int&gt; discards(num_cells);</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>        dihandle.read(discards.data(), H5::PredType::NATIVE_INT);</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>        <span class="keywordflow">for</span> (<span class="keyword">auto</span> d : discards) {</div>
-<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            remaining += (d == 0);</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>        }</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>    } <span class="keywordflow">catch</span> (std::exception&amp; e) {</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>        <span class="keywordflow">throw</span> utils::combine_errors(e, <span class="stringliteral">&quot;failed to retrieve discard information from &#39;results&#39;&quot;</span>);</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    }</div>
-<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>    <span class="keywordflow">return</span> remaining;</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>}</div>
-<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span> </div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>}</div>
-<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span> </div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span><span class="keyword">namespace </span>markers {</div>
-<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    </div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span><span class="keyword">inline</span> <span class="keyword">const</span> std::vector&lt;std::string&gt; effects { <span class="stringliteral">&quot;lfc&quot;</span>, <span class="stringliteral">&quot;delta_detected&quot;</span>, <span class="stringliteral">&quot;cohen&quot;</span>, <span class="stringliteral">&quot;auc&quot;</span> };</div>
-<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span> </div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>}</div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    <span class="keywordflow">if</span> (!skip || rhandle.exists(<span class="stringliteral">&quot;discards&quot;</span>)) {</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>        <span class="keywordflow">try</span> {</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>            std::vector&lt;size_t&gt; dims{ <span class="keyword">static_cast&lt;</span><span class="keywordtype">size_t</span><span class="keyword">&gt;</span>(num_cells) };</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>            <span class="keyword">auto</span> dihandle = utils::check_and_open_dataset(rhandle, <span class="stringliteral">&quot;discards&quot;</span>, H5T_INTEGER, dims);</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span> </div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>            <span class="keywordflow">if</span> (!skip) {</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>                std::vector&lt;int&gt; discards(num_cells);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                dihandle.read(discards.data(), H5::PredType::NATIVE_INT);</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                <span class="keywordflow">for</span> (<span class="keyword">auto</span> d : discards) {</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                    remaining += (d == 0);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                }</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>            } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>                remaining = num_cells;</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>            }</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span> </div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>        } <span class="keywordflow">catch</span> (std::exception&amp; e) {</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>            <span class="keywordflow">throw</span> utils::combine_errors(e, <span class="stringliteral">&quot;failed to retrieve discard information from &#39;results&#39;&quot;</span>);</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>        }</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>        remaining = num_cells;</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    }</div>
 <div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span> </div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>}</div>
-<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span> </div>
-<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keywordflow">return</span> remaining;</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>}</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span> </div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>}</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span><span class="keyword">namespace </span>markers {</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    </div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span><span class="keyword">inline</span> <span class="keyword">const</span> std::vector&lt;std::string&gt; effects { <span class="stringliteral">&quot;lfc&quot;</span>, <span class="stringliteral">&quot;delta_detected&quot;</span>, <span class="stringliteral">&quot;cohen&quot;</span>, <span class="stringliteral">&quot;auc&quot;</span> };</div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span> </div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>}</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span>}</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="anamespacekanaval_html"><div class="ttname"><a href="namespacekanaval.html">kanaval</a></div><div class="ttdoc">Utilities for validating kana files.</div><div class="ttdef"><b>Definition:</b> adt_normalization.hpp:13</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
