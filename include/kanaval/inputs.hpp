@@ -97,18 +97,21 @@ inline ParamDump validate_parameters(const H5::Group& handle, bool embedded, int
             throw std::runtime_error("sum of 'sample_groups' is not equal to the length of 'files'");
         }
 
-        // Checking that everyone has unique groups.
+        // Checking that everyone has unique and sorted names.
         auto names = utils::load_string_vector(phandle, "sample_names");
         if (names.size() != formats.size()) {
             throw std::runtime_error("'sample_names' and 'format' should have the same length");
         }
 
-        std::unordered_set<std::string> stuff;
-        for (auto s : names) {
-            if (stuff.find(s) != stuff.end()) {
-                throw std::runtime_error("duplicated sample name '" + s + "' in 'sample_names'");
+        if (version >= 2001000) {
+            if (!utils::is_unique_and_sorted(names)) {
+                throw std::runtime_error("duplicated or unsorted values in 'sample_names'");
             }
-            stuff.insert(s);
+        } else {
+            std::sort(names.begin(), names.end());
+            if (!utils::is_unique_and_sorted(names)) {
+                throw std::runtime_error("duplicated values in 'sample_names'");
+            }
         }
     } else {
         runs.push_back(nfiles);
@@ -203,13 +206,19 @@ inline ParamDump validate_parameters(const H5::Group& handle, bool embedded, int
         auto subhandle = utils::check_and_open_group(phandle, "subset");
 
         if (subhandle.exists("indices")) {
-            auto idims = utils::load_integer_vector(subhandle, "indices");
-            for (auto i : idims) {
+            auto subidx = utils::load_integer_vector(subhandle, "indices");
+
+            for (auto i : subidx) {
                 if (i < 0) {
                     throw std::runtime_error("indices in 'subset/indices' should be non-negative");
                 }
             }
-            output.subset_num = idims.size();
+
+            if (!utils::is_unique_and_sorted(subidx)) {
+                throw std::runtime_error("indices in 'subset/indices' should be unique and sorted");
+            }
+
+            output.subset_num = subidx.size();
         } else {
             utils::check_and_open_dataset(subhandle, "field", H5T_STRING, {});
             auto vhandle = utils::check_and_open_dataset(subhandle, "values", H5T_STRING);
@@ -395,6 +404,7 @@ inline Details validate_results(const H5::Group& handle, const ParamDump& param_
  * - `indices`, a 1-dimensional integer dataset specifying the indices of the cells to retain.
  *   Indices should be relative to the loaded dataset before subsetting.
  *   The length of this dataset should be equal to the number of cells in `results/dimensions`.
+ *   Indices should be unique and sorted.
  * - `field`, a string scalar specifying the field of the column annotations to use for filtering.
  *   This should be accompanied by `values`, a 1-dimensional string dataset specifying the allowable values for this field.
  *   The subset is defined as all cells with a `field` value in `values`.
@@ -406,7 +416,9 @@ inline Details validate_results(const H5::Group& handle, const ParamDump& param_
  *   (All files from the same sample are assumed to be contiguous in the array represented by `files`;
  *   so a `sample_groups` of `[3, 2, 1]` would mean that the first three files belong to the first sample, 
  *   the next 2 files belong to the second sample, and the last file belongs to the third sample.)
- * - `sample_names`: a string dataset of length equal to the number of samples, containing the sample name.
+ * - `sample_names`: a string dataset of length equal to the number of samples.
+ *   Each value contains the name for the sample defined by the corresponding entry of `sample_groups`.
+ *   All names should be unique and sorted.
  *
  * For single matrix inputs, `parameters` may also contain:
  *

@@ -34,6 +34,10 @@ inline std::vector<std::string> validate_parameters(const H5::Group& handle, int
                 throw std::runtime_error("indices out of range for selection '" + output.back() + "'");
             }
         }
+
+        if (!utils::is_unique_and_sorted(involved)) {
+            throw std::runtime_error("indices should be sorted and unique for selection '" + output.back() + "'");
+        }
     }
 
     return output;
@@ -106,6 +110,7 @@ inline void validate_results(const H5::Group& handle, const std::vector<std::str
  *   Each child is named after a user-created selection.
  *   Each child is an integer dataset of arbitrary length containing the indices of the selected cells.
  *   Note that indices refer to the dataset after QC filtering and should be less than `num_cells`.
+ *   Indices in each dataset should be unique and sorted.
  * 
  * <HR>
  * `results` should contain `per_selection`, a group containing the marker results for each selection after a comparison to a group containing all other cells.

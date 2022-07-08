@@ -504,7 +504,7 @@ TEST(MultipleInputs, ParametersFailed) {
         auto phandle = handle.openGroup("inputs/parameters");
         quick_write_dataset(phandle, "sample_names", std::vector<std::string>{ "A", "A" });
     }
-    quick_input_throw(path, "duplicated sample name");
+    quick_input_throw(path, "duplicated");
 
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);

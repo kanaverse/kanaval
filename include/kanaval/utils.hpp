@@ -214,6 +214,16 @@ std::vector<std::string> load_string_vector(const Object& handle, const std::str
     return output;
 }
 
+template<class V>
+bool is_unique_and_sorted(const V& values) {
+    for (size_t i = 1, n = values.size(); i < n; ++i){
+        if (values[i] <= values[i-1]) {
+            return false;
+        }
+    }
+    return true;
+}
+
 }
 
 }
