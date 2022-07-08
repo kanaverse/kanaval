@@ -558,9 +558,9 @@ TEST(SingleInputs, Subsetting) {
         H5::H5File handle(path, H5F_ACC_TRUNC);
         add_single_matrix(handle);
         auto ihandle = handle.openGroup("inputs");
-        auto phandle = ihandle.openGroup("parameters");
-        auto subhandle = phandle.createGroup("subset");
-        quick_write_dataset(subhandle, "indices", std::vector<int>{1,2,3});
+        auto subhandle = ihandle.createGroup("parameters/subset");
+        auto subcellhandle = subhandle.createGroup("cells");
+        quick_write_dataset(subcellhandle, "indices", std::vector<int>{1,2,3});
 
         auto rhandle = ihandle.openGroup("results");
         rhandle.unlink("num_cells");
@@ -585,7 +585,7 @@ TEST(SingleInputs, Subsetting) {
     // Fails if the indices are negative.
     {
         H5::H5File handle(path, H5F_ACC_RDWR);
-        auto subhandle = handle.openGroup("inputs/parameters/subset");
+        auto subhandle = handle.openGroup("inputs/parameters/subset/cells");
         subhandle.unlink("indices");
         quick_write_dataset(subhandle, "indices", std::vector<int>{-1,0,1});
     }
@@ -594,7 +594,7 @@ TEST(SingleInputs, Subsetting) {
     // No check on the number of cells if we're using field and value.
     {
         H5::H5File handle(path, H5F_ACC_RDWR);
-        auto subhandle = handle.openGroup("inputs/parameters/subset");
+        auto subhandle = handle.openGroup("inputs/parameters/subset/cells");
         subhandle.unlink("indices");
         quick_write_dataset(subhandle, "field", "FOO");
         quick_write_dataset(subhandle, "values", std::vector<std::string>{"BAR"});
@@ -609,7 +609,7 @@ TEST(SingleInputs, Subsetting) {
     // Fails if field or value are missing.
     {
         H5::H5File handle(path, H5F_ACC_RDWR);
-        auto subhandle = handle.openGroup("inputs/parameters/subset");
+        auto subhandle = handle.openGroup("inputs/parameters/subset/cells");
         subhandle.unlink("values");
     }
     quick_input_throw(path, "values", latest);
