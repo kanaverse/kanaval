@@ -80,72 +80,8 @@ inline int validate_results(const H5::Group& qhandle, int num_cells, int num_sam
  */
 
 /**
- * Check contents for the quality control step on the ADT count matrix.
- * Contents are stored inside an `adt_quality_control` HDF5 group at the root of the file.
- * The `adt_quality_control` group itself contains the `parameters` and `results` subgroups.
- * 
- * No ADT data was available prior to version 2.0 of the format, so the `adt_quality_control` group may be absent in such files.
+ * Check contents for the quality control step on the ADT count matrix, see [here](@ref details-adt_quality_control) for details.
  *
- * <HR>
- * `parameters` should contain:
- * 
- * - `igg_prefix`: a scalar string containing the expected prefix for IgG features.
- * - `nmads`: a scalar float specifying the number of MADs to use to define the QC thresholds.
- * - `min_detected_drop`: a scalar float specifying the minimum relative drop in the number of detected features before a cell is considered to be low-quality.
- * 
- * <DIV style="color:blue">
- * <details>
- * <summary>For versions before 2.1</summary>
- * `parameters` should contain:
- * 
- * - `igg_prefix`: a scalar string containing the expected prefix for IgG features.
- * - `nmads`: a scalar float specifying the number of MADs to use to define the QC thresholds.
- * - `min_detected_drop`: a scalar float specifying the minimum relative drop in the number of detected features before a cell is considered to be low-quality.
- * </details>
- * </DIV>
- *
- * <HR>
- * If `adt_in_use = false`, `results` should be empty.
- *
- * If `adt_in_use = true`, `results` should contain:
- * 
- * - `metrics`, a group containing per-cell QC metrics derived from the RNA count data.
- *   This contains:
- *   - `sums`: a float dataset of length equal to the number of cells, containing the total count for each cell.
- *   - `detected`:  an integer dataset of length equal to the number of cells, containing the total number of detected features for each cell.
- *   - `igg_total`: a float dataset of length equal to the number of cells, containing the total count in IgG features.
- * - `thresholds`, a group containing thresholds on the metrics for each sample.
- *   This contains:
- *   - `detected`:  a float dataset of length equal to the number of samples, containing the threshold on the total number of detected features for each sample.
- *   - `igg_total`: a float dataset of length equal to the number of samples, containing the threshold on the total counts in IgG features for each sample.
- * - `discards`: an integer dataset of length equal to the number of cells.
- *   Each value is interpreted as a boolean and specifies whether the corresponding cell would be discarded by the ADT-based filter thresholds.
- *
- * If `adt_in_use = true` and `skip = true`, `results` may be an empty group.
- * However, if any of `metrics`, `thresholds` or `discards` is present, they should follow the requirements listed above.
- *
- * <DIV style="color:blue">
- * <details>
- * <summary>For versions before 2.1</summary>
- * If `adt_in_use = false`, `results` should be empty.
- *
- * If `adt_in_use = true`, `results` should contain:
- * 
- * - `metrics`, a group containing per-cell QC metrics derived from the RNA count data.
- *   This contains:
- *   - `sums`: a float dataset of length equal to the number of cells, containing the total count for each cell.
- *   - `detected`:  an integer dataset of length equal to the number of cells, containing the total number of detected features for each cell.
- *   - `igg_total`: a float dataset of length equal to the number of cells, containing the total count in IgG features.
- * - `thresholds`, a group containing thresholds on the metrics for each sample.
- *   This contains:
- *   - `detected`:  a float dataset of length equal to the number of samples, containing the threshold on the total number of detected features for each sample.
- *   - `igg_total`: a float dataset of length equal to the number of samples, containing the threshold on the total counts in IgG features for each sample.
- * - `discards`: an integer dataset of length equal to the number of cells.
- *   Each value is interpreted as a boolean and specifies whether the corresponding cell would be discarded by the ADT-based filter thresholds.
- * </details>
- * </DIV>
- *
- * <HR>
  * @param handle An open HDF5 file handle.
  * @param num_cells Number of cells in the dataset before any quality control is applied.
  * @param num_samples Number of samples in the dataset.

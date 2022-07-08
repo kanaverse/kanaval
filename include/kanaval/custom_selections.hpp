@@ -99,48 +99,8 @@ inline void validate_results(const H5::Group& handle, const std::vector<std::str
  */
 
 /**
- * Check contents for the custom selections step.
- * Contents are stored inside a `custom_selections` HDF5 group at the root of the file.
- * The `custom_selections` group itself contains the `parameters` and `results` subgroups.
+ * Check contents for the custom selections step, see [here](@ref details-custom_selections) for details.
  *
- * <HR>
- * `parameters` should contain:
- *
- * - `selections`: a group defining the custom selections.
- *   Each child is named after a user-created selection.
- *   Each child is an integer dataset of arbitrary length containing the indices of the selected cells.
- *   Note that indices refer to the dataset after QC filtering and should be less than `num_cells`.
- *   Indices in each dataset should be unique and sorted.
- * 
- * <HR>
- * `results` should contain `per_selection`, a group containing the marker results for each selection after a comparison to a group containing all other cells.
- * Each child of `per_selection` is named after its selection and is itself a group containing children named according to `modalities`.
- * Each modality-specific child is yet another group containing the statistics for that modality:
- *
- * - `means`: a float dataset of length equal to the number of features in that modality, containing the mean expression of each gene in the selection.
- * - `detected`: a float dataset of length equal to the number of features in that modality, containing the proportion of cells with detected expression of each gene in the selection.
- * - `lfc`: a float dataset of length equal to the number of features in that modality, containing the log-fold change in the selection compared to all other cells.
- * - `delta_detected`: same as `lfc`, but for the delta-detected (i.e., difference in the percentage of detected expression).
- * - `cohen`: same as `lfc`, but for Cohen's d.
- * - `auc`: same as `lfc`, but for the AUCs.
- *
- * <DIV style="color:blue">
- * <details>
- * <summary>For versions 1.0-1.2</summary>
- * `results` should contain:
- *
- * - `markers`: a group containing the marker results for each selection after a comparison to a group containing all other cells.
- *   Each child is named after its selection and is a group containing:
- *   - `means`: a float dataset of length equal to the number of genes, containing the mean expression of each gene in the selection.
- *   - `detected`: a float dataset of length equal to the number of genes, containing the proportion of cells with detected expression of each gene in the selection.
- *   - `lfc`: a float dataset of length equal to the number of genes, containing the log-fold change in the selection compared to all other cells.
- *   - `delta_detected`: same as `lfc`, but for the delta-detected (i.e., difference in the percentage of detected expression).
- *   - `cohen`: same as `lfc`, but for Cohen's d.
- *   - `auc`: same as `lfc`, but for the AUCs.
- * </details>
- * </DIV>
- *
- * <HR>
  * @param handle An open HDF5 file handle.
  * @param num_cells Number of high-quality cells in the dataset, i.e., after any quality-based filtering has been applied.
  * @param modalities Modalities available in the dataset, should be some combination of `"RNA"` or `"ADT"`.

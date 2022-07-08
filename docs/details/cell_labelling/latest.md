@@ -1,0 +1,33 @@
+# Cell labelling (latest) {#details-cell_labelling}
+
+## Overview
+
+Contents are stored inside an `inputs` HDF5 group at the root of the file.
+The `cell_labelling` group itself contains the `parameters` and `results` subgroups.
+
+## Parameters
+
+`parameters` should contain:
+
+- `human_references`: a string dataset defining the human reference datasets used for labelling.
+  Each entry contains the name of a reference dataset, e.g., `"BlueprintEncode"`.
+- `mouse_references`: a string dataset defining the mouse reference datasets used for labelling.
+  Each entry contains the name of a reference dataset, e.g., `"ImmGen"`.
+
+## Results
+
+`results` should contain:
+
+- `per_reference`: a group containing the label assignments for each cluster in each reference.
+  Each child is named after its corresponding reference as listed in `parameters`, though not all references listed in `parameters` need to be present here.
+  Each child is a 1-dimensional string dataset of length equal to the number of clusters, where each entry contains the assigned label for the corresponding cluster.
+  (The number of clusters is defined by `num_clusters` in `cell_labelling::validate()`.)
+
+For multiple references of the relevant species, `results` will also contain:
+
+- `integrated`: a string dataset of length equal to the number of clusters.
+  This specifies the reference with the top-scoring label for each cluster, after integrating the results of all per-reference classifications.
+
+## Changelog
+
+- Version 1.0: added the `cell_labelling` group.

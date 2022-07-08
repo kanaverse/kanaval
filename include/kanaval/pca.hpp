@@ -59,33 +59,8 @@ inline int validate_results(const H5::Group& handle, int max_pcs, std::string bl
  */
 
 /**
- * Check contents for the PCA step on the RNA log-expression matrix.
- * Contents are stored inside an `pca` HDF5 group at the root of the file.
- * The `pca` group itself contains the `parameters` and `results` subgroups.
+ * Check contents for the PCA step on the RNA log-expression matrix, see [here](@ref details-pca) for details.
  *
- * <HR>
- * `parameters` should contain:
- *
- * - `num_hvgs`: a scalar integer containing the number of highly variable genes to use to compute the PCA.
- * - `num_pcs`: a scalar integer containing the number of PCs to compute.
- * - \v1_1{\[**since version 1.1**\] `block_method`: a scalar string specifying the method to use when dealing with multiple blocks in the dataset.
- *   This may be `"none"`, `"regress"` or `"mnn"`.}
- *
- * <HR>
- * `results` should contain:
- *
- * - `pcs`: a 2-dimensional float dataset containing the PC coordinates in a row-major layout.
- *   Each row corresponds to a cell (after QC filtering) and each column corresponds to a PC.
- *   Note that this is deliberately transposed from the Javascript/Wasm representation for easier storage.
- *   \v1_1{\[**since version 1.1**\] If `block_type = "mnn"`, the PCs will be computed using a weighted method that adjusts for differences in the number of cells across blocks.
- *   If `block_type = "regress"`, the PCs will be computed on the residuals after regressing out the block-wise effects.}
- * - `var_exp`: a float dataset of length equal to the number of PCs, containing the percentage of variance explained by each PC.
- *
- * \v1_1{\[**since version 1.1**\] If `block_type = "mnn"`, the `results` group will also contain:}
- *
- * - \v1_1{`corrected`, a float dataset with the same dimensions as `pcs`, containing the MNN-corrected PCs for each cell.}
- *
- * <HR>
  * @param handle An open HDF5 file handle.
  * @param num_cells Number of cells in the dataset after any quality filtering is applied.
  * @param version Version of the state file.

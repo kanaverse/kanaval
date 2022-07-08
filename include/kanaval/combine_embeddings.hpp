@@ -48,32 +48,8 @@ inline void validate_results(const H5::Group& handle, int num_cells, const std::
  */
 
 /**
- * Check contents for the combined embeddings step.
- * Contents are stored inside a `combined_embedding` HDF5 group at the root of the file.
- * The `combined_embedding` group itself contains the `parameters` and `results` subgroups.
+ * Check contents for the combined embeddings step, see [here](@ref details-combine_embeddings) for details.
  *
- * Only a single embedding was generated prior to version 2.0 of the format, so the `combined_embeddings` group may be absent in pre-v2.0 files.
- * No concept of multi-modality exists in earlier versions so downstream steps should use the PCs directly from `pca::validate()`.
- *
- * <HR>
- * `parameters` should contain:
- *
- * - `approximate`: an integer scalar to be interpreted as a boolean,
- *   indicating whether an approximate neighbor search was used to compute the per-embedding scaling factors.
- * - `weights`: a group containing the (scaling) weights to apply to each modality.
- *   If empty, weights are implicitly assumed to be equal to unity for all modalities.
- *   Otherwise, the group should contain a float scalar dataset named after each modality in `modalities`, containing the weight to be applied to each modality.
- *
- * <HR>
- * If `modalities.size() > 1`, `results` should contain:
- *
- * - `combined`: a 2-dimensional float dataset containing the combined embeddings in a row-major layout.
- *   Each row corresponds to a cell (`num_cells`) and each column corresponds to a dimension (`total_dims`).
- *
- * Otherwise, `combined` may be missing, in which case it is assumed that only a single embedding exists in the analysis and no combining is necessary.
- * Downstream steps should instead use the `pcs` of the PCA group of the available modality, see `pca::validate()` or `adt_pca::validate()`.
- *
- * <HR>
  * @param handle An open HDF5 file handle.
  * @param num_cells Number of cells in the dataset after any quality filtering is applied.
  * @param modalities Vector of strings containing the names of the modalities to be combined.

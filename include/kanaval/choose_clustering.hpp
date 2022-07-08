@@ -36,24 +36,7 @@ inline void validate_results(const H5::Group& handle) {
  */
 
 /**
- * Check contents for the clustering choice.
- * Contents are stored inside a `choose_clustering` HDF5 group at the root of the file.
- * The `choose_clustering` group itself contains the `parameters` and `results` subgroups.
- *
- * <HR>
- * `parameters` should contain:
- * 
- * - `method`: a scalar string specifying the clustering method to use.
- *   This is currently either `snn_graph` or `kmeans`.
- * 
- * <HR>
- * `results` is empty.
- * 
- * Depending on the `method`, `snn_graph_cluster` or `kmeans_cluster` must have non-empty `results`.
- * Both may also be non-empty, in which case the appropriate clustering is chosen based on `method`.
- *
- * <HR>
- * @param handle An open HDF5 file handle.
+ * Check contents for the clustering choice, see [here](@ref details-choose_clustering) for details.
  *
  * @return The clustering method of choice. 
  * If the format is invalid, an error is raised.

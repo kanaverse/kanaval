@@ -77,29 +77,8 @@ inline int validate_results(const H5::Group& handle, int num_cells, bool in_use)
  */
 
 /**
- * Check contents for the SNN graph clustering step.
- * Contents are stored inside an `snn_graph_cluster` HDF5 group at the root of the file.
- * The `snn_graph_cluster` group itself contains the `parameters` and `results` subgroups.
+ * Check contents for the SNN graph clustering step, see [here](@ref details-snn_graph_cluster) for details.
  *
- * <HR>
- * `parameters` will contain:
- * 
- * - `k`: a scalar integer specifying the number of nearest neighbors to find.
- * - `scheme`: a scalar string specifying the edge weighting scheme to use.
- *   This may be `"rank"`, `"number"` or `"jaccard"`.
- * - `resolution`: a scalar float specifying the resolution of the multi-level community detection.
- * 
- * <HR>
- * If `in_use = true`, `results` should contain:
- * 
- * - `clusters`: an integer dataset of length equal to the number of cells (after QC filtering), 
- *   containing the SNN graph cluster assignment for each cell.
- *   For $N$ clusters, there should be at least one occurrence of each integer in $[0, N)$.
- * 
- * If `in_use = false`, `clusters` may be absent.
- * If it is present, it should follow the constraints listed above.
- *
- * <HR>
  * @param handle An open HDF5 file handle.
  * @param num_cells Number of cells in the dataset after any quality filtering is applied.
  * @param in_use Was SNN clustering used by downstream steps?

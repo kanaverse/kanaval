@@ -1,0 +1,29 @@
+# k-means clustering (latest) {#details-kmeans_cluster}
+
+## Overview
+
+We expect an `kmeans_cluster` HDF5 group at the root of the file, containing the k-means clustering parameters and results.
+The group itself should contain the `parameters` and `results` subgroups.
+
+## Parameters
+
+`parameters` should contain:
+
+- `k`: a scalar integer specifying the number of clusters to create.
+
+## Results
+
+If k-means clustering is the chosen clustering method in [`choose_clustering`](../choose_clustering/latest.md) (i.e., `in_use = true` in `kmeans_cluster::validate()`), `results` should contain:
+
+- `clusters`: an integer dataset of length equal to the number of cells after filtering.
+  This contains the cluster assignment for each cell, which should lie in `[0, k)`.
+
+  The total number of clusters may be less than `k`, e.g., when there are too few cells.
+  For `N` clusters, there should be at least one occurrence of each integer in `[0, N)`.
+
+If `in_use = false`, `clusters` may be absent.
+Nonetheless, if it is present, it should follow the constraints listed above.
+
+## Changelog
+
+- Version 1.0: added the `kmeans_cluster` group.
