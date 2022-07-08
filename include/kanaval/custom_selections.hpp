@@ -19,7 +19,7 @@ namespace custom_selections {
 /**
  * @cond
  */
-inline std::vector<std::string> validate_parameters(const H5::Group& handle, int num_cells) {
+inline std::vector<std::string> validate_parameters(const H5::Group& handle, int num_cells, int version) {
     auto phandle = utils::check_and_open_group(handle, "parameters");
     auto shandle = utils::check_and_open_group(phandle, "selections");
 
@@ -35,8 +35,15 @@ inline std::vector<std::string> validate_parameters(const H5::Group& handle, int
             }
         }
 
-        if (!utils::is_unique_and_sorted(involved)) {
-            throw std::runtime_error("indices should be sorted and unique for selection '" + output.back() + "'");
+        if (version <= 2001000) {
+            if (!utils::is_unique_and_sorted(involved)) {
+                throw std::runtime_error("indices should be sorted and unique for selection '" + output.back() + "'");
+            }
+        } else {
+            std::sort(involved.begin(), involved.end());
+            if (!utils::is_unique_and_sorted(involved)) {
+                throw std::runtime_error("indices should be unique for selection '" + output.back() + "'");
+            }
         }
     }
 
@@ -156,7 +163,7 @@ inline void validate(const H5::Group& handle, int num_cells, const std::vector<s
 
     std::vector<std::string> collected;
     try {
-        collected = validate_parameters(mhandle, num_cells);
+        collected = validate_parameters(mhandle, num_cells, version);
     } catch (std::exception& e) {
         throw utils::combine_errors(e, "failed to retrieve parameters from 'custom_selections'");
     }
