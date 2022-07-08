@@ -174,7 +174,7 @@ Functions</h2></td></tr>
 <hr  />
 <p> <code>parameters</code> should contain:</p>
 <ul>
-<li><code>selections</code>: a group defining the custom selections. Each child is named after a user-created selection. Each child is an integer dataset of arbitrary length containing the indices of the selected cells. Note that indices refer to the dataset after QC filtering and should be less than <code>num_cells</code>.</li>
+<li><code>selections</code>: a group defining the custom selections. Each child is named after a user-created selection. Each child is an integer dataset of arbitrary length containing the indices of the selected cells. Note that indices refer to the dataset after QC filtering and should be less than <code>num_cells</code>. Indices in each dataset should be unique and sorted.</li>
 </ul>
 <hr  />
 <p> <code>results</code> should contain <code>per_selection</code>, a group containing the marker results for each selection after a comparison to a group containing all other cells. Each child of <code>per_selection</code> is named after its selection and is itself a group containing children named according to <code>modalities</code>. Each modality-specific child is yet another group containing the statistics for that modality:</p>
