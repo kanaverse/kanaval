@@ -14,6 +14,9 @@
 
 namespace kanaval {
 
+/**
+ * Validation for RNA quality control
+ */
 namespace quality_control {
 
 /**
@@ -74,70 +77,8 @@ inline int validate_results(const H5::Group& qhandle, int num_cells, int num_sam
  */
 
 /**
- * Check contents for the quality control step on the RNA count matrix.
- * Contents are stored inside a `quality_control` HDF5 group at the root of the file.
- * The `quality_control` group itself contains the `parameters` and `results` subgroups.
- * 
- * <HR>
- * `parameters` should contain:
- * 
- * - `use_mito_default`: a scalar integer to be interpreted as a boolean.
- *   This specifies whether to use the default mitochondrial gene list.
- * - `mito_prefix`: a scalar string containing the expected prefix for mitochondrial gene symbols.
- * - `nmads`: a scalar float specifying the number of MADs to use to define the QC thresholds.
- * - `skip`: a scalar integer indicating whether quality control should be skipped.
+ * Check contents for the quality control step on the RNA count matrix, see [here](@ref details-quality_control) for more details.
  *
- * <DIV style="color:blue">
- * <details>
- * <summary>For versions before 2.1</summary> 
- * `parameters` should contain:
- * - `use_mito_default`: a scalar integer to be interpreted as a boolean.
- *   This specifies whether to use the default mitochondrial gene list.
- * - `mito_prefix`: a scalar string containing the expected prefix for mitochondrial gene symbols.
- * - `nmads`: a scalar float specifying the number of MADs to use to define the QC thresholds.
- * </details>
- * </DIV>
- * 
- * <HR>
- * `results` should contain:
- * 
- * - `metrics`, a group containing per-cell QC metrics derived from the RNA count data.
- *   This contains:
- *   - `sums`: a float dataset of length equal to the number of cells, containing the total count for each cell.
- *   - `detected`:  an integer dataset of length equal to the number of cells, containing the total number of detected genes for each cell.
- *   - `proportion`: a float dataset of length equal to the number of cells, containing the percentage of counts in (mitochondrial) genes.
- * - `thresholds`, a group containing thresholds on the metrics for each batch.
- *   This contains:
- *   - `sums`: a float dataset of length equal to the number of batches, containing the total count threshold for each batch.
- *   - `detected`:  an integer dataset of length equal to the number of batches, containing the threshold on the total number of detected genes for each batch.
- *   - `proportion`: a float dataset of length equal to the number of batches, containing the threshold on the percentage of counts in (mitochondrial) genes for each batch.
- * - `discards`: an integer dataset of length equal to the number of cells.
- *   Each value is interpreted as a boolean and specifies whether the corresponding cell would be discarded by the RNA-based filter thresholds.
- *
- * If `skip = true`, `results` may be an empty group.
- * However, if any of `metrics`, `thresholds` or `discards` is present, they should follow the requirements listed above.
- *
- * <DIV style="color:blue">
- * <details>
- * <summary>For versions before 2.1</summary> 
- * `results` should contain:
- * 
- * - `metrics`, a group containing per-cell QC metrics derived from the RNA count data.
- *   This contains:
- *   - `sums`: a float dataset of length equal to the number of cells, containing the total count for each cell.
- *   - `detected`:  an integer dataset of length equal to the number of cells, containing the total number of detected genes for each cell.
- *   - `proportion`: a float dataset of length equal to the number of cells, containing the percentage of counts in (mitochondrial) genes.
- * - `thresholds`, a group containing thresholds on the metrics for each batch.
- *   This contains:
- *   - `sums`: a float dataset of length equal to the number of batches, containing the total count threshold for each batch.
- *   - `detected`:  an integer dataset of length equal to the number of batches, containing the threshold on the total number of detected genes for each batch.
- *   - `proportion`: a float dataset of length equal to the number of batches, containing the threshold on the percentage of counts in (mitochondrial) genes for each batch.
- * - `discards`: an integer dataset of length equal to the number of cells.
- *   Each value is interpreted as a boolean and specifies whether the corresponding cell would be discarded by the RNA-based filter thresholds.
- * </details>
- * </DIV>
- *
- * <HR>
  * @param handle An open HDF5 file handle.
  * @param num_cells Number of cells in the dataset before any quality filtering is applied.
  * @param num_samples Number of batches in the dataset.

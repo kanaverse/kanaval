@@ -13,6 +13,9 @@
 
 namespace kanaval {
 
+/** 
+ * Validation for the batch correction
+ */
 namespace batch_correction {
 
 /**
@@ -51,28 +54,7 @@ inline void validate_results(const H5::Group& handle, int num_dims, int num_cell
  */
 
 /**
- * Check contents for the batch correction step.
- * Contents are stored inside an `batch_correction` HDF5 group at the root of the file.
- * The `batch_correction` group itself contains the `parameters` and `results` subgroups.
- *
- * A separate batch correction step was not used prior to version 2.0 of the format, so the `batch_correction` group may be absent in pre-v2.0 files.
- * In such cases, we can check the `corrected` dataset in the `pca/results` group, see `pca::validate()` for more details.
- *
- * <HR>
- * `parameters` should contain:
- *
- * - `num_neighbors`: a scalar integer specifying the number of neighbors to use for mutual nearest neighbors correction.
- * - `approximate`: a scalar integer to be treated as a boolean, indicating whether an approximate neighbor search was used.
- * - `method`: a scalar string specifying the correction method to use, either `"none"` or `"mnn"`.
- *
- * <HR>
- * If `method = "mnn"` and `num_samples > 1`, `results` should contain:
- *
- * - `corrected`: a 2-dimensional float dataset containing the corrected PCs in a row-major layout.
- *   Each row corresponds to a cell (`num_cells`) and each column corresponds to a dimension (`num_dims`).
- *
- * Otherwise, correction is assumed to be a no-op and `results` may be empty.
- * Downstream steps should instead fetch coordinates from the `combined` dataset in `combine_embeddings::validate()`.
+ * Check contents for the batch correction step, see [here](@ref details-batch_correction.md) for details.
  *
  * <HR>
  * @param handle An open HDF5 file handle.

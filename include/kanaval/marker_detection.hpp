@@ -14,6 +14,9 @@
 
 namespace kanaval {
 
+/**
+ * Validation for marker detection
+ */
 namespace marker_detection {
 
 /**
@@ -56,51 +59,8 @@ inline void validate_markers(const H5::Group& chandle, int num_features, int num
  */
 
 /**
- * Check contents for the marker detection step.
- * Contents are stored inside an `marker_detection` HDF5 group at the root of the file.
- * The `marker_detection` group itself contains the `parameters` and `results` subgroups.
+ * Check contents for the marker detection step, see [here](@ref details-marker_detection) for details.
  *
- * <HR>
- * `parameters` should be empty.
- * 
- * <HR>
- * `results` should contain `per_cluster`, a group containing the marker results for each cluster.
- * Each child of `per_cluster` is named after a cluster index from 0 to `num_clusters - 1`, and is itself a group containing children named according to `modalities`.
- * Each modality-specific child is yet another group containing the statistics for that modality:
- *
- * - `means`: a float dataset of length equal to the number of features, containing the mean expression of each feature in the current cluster.
- * - `detected`: a float dataset of length equal to the number of features, containing the proportion of cells with detected expression of each feature in the current cluster.
- * - `lfc`: an group containing statistics for the log-fold changes from all pairwise comparisons involving the current cluster.
- *   This contains:
- *   - `min`: a float dataset of length equal to the number of features, containing the minimum log-fold change across all pairwise comparisons for each feature.
- *   - `mean`: a float dataset of length equal to the number of features, containing the mean log-fold change across all pairwise comparisons for each feature.
- *   - `min_rank`: a float dataset of length equal to the number of features, containing the minimum rank of the log-fold changes across all pairwise comparisons for each feature.
- * - `delta_detected`: same as `lfc`, but for the delta-detected (i.e., difference in the percentage of detected expression).
- * - `cohen`: same as `lfc`, but for Cohen's d.
- * - `auc`: same as `lfc`, but for the AUCs.
- *
- * <DIV style="color:blue">
- * <details>
- * <summary>For versions 1.0-1.2</summary>
- * `results` should contain:
- *
- * - `clusters`: a group representing an array of length equal to the number of clusters.
- *   Each child is another group that is named by the cluster index from 0 to `num_clusters - 1`, containing the marker details for that cluster.
- *   Each child group contains:
- *   - `means`: a float dataset of length equal to the number of genes, containing the mean expression of each gene in the current cluster.
- *   - `detected`: a float dataset of length equal to the number of genes, containing the proportion of cells with detected expression of each gene in the current cluster.
- *   - `lfc`: an group containing statistics for the log-fold changes from all pairwise comparisons involving the current cluster.
- *     This contains:
- *     - `min`: a float dataset of length equal to the number of genes, containing the minimum log-fold change across all pairwise comparisons for each gene.
- *     - `mean`: a float dataset of length equal to the number of genes, containing the mean log-fold change across all pairwise comparisons for each gene.
- *     - `min_rank`: a float dataset of length equal to the number of genes, containing the minimum rank of the log-fold changes across all pairwise comparisons for each gene.
- *   - `delta_detected`: same as `lfc`, but for the delta-detected (i.e., difference in the percentage of detected expression).
- *   - `cohen`: same as `lfc`, but for Cohen's d.
- *   - `auc`: same as `lfc`, but for the AUCs.
- * </details>
- * </DIV>
- *
- * <HR>
  * @param handle An open HDF5 file handle.
  * @param num_clusters Number of clusters produced by previous steps.
  * @param modalities Modalities available in the dataset, should be some combination of `"RNA"` or `"ADT"`.

@@ -14,6 +14,9 @@
 
 namespace kanaval {
 
+/** 
+ * Validation for the cell filtering
+ */
 namespace cell_filtering {
 
 /**
@@ -32,27 +35,8 @@ inline int validate_results(const H5::Group& qhandle, int num_cells, int num_mod
  */
 
 /**
- * Check contents for the cell filtering step.
- * Contents are stored inside a `cell_filtering` HDF5 group at the root of the file.
- * The `cell_filtering` group itself contains the `parameters` and `results` subgroups.
+ * Check contents for the cell filtering step, see [here](@ref details-cell_filtering) for details.
  *
- * Cell filtering was rolled into the `quality_control` step prior to version 2.0 of the format, so the `cell_filtering` group may be absent in pre-v2.0 files.
- * For such files, the `discards` vector is implicitly defined as the one from the `quality_control` group, see `quality_control::validate()` for details.
- *
- * <HR>
- * `parameters` should be empty.
- *
- * <HR>
- * If `num_modalities > 1`, `results` should contain:
- *
- * - `discards`: an integer dataset of length equal to the number of cells.
- *   Each value is interpreted as a boolean and specifies whether the corresponding cell would be discarded by the filter thresholds.
- *   This is typically some function of the per-modality `discards` from `quality_control::validate()` and `adt_quality_control::validate()`.
- *   
- * Otherwise, `discards` may be absent, in which case the discard dataset is implicitly defined as the `discards` from the single modality.
- * See `quality_control::validate()` or `adt_quality_control::validate()` for more detials.
- * 
- * <HR>
  * @param handle An open HDF5 file handle.
  * @param num_cells Number of cells in the dataset before any quality filtering is applied.
  * @param num_modalities Number of modalities present in the dataset.

@@ -14,6 +14,9 @@
 
 namespace kanaval {
 
+/** 
+ * Validation for cell labelling
+ */
 namespace cell_labelling {
 
 /**
@@ -70,31 +73,8 @@ inline void validate_results(const H5::Group& handle, const std::unordered_set<s
  */
 
 /**
- * Check contents for the cell labelling step.
- * Contents are stored inside an `inputs` HDF5 group at the root of the file.
- * The `cell_labelling` group itself contains the `parameters` and `results` subgroups.
+ * Check contents for the cell labelling step, see [here](@ref details-cell_labelling) for details.
  *
- * <HR>
- * `parameters` should contain:
- * 
- * - `human_references`: a string dataset defining the human reference datasets used for labelling.
- *   Each entry contains the name of a reference dataset, e.g., `"BlueprintEncode"`.
- * - `mouse_references`: a string dataset defining the mouse reference datasets used for labelling.
- *   Each entry contains the name of a reference dataset, e.g., `"ImmGen"`.
- * 
- * <HR>
- * `results` should contain:
- * 
- * - `per_reference`: a group containing the label assignments for each cluster in each reference.
- *   Each child is named after its corresponding reference as listed in `parameters` (though not all references listed in `parameters` need to be present here).
- *   Each child is a 1-dimensional string dataset of length equal to the number of clusters, where each entry contains the assigned label for the corresponding cluster.
- * 
- * For multiple references of the relevant species, `results` will also contain:
- * 
- * - `integrated`: a string dataset of length equal to the number of clusters.
- *   This specifies the reference with the top-scoring label for each cluster, after integrating the results of all per-reference classifications.
- *
- * <HR>
  * @param handle An open HDF5 file handle.
  * @param num_clusters Number of clusters to be labelled.
  * 

@@ -13,6 +13,9 @@
 
 namespace kanaval {
 
+/**
+ * Validation for t-SNE results
+ */
 namespace tsne {
 
 /**
@@ -49,24 +52,8 @@ inline void validate_results(const H5::Group& handle, int num_cells) {
  */
 
 /**
- * Check contents for the t-SNE step.
- * Contents are stored inside an `tsne` HDF5 group at the root of the file.
- * The `tsne` group itself contains the `parameters` and `results` subgroups.
+ * Check contents for the t-SNE step, see [here](@ref details-tsne) for details.
  *
- * <HR>
- * `parameters` should contain:
- *
- * - `perplexity`: a scalar float specifying the t-SNE perplexity.
- * - `iterations`: a scalar integer specifying the t-SNE iterations.
- * - `animate`: a scalar integer to be interpreted as a boolean, indicating whether an animation should be performed.
- *
- * <HR>
- * `results` should contain:
- *
- * - `x`: a float dataset of length equal to the number of cells (after QC filtering), containing the x-coordinates for each cell.
- * - `y`: a float dataset of length equal to the number of cells (after QC filtering), containing the y-coordinates for each cell.
- *
- * <HR>
  * @param handle An open HDF5 file handle.
  * @param num_cells Number of cells in the dataset after any quality filtering is applied.
  *
