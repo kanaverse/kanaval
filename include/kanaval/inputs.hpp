@@ -208,26 +208,30 @@ inline ParamDump validate_parameters(const H5::Group& handle, bool embedded, int
     if (phandle.exists("subset")) {
         auto subhandle = utils::check_and_open_group(phandle, "subset");
 
-        if (subhandle.exists("indices")) {
-            auto subidx = utils::load_integer_vector(subhandle, "indices");
+        if (subhandle.exists("cells")) {
+            auto subcellhandle = utils::check_and_open_group(subhandle, "cells");
 
-            for (auto i : subidx) {
-                if (i < 0) {
-                    throw std::runtime_error("indices in 'subset/indices' should be non-negative");
+            if (subcellhandle.exists("indices")) {
+                auto subidx = utils::load_integer_vector(subcellhandle, "indices");
+
+                for (auto i : subidx) {
+                    if (i < 0) {
+                        throw std::runtime_error("indices in 'subset/indices' should be non-negative");
+                    }
                 }
-            }
 
-            if (!utils::is_unique_and_sorted(subidx)) {
-                throw std::runtime_error("indices in 'subset/indices' should be unique and sorted");
-            }
+                if (!utils::is_unique_and_sorted(subidx)) {
+                    throw std::runtime_error("indices in 'subset/indices' should be unique and sorted");
+                }
 
-            output.subset_num = subidx.size();
-        } else {
-            utils::check_and_open_dataset(subhandle, "field", H5T_STRING, {});
-            auto vhandle = utils::check_and_open_dataset(subhandle, "values", H5T_STRING);
-            auto vdims = utils::load_dataset_dimensions(vhandle);
-            if (vdims.size() != 1) {
-                throw std::runtime_error("'subset/values' should be a 1-dimensional string dataset");
+                output.subset_num = subidx.size();
+            } else {
+                utils::check_and_open_dataset(subcellhandle, "field", H5T_STRING, {});
+                auto vhandle = utils::check_and_open_dataset(subcellhandle, "values", H5T_STRING);
+                auto vdims = utils::load_dataset_dimensions(vhandle);
+                if (vdims.size() != 1) {
+                    throw std::runtime_error("'subset/values' should be a 1-dimensional string dataset");
+                }
             }
         }
     }
