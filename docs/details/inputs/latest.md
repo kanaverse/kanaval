@@ -55,8 +55,9 @@ For multiple matrices, the loaded dataset is assumed to be a column-wise concate
   - `id`: a scalar string containing some unique identifier for this file.
     The interpretation of `id` is application-specific but usually refers to some cache or database.
 
-Optionally, `parameters` may contain a `subset` group, specifying the subset of cells to be used in downstream steps.
-This group should contain one of:
+Optionally, `parameters` may contain a `subset` group.
+This may in turn contain a `cells` group, specifying the subset of cells to be used in downstream steps.
+The `subset/cells` group should contain one of:
 
 - `indices`, a 1-dimensional integer dataset specifying the indices of the cells to retain.
   Indices should be relative to the loaded dataset before subsetting.
