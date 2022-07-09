@@ -38,7 +38,7 @@ inline std::vector<std::string> validate_parameters(const H5::Group& handle, int
             }
         }
 
-        if (version <= 2001000) {
+        if (version >= 2001000) {
             if (!utils::is_unique_and_sorted(involved)) {
                 throw std::runtime_error("indices should be sorted and unique for selection '" + output.back() + "'");
             }
