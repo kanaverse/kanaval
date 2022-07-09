@@ -14,6 +14,9 @@
 
 namespace kanaval {
 
+/**
+ * Validation for combined embeddings
+ */
 namespace combine_embeddings {
 
 /**

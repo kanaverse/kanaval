@@ -13,6 +13,9 @@
 
 namespace kanaval {
 
+/**
+ * Validation for the clustering choice
+ */
 namespace choose_clustering { 
 
 /**

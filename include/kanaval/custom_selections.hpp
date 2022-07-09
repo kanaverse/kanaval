@@ -14,6 +14,9 @@
 
 namespace kanaval {
 
+/**
+ * Validation for custom selections
+ */
 namespace custom_selections {
 
 /**

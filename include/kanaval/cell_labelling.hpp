@@ -14,6 +14,9 @@
 
 namespace kanaval {
 
+/** 
+ * Validation for cell labelling
+ */
 namespace cell_labelling {
 
 /**

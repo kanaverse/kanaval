@@ -12,6 +12,9 @@
 
 namespace kanaval {
 
+/**
+ * Validation for the neighbor search index
+ */
 namespace neighbor_index {
 
 /**

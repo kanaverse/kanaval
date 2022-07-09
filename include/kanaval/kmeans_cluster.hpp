@@ -13,6 +13,9 @@
 
 namespace kanaval {
 
+/**
+ * Validation for k-means clustering
+ */
 namespace kmeans_cluster { 
 
 /**

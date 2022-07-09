@@ -14,6 +14,9 @@
 
 namespace kanaval {
 
+/** 
+ * Validating ADT quality control
+ */
 namespace adt_quality_control {
 
 /**

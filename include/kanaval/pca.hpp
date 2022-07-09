@@ -14,6 +14,9 @@
 
 namespace kanaval {
 
+/**
+ * Validation for the RNA-based PCA
+ */
 namespace pca {
 
 /**

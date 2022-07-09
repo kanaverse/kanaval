@@ -42,7 +42,6 @@
  * @namespace kanaval
  * @brief Utilities for validating kana files.
  */
-
 namespace kanaval {
 
 /**
@@ -70,12 +69,11 @@ namespace kanaval {
  * - `cell_labelling::validate()`
  *
  * See the documentation for each individual function for more details on the expected structure of the state file.
+ * An error is raised if an invalid structure is detected in any step.
  *
  * @param handle Open handle to a HDF5 file.
  * @param embedded Whether the data files are embedded.
  * @param version Version of the kana file.
- *
- * @return An error is raised if an invalid structure is detected.
  */
 void validate(const H5::H5File& handle, bool embedded, int version) {
     auto i_out = inputs::validate(handle, embedded, version);

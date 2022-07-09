@@ -18,6 +18,9 @@
 
 namespace kanaval {
 
+/** 
+ * Validation of inputs
+ */
 namespace inputs {
 
 /**

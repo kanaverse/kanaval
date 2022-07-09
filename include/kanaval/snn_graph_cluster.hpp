@@ -13,6 +13,9 @@
 
 namespace kanaval {
 
+/**
+ * Validation for SNN graph-based clustering
+ */
 namespace snn_graph_cluster { 
 
 /**

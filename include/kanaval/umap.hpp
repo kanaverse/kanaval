@@ -13,6 +13,9 @@
 
 namespace kanaval {
 
+/**
+ * Validation for UMAP results
+ */
 namespace umap {
 
 /**

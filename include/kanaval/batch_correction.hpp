@@ -13,6 +13,9 @@
 
 namespace kanaval {
 
+/** 
+ * Validation for the batch correction
+ */
 namespace batch_correction {
 
 /**

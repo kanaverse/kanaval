@@ -13,6 +13,9 @@
 
 namespace kanaval {
 
+/**
+ * Validation for feature selection
+ */
 namespace feature_selection {
 
 /**

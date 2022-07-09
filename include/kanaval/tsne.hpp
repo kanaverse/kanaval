@@ -13,6 +13,9 @@
 
 namespace kanaval {
 
+/**
+ * Validation for t-SNE results
+ */
 namespace tsne {
 
 /**

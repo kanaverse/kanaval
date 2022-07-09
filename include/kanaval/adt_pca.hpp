@@ -14,6 +14,9 @@
 
 namespace kanaval {
 
+/** 
+ * Validating the ADT-based PCA
+ */
 namespace adt_pca {
 
 /**

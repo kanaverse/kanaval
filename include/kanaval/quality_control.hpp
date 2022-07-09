@@ -14,6 +14,9 @@
 
 namespace kanaval {
 
+/**
+ * Validation for RNA quality control
+ */
 namespace quality_control {
 
 /**

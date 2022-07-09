@@ -12,6 +12,9 @@
 
 namespace kanaval {
 
+/**
+ * Validation for the RNA matrix normalization
+ */
 namespace normalization {
 
 /**

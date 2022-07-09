@@ -14,6 +14,9 @@
 
 namespace kanaval {
 
+/** 
+ * Validation for the cell filtering
+ */
 namespace cell_filtering {
 
 /**

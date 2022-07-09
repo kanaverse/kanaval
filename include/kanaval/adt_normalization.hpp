@@ -12,6 +12,9 @@
 
 namespace kanaval {
 
+/** 
+ * Validation for ADT normalization
+ */
 namespace adt_normalization {
 
 /**

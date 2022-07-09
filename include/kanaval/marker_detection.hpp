@@ -14,6 +14,9 @@
 
 namespace kanaval {
 
+/**
+ * Validation for marker detection
+ */
 namespace marker_detection {
 
 /**
