@@ -80,29 +80,55 @@ $(function() {
 <p ><img src="https://raw.githubusercontent.com/LTLA/kanaval/master/docs/layout.png" alt="" width="500" class="inline"/></p>
 <h1>Structure of the HDF5 state file</h1>
 <p >Inside the HDF5 state file, each analysis step is represented by a HDF5 group. The expectations for the contents of each group are described in the documentation for the corresponding validation function:</p>
-<ul>
-<li><a href="https://ltla.github.io/kanaval/inputs_8hpp.html">Inputs</a></li>
-<li><a href="https://ltla.github.io/kanaval/quality__control_8hpp.html">Quality control</a></li>
-<li><a href="https://ltla.github.io/kanaval/normalization_8hpp.html">Normalization</a></li>
-<li><a href="https://ltla.github.io/kanaval/feature__selection_8hpp.html">Feature selection</a></li>
-<li><a href="https://ltla.github.io/kanaval/pca_8hpp.html">Principal components analysis</a></li>
-<li><a href="https://ltla.github.io/kanaval/kmeans__cluster_8hpp.html">k-means clustering</a></li>
-<li><a href="https://ltla.github.io/kanaval/neighbor__index_8hpp.html">Neighbor index</a></li>
-<li><a href="https://ltla.github.io/kanaval/snn__graph__cluster_8hpp.html">SNN graph clustering</a></li>
-<li><a href="https://ltla.github.io/kanaval/choose__clustering_8hpp.html">Clustering choice</a></li>
-<li><a href="https://ltla.github.io/kanaval/tsne_8hpp.html">t-SNE</a></li>
-<li><a href="https://ltla.github.io/kanaval/umap_8hpp.html">UMAP</a></li>
-<li><a href="https://ltla.github.io/kanaval/marker__detection_8hpp.html">Marker detection</a></li>
-<li><a href="https://ltla.github.io/kanaval/custom__selections_8hpp.html">Custom selections</a></li>
-<li><a href="https://ltla.github.io/kanaval/cell__labelling_8hpp.html">Cell labelling</a></li>
-</ul>
+<table class="markdownTable">
+<tr class="markdownTableHead">
+<th class="markdownTableHeadNone"><b>Step</b>   </th><th class="markdownTableHeadNone"><b>Specification</b>   </th><th class="markdownTableHeadNone"><b>Function</b>    </th></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Inputs   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/details-inputs.html">link</a>   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/inputs_8hpp.html">link</a>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Quality control   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/details-quality_control.html">link</a>   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/quality__control_8hpp.html">link</a>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">ADT quality control   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/details-adt_quality_control.html">link</a>   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/adt__quality__control_8hpp.html">link</a>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Normalization   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/details-normalization.html">link</a>   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/normalization_8hpp.html">link</a>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">ADT normalization   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/details-adt_normalization.html">link</a>   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/adt__normalization_8hpp.html">link</a>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Feature selection   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/details-feature_selection.html">link</a>   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/feature__selection_8hpp.html">link</a>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">PCA   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/details-pca.html">link</a>   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/pca_8hpp.html">link</a>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">ADT PCA   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/details-adt_pca.html">link</a>   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/adt__pca_8hpp.html">link</a>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Combine embeddings   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/details-combine_embeddings.html">link</a>   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/combine__embeddings_8hpp.html">link</a>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Batch correction   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/details-batch_correction.html">link</a>   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/batch__correction_8hpp.html">link</a>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">k-means clustering   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/details-kmeans_cluster.html">link</a>   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/kmeans__cluster_8hpp.html">link</a>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Neighbor index   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/details-neighbor_index.html">link</a>   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/neighbor__index_8hpp.html">link</a>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">SNN graph clustering   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/details-snn_graph_cluster.html">link</a>   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/snn__graph__cluster_8hpp.html">link</a>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Clustering choice   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/details-choose_clustering.html">link</a>   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/choose__clustering_8hpp.html">link</a>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">t-SNE   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/details-tsne.html">link</a>   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/tsne_8hpp.html">link</a>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">UMAP   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/details-umap.html">link</a>   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/umap_8hpp.html">link</a>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Marker detection   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/details-marker_detection.html">link</a>   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/marker__detection_8hpp.html">link</a>    </td></tr>
+<tr class="markdownTableRowEven">
+<td class="markdownTableBodyNone">Custom selections   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/details-custom_selections.html">link</a>   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/custom__selections_8hpp.html">link</a>    </td></tr>
+<tr class="markdownTableRowOdd">
+<td class="markdownTableBodyNone">Cell labelling   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/details-cell_labelling.html">link</a>   </td><td class="markdownTableBodyNone"><a href="https://ltla.github.io/kanaval/cell__labelling_8hpp.html">link</a>   </td></tr>
+</table>
 <p >All of these can be executed on a state file by calling the <a href="https://ltla.github.io/kanaval/validate_8hpp.html"><code>validate()</code></a> function, which will throw a reasonably informative error if there are any problems.</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#include &quot;H5Cpp.h&quot;</span></div>
 <div class="line"><span class="preprocessor">#include &quot;<a class="code" href="validate_8hpp.html">kanaval/validate.hpp</a>&quot;</span></div>
 <div class="line"> </div>
 <div class="line">H5::H5File handle(path, H5F_ACC_RDONLY);</div>
 <div class="line"><a class="code hl_function" href="namespacekanaval.html#ab7f88e5ced956c8f906dd57493f12f16">kanaval::validate</a>(handle, embedded, version);</div>
-<div class="ttc" id="anamespacekanaval_html_ab7f88e5ced956c8f906dd57493f12f16"><div class="ttname"><a href="namespacekanaval.html#ab7f88e5ced956c8f906dd57493f12f16">kanaval::validate</a></div><div class="ttdeci">void validate(const H5::H5File &amp;handle, bool embedded, int version)</div><div class="ttdef"><b>Definition:</b> validate.hpp:80</div></div>
+<div class="ttc" id="anamespacekanaval_html_ab7f88e5ced956c8f906dd57493f12f16"><div class="ttname"><a href="namespacekanaval.html#ab7f88e5ced956c8f906dd57493f12f16">kanaval::validate</a></div><div class="ttdeci">void validate(const H5::H5File &amp;handle, bool embedded, int version)</div><div class="ttdef"><b>Definition:</b> validate.hpp:78</div></div>
 <div class="ttc" id="avalidate_8hpp_html"><div class="ttname"><a href="validate_8hpp.html">validate.hpp</a></div><div class="ttdoc">Validate the embedded state file of a kana file.</div></div>
 </div><!-- fragment --> </div></div><!-- PageDoc -->
 </div><!-- contents -->

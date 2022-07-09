@@ -64,7 +64,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_cad48341f1c85806521c29a6597af908.html">kanaval</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_cf31a4eea05b60cfcb07c5ef00528b59.html">kanaval</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -110,123 +110,17 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacekanaval"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacekanaval.html">kanaval</a></td></tr>
 <tr class="memdesc:namespacekanaval"><td class="mdescLeft">&#160;</td><td class="mdescRight">Utilities for validating kana files. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacekanaval_1_1marker__detection"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacekanaval_1_1marker__detection.html">kanaval::marker_detection</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a988269dafcd63f264bdff6c82624c5ad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="marker__detection_8hpp.html#a988269dafcd63f264bdff6c82624c5ad">kanaval::marker_detection::validate</a> (const H5::Group &amp;handle, int num_clusters, const std::vector&lt; std::string &gt; &amp;modalities, const std::vector&lt; int &gt; &amp;num_features, int version)</td></tr>
+<tr class="memitem:a988269dafcd63f264bdff6c82624c5ad"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacekanaval_1_1marker__detection.html#a988269dafcd63f264bdff6c82624c5ad">kanaval::marker_detection::validate</a> (const H5::Group &amp;handle, int num_clusters, const std::vector&lt; std::string &gt; &amp;modalities, const std::vector&lt; int &gt; &amp;num_features, int version)</td></tr>
 <tr class="separator:a988269dafcd63f264bdff6c82624c5ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Validate marker detection contents. </p>
-</div><h2 class="groupheader">Function Documentation</h2>
-<a id="a988269dafcd63f264bdff6c82624c5ad" name="a988269dafcd63f264bdff6c82624c5ad"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a988269dafcd63f264bdff6c82624c5ad">&#9670;&nbsp;</a></span>validate()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void kanaval::marker_detection::validate </td>
-          <td>(</td>
-          <td class="paramtype">const H5::Group &amp;&#160;</td>
-          <td class="paramname"><em>handle</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>num_clusters</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
-          <td class="paramname"><em>modalities</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::vector&lt; int &gt; &amp;&#160;</td>
-          <td class="paramname"><em>num_features</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>version</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p >Check contents for the marker detection step. Contents are stored inside an <code>marker_detection</code> HDF5 group at the root of the file. The <code>marker_detection</code> group itself contains the <code>parameters</code> and <code>results</code> subgroups.</p>
-<hr  />
-<p> <code>parameters</code> should be empty.</p>
-<hr  />
-<p> <code>results</code> should contain <code>per_cluster</code>, a group containing the marker results for each cluster. Each child of <code>per_cluster</code> is named after a cluster index from 0 to <code>num_clusters - 1</code>, and is itself a group containing children named according to <code>modalities</code>. Each modality-specific child is yet another group containing the statistics for that modality:</p>
-<ul>
-<li><code>means</code>: a float dataset of length equal to the number of features, containing the mean expression of each feature in the current cluster.</li>
-<li><code>detected</code>: a float dataset of length equal to the number of features, containing the proportion of cells with detected expression of each feature in the current cluster.</li>
-<li><code>lfc</code>: an group containing statistics for the log-fold changes from all pairwise comparisons involving the current cluster. This contains:<ul>
-<li><code>min</code>: a float dataset of length equal to the number of features, containing the minimum log-fold change across all pairwise comparisons for each feature.</li>
-<li><code>mean</code>: a float dataset of length equal to the number of features, containing the mean log-fold change across all pairwise comparisons for each feature.</li>
-<li><code>min_rank</code>: a float dataset of length equal to the number of features, containing the minimum rank of the log-fold changes across all pairwise comparisons for each feature.</li>
-</ul>
-</li>
-<li><code>delta_detected</code>: same as <code>lfc</code>, but for the delta-detected (i.e., difference in the percentage of detected expression).</li>
-<li><code>cohen</code>: same as <code>lfc</code>, but for Cohen's d.</li>
-<li><code>auc</code>: same as <code>lfc</code>, but for the AUCs.</li>
-</ul>
-<div style="color:blue"> <details>
- <summary>For versions 1.0-1.2</summary> <code>results</code> should contain:</details>
-</div><div style="color:blue"><details>
-<ul>
-<li><code>clusters</code>: a group representing an array of length equal to the number of clusters. Each child is another group that is named by the cluster index from 0 to <code>num_clusters - 1</code>, containing the marker details for that cluster. Each child group contains:<ul>
-<li><code>means</code>: a float dataset of length equal to the number of genes, containing the mean expression of each gene in the current cluster.</li>
-<li><code>detected</code>: a float dataset of length equal to the number of genes, containing the proportion of cells with detected expression of each gene in the current cluster.</li>
-<li><code>lfc</code>: an group containing statistics for the log-fold changes from all pairwise comparisons involving the current cluster. This contains:<ul>
-<li><code>min</code>: a float dataset of length equal to the number of genes, containing the minimum log-fold change across all pairwise comparisons for each gene.</li>
-<li><code>mean</code>: a float dataset of length equal to the number of genes, containing the mean log-fold change across all pairwise comparisons for each gene.</li>
-<li><code>min_rank</code>: a float dataset of length equal to the number of genes, containing the minimum rank of the log-fold changes across all pairwise comparisons for each gene.</li>
-</ul>
-</li>
-<li><code>delta_detected</code>: same as <code>lfc</code>, but for the delta-detected (i.e., difference in the percentage of detected expression).</li>
-<li><code>cohen</code>: same as <code>lfc</code>, but for Cohen's d.</li>
-<li><code>auc</code>: same as <code>lfc</code>, but for the AUCs.  </li>
-</ul>
-</li>
-</ul>
-</details>
-</div><div style="color:blue"><details>
-<hr  />
- <dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">handle</td><td>An open HDF5 file handle. </td></tr>
-    <tr><td class="paramname">num_clusters</td><td>Number of clusters produced by previous steps. </td></tr>
-    <tr><td class="paramname">modalities</td><td>Modalities available in the dataset, should be some combination of <code>"RNA"</code> or <code>"ADT"</code>. If <code>version &lt; 2000000</code>, this is ignored and an RNA modality is always assumed. </td></tr>
-    <tr><td class="paramname">num_features</td><td>Number of features for each modality in <code>modalities</code>. If <code>version &lt; 2000000</code>, only the first value is used and is assumed to refer to the number of genes for the RNA modality. </td></tr>
-    <tr><td class="paramname">modalities</td><td>Available modalities in the dataset. Ignored for <code>version &lt; 2000000</code>. </td></tr>
-    <tr><td class="paramname">version</td><td>Version of the format.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>If the format is invalid, an error is raised. </dd></dl>
-</details>
-</div>
-</div>
-</div>
-</div><!-- contents -->
+</div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4

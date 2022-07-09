@@ -1,5 +1,26 @@
 var searchData=
 [
-  ['kanaval_0',['kanaval',['../namespacekanaval.html',1,'']]],
-  ['kmeans_5fcluster_2ehpp_1',['kmeans_cluster.hpp',['../kmeans__cluster_8hpp.html',1,'']]]
+  ['adt_5fnormalization_0',['adt_normalization',['../namespacekanaval_1_1adt__normalization.html',1,'kanaval']]],
+  ['adt_5fpca_1',['adt_pca',['../namespacekanaval_1_1adt__pca.html',1,'kanaval']]],
+  ['adt_5fquality_5fcontrol_2',['adt_quality_control',['../namespacekanaval_1_1adt__quality__control.html',1,'kanaval']]],
+  ['batch_5fcorrection_3',['batch_correction',['../namespacekanaval_1_1batch__correction.html',1,'kanaval']]],
+  ['cell_5ffiltering_4',['cell_filtering',['../namespacekanaval_1_1cell__filtering.html',1,'kanaval']]],
+  ['cell_5flabelling_5',['cell_labelling',['../namespacekanaval_1_1cell__labelling.html',1,'kanaval']]],
+  ['choose_5fclustering_6',['choose_clustering',['../namespacekanaval_1_1choose__clustering.html',1,'kanaval']]],
+  ['combine_5fembeddings_7',['combine_embeddings',['../namespacekanaval_1_1combine__embeddings.html',1,'kanaval']]],
+  ['custom_5fselections_8',['custom_selections',['../namespacekanaval_1_1custom__selections.html',1,'kanaval']]],
+  ['feature_5fselection_9',['feature_selection',['../namespacekanaval_1_1feature__selection.html',1,'kanaval']]],
+  ['inputs_10',['inputs',['../namespacekanaval_1_1inputs.html',1,'kanaval']]],
+  ['k_2dmeans_20clustering_20_28latest_29_11',['k-means clustering (latest)',['../details-kmeans_cluster.html',1,'']]],
+  ['kanaval_12',['kanaval',['../namespacekanaval.html',1,'']]],
+  ['kmeans_5fcluster_13',['kmeans_cluster',['../namespacekanaval_1_1kmeans__cluster.html',1,'kanaval']]],
+  ['kmeans_5fcluster_2ehpp_14',['kmeans_cluster.hpp',['../kmeans__cluster_8hpp.html',1,'']]],
+  ['marker_5fdetection_15',['marker_detection',['../namespacekanaval_1_1marker__detection.html',1,'kanaval']]],
+  ['neighbor_5findex_16',['neighbor_index',['../namespacekanaval_1_1neighbor__index.html',1,'kanaval']]],
+  ['normalization_17',['normalization',['../namespacekanaval_1_1normalization.html',1,'kanaval']]],
+  ['pca_18',['pca',['../namespacekanaval_1_1pca.html',1,'kanaval']]],
+  ['quality_5fcontrol_19',['quality_control',['../namespacekanaval_1_1quality__control.html',1,'kanaval']]],
+  ['snn_5fgraph_5fcluster_20',['snn_graph_cluster',['../namespacekanaval_1_1snn__graph__cluster.html',1,'kanaval']]],
+  ['tsne_21',['tsne',['../namespacekanaval_1_1tsne.html',1,'kanaval']]],
+  ['umap_22',['umap',['../namespacekanaval_1_1umap.html',1,'kanaval']]]
 ];

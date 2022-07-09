@@ -64,7 +64,7 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="dir_cad48341f1c85806521c29a6597af908.html">kanaval</a></li>  </ul>
+<li class="navelem"><a class="el" href="dir_cf31a4eea05b60cfcb07c5ef00528b59.html">kanaval</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -108,97 +108,17 @@ Namespaces</h2></td></tr>
 <tr class="memitem:namespacekanaval"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacekanaval.html">kanaval</a></td></tr>
 <tr class="memdesc:namespacekanaval"><td class="mdescLeft">&#160;</td><td class="mdescRight">Utilities for validating kana files. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:namespacekanaval_1_1batch__correction"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacekanaval_1_1batch__correction.html">kanaval::batch_correction</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a513ba3636a2e489f1a026eb9192162ea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="batch__correction_8hpp.html#a513ba3636a2e489f1a026eb9192162ea">kanaval::batch_correction::validate</a> (const H5::H5File &amp;handle, int num_dims, int num_cells, int num_samples, int version)</td></tr>
+<tr class="memitem:a513ba3636a2e489f1a026eb9192162ea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacekanaval_1_1batch__correction.html#a513ba3636a2e489f1a026eb9192162ea">kanaval::batch_correction::validate</a> (const H5::H5File &amp;handle, int num_dims, int num_cells, int num_samples, int version)</td></tr>
 <tr class="separator:a513ba3636a2e489f1a026eb9192162ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Validate batch correction contents. </p>
-</div><h2 class="groupheader">Function Documentation</h2>
-<a id="a513ba3636a2e489f1a026eb9192162ea" name="a513ba3636a2e489f1a026eb9192162ea"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a513ba3636a2e489f1a026eb9192162ea">&#9670;&nbsp;</a></span>validate()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void kanaval::batch_correction::validate </td>
-          <td>(</td>
-          <td class="paramtype">const H5::H5File &amp;&#160;</td>
-          <td class="paramname"><em>handle</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>num_dims</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>num_cells</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>num_samples</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">int&#160;</td>
-          <td class="paramname"><em>version</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p >Check contents for the batch correction step. Contents are stored inside an <code>batch_correction</code> HDF5 group at the root of the file. The <code>batch_correction</code> group itself contains the <code>parameters</code> and <code>results</code> subgroups.</p>
-<p >A separate batch correction step was not used prior to version 2.0 of the format, so the <code>batch_correction</code> group may be absent in pre-v2.0 files. In such cases, we can check the <code>corrected</code> dataset in the <code>pca/results</code> group, see <code><a class="el" href="batch__correction_8hpp.html#a513ba3636a2e489f1a026eb9192162ea">pca::validate()</a></code> for more details.</p>
-<hr  />
-<p> <code>parameters</code> should contain:</p>
-<ul>
-<li><code>num_neighbors</code>: a scalar integer specifying the number of neighbors to use for mutual nearest neighbors correction.</li>
-<li><code>approximate</code>: a scalar integer to be treated as a boolean, indicating whether an approximate neighbor search was used.</li>
-<li><code>method</code>: a scalar string specifying the correction method to use, either <code>"none"</code> or <code>"mnn"</code>.</li>
-</ul>
-<hr  />
-<p> If <code>method = "mnn"</code> and <code>num_samples &gt; 1</code>, <code>results</code> should contain:</p>
-<ul>
-<li><code>corrected</code>: a 2-dimensional float dataset containing the corrected PCs in a row-major layout. Each row corresponds to a cell (<code>num_cells</code>) and each column corresponds to a dimension (<code>num_dims</code>).</li>
-</ul>
-<p >Otherwise, correction is assumed to be a no-op and <code>results</code> may be empty. Downstream steps should instead fetch coordinates from the <code>combined</code> dataset in <code><a class="el" href="batch__correction_8hpp.html#a513ba3636a2e489f1a026eb9192162ea">combine_embeddings::validate()</a></code>.</p>
-<hr  />
- <dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">handle</td><td>An open HDF5 file handle. </td></tr>
-    <tr><td class="paramname">num_dims</td><td>Number of dimensions of interest. </td></tr>
-    <tr><td class="paramname">num_cells</td><td>Number of high-quality cells in the dataset, i.e., after any quality-based filtering has been applied. </td></tr>
-    <tr><td class="paramname">num_samples</td><td>Number of batches available in the dataset. </td></tr>
-    <tr><td class="paramname">version</td><td>Version of the state file.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>If the format is invalid, an error is raised. </dd></dl>
-
-</div>
-</div>
-</div><!-- contents -->
+</div></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
 Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.9.4
