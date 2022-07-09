@@ -10,7 +10,7 @@ The `choose_clustering` group itself contains the `parameters` and `results` sub
 `parameters` should contain:
 
 - `method`: a scalar string specifying the clustering method to use.
-  This is currently either `snn_graph` or `kmeans`.
+  This is currently either `"snn_graph"` or `"kmeans"`.
 
 ## Results
 

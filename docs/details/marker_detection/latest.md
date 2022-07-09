@@ -5,6 +5,15 @@
 We expect a `marker_detection` HDF5 group at the root of the file, containing marker statistics for each cluster.
 The group itself contains the `parameters` and `results` subgroups.
 
+**Definitions:**
+
+- `num_clusters`: number of clusters in the analysis.
+  This is typically determined from [`choose_clustering`](../choose_clustering/latest.md).
+- `modalities`: an array of names of all available modalities.
+  This is typically determined from the [`inputs`](../inputs/latest.md) step.
+- `num_features`: an array of length equal to `modalities`, containing the number of features present in each modality.
+  This is typically determined from the [`inputs`](../inputs/latest.md) step.
+
 ## Parameters
 
 `parameters` should be empty.
@@ -15,7 +24,7 @@ The group itself contains the `parameters` and `results` subgroups.
 Each child of `per_cluster` is named after a cluster index from 0 to `num_clusters - 1`, and is itself a group containing children named according to `modalities`.
 Each modality-specific child is yet another group containing the statistics for that modality:
 
-- `means`: a float dataset of length equal to the number of features, containing the mean expression of each feature in the current cluster.
+- `means`: a float dataset of length equal to the number of features for this modality (as determined from `num_features`), containing the mean expression of each feature in the current cluster.
 - `detected`: a float dataset of length equal to the number of features, containing the proportion of cells with detected expression of each feature in the current cluster.
 - `lfc`: an group containing statistics for the log-fold changes from all pairwise comparisons involving the current cluster.
   This contains:

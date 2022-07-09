@@ -15,7 +15,12 @@ The loaded dataset refers to the in-memory representation of the matrix (for sin
 The identities of the rows of the loaded dataset may be a permutation or subset of the rows in the input matrices.
 This is especially true for multiple inputs where the loaded dataset only contains the intersection of features across inputs.
 For multiple matrices, the loaded dataset is assumed to be a column-wise concatenation of the individual matrices after sorting them by `sample_names`.
- 
+
+**Definitions:**
+
+- `embedded`: whether the input files were embedded in the `*.kana` file.
+  If `false`, the input files are assumed to be linked instead.
+
 ## Parameters
 
 `parameters` should contain:
@@ -40,13 +45,13 @@ For multiple matrices, the loaded dataset is assumed to be a column-wise concate
     - For other `format`s, any `type` can be used, typically for custom resources.
   - `name`: a scalar string specifying the file name as it was provided to **kana**.
 
-  If the files are embedded (i.e., `embedded = true` in `inputs::validate()`), we additionally expect:
+  If `embedded = true`, we additionally expect:
   - `offset`: a scalar integer specifying where the file starts as an offset from the start of the remaining bytes section.
     The offset for the first file should be zero, and entries in `files` should be ordered by increasing `offset`.
   - `size`: a non-negative scalar integer specifying the number of bytes in the file.
     The offset of each file should be equal to the sum of `size` and `offset` for the preceding file.
 
-  If the files are linked (i.e., `embedded = false`), we expect:
+  If `embedded = false`, we expect:
   - `id`: a scalar string containing some unique identifier for this file.
     The interpretation of `id` is application-specific but usually refers to some cache or database.
 
@@ -55,7 +60,7 @@ This group should contain one of:
 
 - `indices`, a 1-dimensional integer dataset specifying the indices of the cells to retain.
   Indices should be relative to the loaded dataset before subsetting.
-  The length of this dataset should be equal to the number of cells in `results/dimensions`.
+  The length of this dataset should be equal to the number of cells in `results/num_cells`.
   Indices should be unique and sorted.
 - `field`, a string scalar specifying the field of the column annotations to use for filtering.
   This should be accompanied by `values`, a 1-dimensional string dataset specifying the allowable values for this field.
@@ -93,11 +98,7 @@ For single matrix inputs, `parameters` may also contain:
   Row identities are parallel to the per-feature results in subsequent analysis steps.
 
 All steps that generate per-gene results should use `identities` (or, for older formats, `permutation` or `indices`) to identify the genes corresponding to the statistics.
-See the documentation for the functions listed below:
-
-- `feature_selection::validate()`
-- `marker_detection::validate()`
-- `custom_selections::validate()`
+This includes [`feature_selection`](../feature_selection/latest.md), [`marker_detection`](../marker_detection/latest.md) and [`custom_selections`](../custom_selections/latest.md).
 
 ## Changelog
 

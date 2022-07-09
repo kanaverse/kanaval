@@ -6,6 +6,10 @@ We expect a `feature_selection` HDF5 group at the root of the file, containing s
 The group itself contains the `parameters` and `results` subgroups.
 In multi-modal contexts, the results here are only relevant for the RNA modality.
 
+**Definitions:**
+
+- `num_genes`: number of genes in the RNA expression matrix.
+
 ## Parameters
 
 `parameters` should contain:
@@ -16,13 +20,13 @@ In multi-modal contexts, the results here are only relevant for the RNA modality
 
 `results` should contain:
 
-- `means`: a 1-dimensional float dataset of length equal to the number of genes,
+- `means`: a 1-dimensional float dataset of length equal to `num_genes`,
   containing the mean log-expression of each gene.
-- `vars`: a 1-dimensional float dataset of length equal to the number of genes,
+- `vars`: a 1-dimensional float dataset of length equal to `num_genes`,
   containing the variance in log-expression of each gene.
-- `fitted`: a 1-dimensional float dataset of length equal to the number of genes,
+- `fitted`: a 1-dimensional float dataset of length equal to `num_genes`,
   containing the fitted value of the trend for each gene.
-- `resids`: a 1-dimensional float dataset of length equal to the number of genes,
+- `resids`: a 1-dimensional float dataset of length equal to `num_genes`,
   containing the residuals from the trend for each gene.
 
 ## Changelog

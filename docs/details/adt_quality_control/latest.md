@@ -7,6 +7,15 @@ The group itself contains the `parameters` and `results` subgroups.
 
 No ADT data was available prior to version 2.0 of the format, so the `adt_quality_control` group may be absent in such files.
 
+**Definitions:**
+
+- `adt_in_use`: whether ADTs are present in the dataset.
+  This is typically determined by examining the [`inputs`](../inputs/latest.md). 
+- `num_cells`: number of cells in the dataset, prior to any filtering.
+  This is typically determined from the [`inputs`](../inputs/latest.md) step.
+- `num_samples`: number of samples in the dataset.
+  This is typically determined from the [`inputs`](../inputs/latest.md) step.
+
 ## Parameters
 
 `parameters` should contain:
@@ -18,21 +27,20 @@ No ADT data was available prior to version 2.0 of the format, so the `adt_qualit
 
 ## Results
 
-If ADTs are not available (i.e., `adt_in_use = false` in `adt_quality_control::validate()`), `results` should be empty.
+If `adt_in_use = false`, `results` should be empty.
 
 If `adt_in_use = true`, `results` should contain:
 
 - `metrics`, a group containing per-cell QC metrics derived from the RNA count data.
   This contains:
-  - `sums`: a float dataset of length equal to the number of cells (i.e., `num_cells` in `adt_quality_control::validate()`), containing the total count for each cell.
-  - `detected`:  an integer dataset of length equal to the number of cells, containing the total number of detected features for each cell.
-  - `igg_total`: a float dataset of length equal to the number of cells, containing the total count in IgG features.
+  - `sums`: a float dataset of length equal to `num_cells`, containing the total count for each cell.
+  - `detected`:  an integer dataset of length equal to `num_cells`, containing the total number of detected features for each cell.
+  - `igg_total`: a float dataset of length equal to `num_cells`, containing the total count in IgG features.
 - `thresholds`, a group containing thresholds on the metrics for each sample.
-  (The number of samples is defined from `num_samples` in `adt_quality_control::validate()`.)
   This group contains:
-  - `detected`:  a float dataset of length equal to the number of samples, containing the threshold on the total number of detected features for each sample.
-  - `igg_total`: a float dataset of length equal to the number of samples, containing the threshold on the total counts in IgG features for each sample.
-- `discards`: an integer dataset of length equal to the number of cells.
+  - `detected`:  a float dataset of length equal to `num_samples`, containing the threshold on the total number of detected features for each sample.
+  - `igg_total`: a float dataset of length equal to `num_samples`, containing the threshold on the total counts in IgG features for each sample.
+- `discards`: an integer dataset of length equal to `num_cells`.
   Each value is interpreted as a boolean and specifies whether the corresponding cell would be discarded by the ADT-based filter thresholds.
 
 If `adt_in_use = true` and `skip = true`, `results` may be an empty group.

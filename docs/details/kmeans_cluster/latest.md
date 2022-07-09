@@ -5,6 +5,12 @@
 We expect an `kmeans_cluster` HDF5 group at the root of the file, containing the k-means clustering parameters and results.
 The group itself should contain the `parameters` and `results` subgroups.
 
+**Definitions:**
+
+- `in_use`: whether k-means is the chosen clustering method in [`choose_clustering`](../choose_clustering/latest.md).
+- `num_cells`: number of cells remaining after QC filtering.
+  This is usually determined from the [`cell_filtering`](../cell_filtering/latest.md) step.
+
 ## Parameters
 
 `parameters` should contain:
@@ -13,9 +19,9 @@ The group itself should contain the `parameters` and `results` subgroups.
 
 ## Results
 
-If k-means clustering is the chosen clustering method in [`choose_clustering`](../choose_clustering/latest.md) (i.e., `in_use = true` in `kmeans_cluster::validate()`), `results` should contain:
+If `in_use = true`, `results` should contain:
 
-- `clusters`: an integer dataset of length equal to the number of cells after filtering.
+- `clusters`: an integer dataset of length equal to `num_cells`.
   This contains the cluster assignment for each cell, which should lie in `[0, k)`.
 
   The total number of clusters may be less than `k`, e.g., when there are too few cells.

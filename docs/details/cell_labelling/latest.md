@@ -5,6 +5,11 @@
 Contents are stored inside an `inputs` HDF5 group at the root of the file.
 The `cell_labelling` group itself contains the `parameters` and `results` subgroups.
 
+**Definitions:**
+
+- `num_clusters`: number of clusters generated in the analysis.
+  This is determined by the [`choose_clustering`](../choose_clustering/latest.md) step.
+
 ## Parameters
 
 `parameters` should contain:
@@ -20,12 +25,11 @@ The `cell_labelling` group itself contains the `parameters` and `results` subgro
 
 - `per_reference`: a group containing the label assignments for each cluster in each reference.
   Each child is named after its corresponding reference as listed in `parameters`, though not all references listed in `parameters` need to be present here.
-  Each child is a 1-dimensional string dataset of length equal to the number of clusters, where each entry contains the assigned label for the corresponding cluster.
-  (The number of clusters is defined by `num_clusters` in `cell_labelling::validate()`.)
+  Each child is a 1-dimensional string dataset of length equal to `num_clusters`, where each entry contains the assigned label for the corresponding cluster.
 
 For multiple references of the relevant species, `results` will also contain:
 
-- `integrated`: a string dataset of length equal to the number of clusters.
+- `integrated`: a string dataset of length equal to `num_clusters`.
   This specifies the reference with the top-scoring label for each cluster, after integrating the results of all per-reference classifications.
 
 ## Changelog

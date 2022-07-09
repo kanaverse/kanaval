@@ -7,6 +7,13 @@ The group itself contains the `parameters` and `results` subgroups.
 
 No ADT data was available prior to version 2.0 of the format, so the `adt_pca` group may be absent in pre-v2.0 files.
 
+**Definitions:**
+
+- `adt_in_use`: whether ADTs are present in the dataset.
+  This is typically determined by examining the [`inputs`](../inputs/latest.md). 
+- `num_cells`: number of cells remaining after QC filtering.
+  This is typically determined from the [`cell filtering`](../cell_filtering/latest.md) step.
+
 ## Parameters
 
 `parameters` should contain:
@@ -17,12 +24,13 @@ No ADT data was available prior to version 2.0 of the format, so the `adt_pca` g
 
 ## Results
 
-If ADTs are not present (i.e., `adt_in_use = false` in `adt_pca::validate()`), `results` should be empty.
+If `adt_in_use = false`, `results` should be empty.
 
 If `adt_in_use = true`, `results` should contain:
 
 - `pcs`: a 2-dimensional float dataset containing the PC coordinates in a row-major layout.
-  Each row corresponds to a cell after QC filtering (the total number of rows should be equal to `num_cells` in `adt_pca::validate()`), and each column corresponds to a PC.
+  Each row corresponds to a cell after QC filtering, and the the total number of rows should be equal to `num_cells`.
+  Each column corresponds to a PC.
   The number of PCs should be no greater than `num_pcs`, and may be less if not enough PCs are available in the original dataset.
 
   If `block_method = "weight"`, the PCs will be computed using a weighted method that adjusts for differences in the number of cells across blocks.

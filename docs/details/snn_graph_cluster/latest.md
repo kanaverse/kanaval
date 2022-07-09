@@ -5,6 +5,12 @@
 We expect a `snn_graph_cluster` HDF5 group at the root of the file, containing details on the SNN graph-based clustering.
 The group itself should contain the `parameters` and `results` subgroups.
 
+**Definitions:**
+
+- `in_use`: whether SNN graph clustering is the chosen method in [`choose_clustering`](../choose_clustering/latest.md).
+- `num_cells`: number of cells remaining after QC filtering.
+  This is usually determined from the [`cell_filtering`](../cell_filtering/latest.md) step.
+
 ## Parameters
 
 `parameters` will contain:
@@ -18,8 +24,7 @@ The group itself should contain the `parameters` and `results` subgroups.
 
 If `in_use = true`, `results` should contain:
 
-- `clusters`: an integer dataset of length equal to the number of cells (after QC filtering), 
-  containing the SNN graph cluster assignment for each cell.
+- `clusters`: an integer dataset of length equal to `num_cells`, containing the SNN graph cluster assignment for each cell.
   For `N` clusters, there should be at least one occurrence of each integer in `[0, N)`.
 
 If `in_use = false`, `clusters` may be absent.

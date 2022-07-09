@@ -5,6 +5,11 @@
 We expect an `umap` HDF5 group at the root of the file, containing the UMAP parameters and results.
 The `umap` group itself contains the `parameters` and `results` subgroups.
 
+**Definitions:**
+
+- `num_cells`: number of cells remaining after QC filtering.
+  This is usually determined from the [`cell_filtering`](../cell_filtering/latest.md) step.
+
 ## Parameters
 
 `parameters` should contain:
@@ -18,8 +23,8 @@ The `umap` group itself contains the `parameters` and `results` subgroups.
 
 `results` should contain:
 
-- `x`: a float dataset of length equal to the number of cells (after QC filtering), containing the x-coordinates for each cell.
-- `y`: a float dataset of length equal to the number of cells (after QC filtering), containing the y-coordinates for each cell.
+- `x`: a float dataset of length equal to `num_cells`, containing the x-coordinates for each cell.
+- `y`: a float dataset of length equal to `num_cells`, containing the y-coordinates for each cell.
 
 ## Changelog
 
