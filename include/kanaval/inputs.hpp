@@ -9,6 +9,7 @@
 #include <numeric>
 #include <unordered_set>
 #include <unordered_map>
+#include <algorithm>
 
 /**
  * @file inputs.hpp
@@ -227,10 +228,35 @@ inline ParamDump validate_parameters(const H5::Group& handle, bool embedded, int
                 output.subset_num = subidx.size();
             } else {
                 utils::check_and_open_dataset(subcellhandle, "field", H5T_STRING, {});
-                auto vhandle = utils::check_and_open_dataset(subcellhandle, "values", H5T_STRING);
-                auto vdims = utils::load_dataset_dimensions(vhandle);
-                if (vdims.size() != 1) {
-                    throw std::runtime_error("'subset/values' should be a 1-dimensional string dataset");
+
+                if (subcellhandle.exists("values")) {
+                    auto vhandle = utils::check_and_open_dataset(subcellhandle, "values", H5T_STRING);
+                    auto vdims = utils::load_dataset_dimensions(vhandle);
+                    if (vdims.size() != 1) {
+                        throw std::runtime_error("'subset/values' should be a 1-dimensional string dataset");
+                    }
+
+                } else {
+                    auto rahandle = utils::check_and_open_dataset(subcellhandle, "ranges", H5T_FLOAT);
+
+                    auto radims = utils::load_dataset_dimensions(rahandle);
+                    if (radims.size() != 2) {
+                        throw std::runtime_error("'subset/ranges' should be a 2-dimensional float dataset");
+                    }
+                    if (radims[1] != 2) {
+                        throw std::runtime_error("'subset/ranges' should have two columns");
+                    }
+
+                    std::vector<double> loaded(radims[0] * radims[1]);
+                    rahandle.read(loaded.data(), H5::PredType::NATIVE_DOUBLE);
+
+                    // Should be sorted. Each row is a [start, end) pair,
+                    // defining an interval to retain.  Intervals should be
+                    // non-overlapping and sorted, and HDF5 stores its matrices
+                    // as row-order, so start1 <= end1 <= start2 <= end2 <= ...
+                    if (!std::is_sorted(loaded.begin(), loaded.end())) {
+                        throw std::runtime_error("'subset/ranges' should specify sorted, non-overlapping intervals");
+                    }
                 }
             }
         }

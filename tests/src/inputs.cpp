@@ -550,7 +550,7 @@ TEST(MultipleInputs, ResultsOldFail) {
     quick_input_throw(path, "length equal to the number of genes", 1001000);
 }
 
-TEST(SingleInputs, Subsetting) {
+TEST(SingleInputs, SubsettingIndices) {
     const std::string path = "TEST_inputs.h5";
 
     // Works correctly.
@@ -590,12 +590,18 @@ TEST(SingleInputs, Subsetting) {
         quick_write_dataset(subhandle, "indices", std::vector<int>{-1,0,1});
     }
     quick_input_throw(path, "negative", latest);
+}
 
-    // No check on the number of cells if we're using field and value.
+TEST(SingleInputs, SubsettingFieldValues) {
+    const std::string path = "TEST_inputs.h5";
+
+    // No check on the number of cells if we're using field/value.
     {
-        H5::H5File handle(path, H5F_ACC_RDWR);
-        auto subhandle = handle.openGroup("inputs/parameters/subset/cells");
-        subhandle.unlink("indices");
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        add_single_matrix(handle);
+        auto ihandle = handle.openGroup("inputs");
+        auto shandle = ihandle.createGroup("parameters/subset");
+        auto subhandle = shandle.createGroup("cells");
         quick_write_dataset(subhandle, "field", "FOO");
         quick_write_dataset(subhandle, "values", std::vector<std::string>{"BAR"});
     }
@@ -610,7 +616,71 @@ TEST(SingleInputs, Subsetting) {
     {
         H5::H5File handle(path, H5F_ACC_RDWR);
         auto subhandle = handle.openGroup("inputs/parameters/subset/cells");
-        subhandle.unlink("values");
+        subhandle.unlink("field");
     }
-    quick_input_throw(path, "values", latest);
+    quick_input_throw(path, "field", latest);
+}
+
+TEST(SingleInputs, SubsettingRanges) {
+    const std::string path = "TEST_inputs.h5";
+
+    H5::DataSpace space;
+    std::vector<hsize_t> nranges{3, 2};
+    space.setExtentSimple(2, nranges.data());
+
+    // No check on the number of cells if we're using field/ranges.
+    {
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        add_single_matrix(handle);
+        auto ihandle = handle.openGroup("inputs");
+        auto shandle = ihandle.createGroup("parameters/subset");
+        auto subhandle = shandle.createGroup("cells");
+        quick_write_dataset(subhandle, "field", "FOO");
+
+        auto dhandle = subhandle.createDataSet("ranges", H5::PredType::NATIVE_DOUBLE, space);
+        std::vector<double> ranges { 0.2, 0.5, 1, 1.2, 1.25, 3 };
+        dhandle.write(ranges.data(), H5::PredType::NATIVE_DOUBLE);
+    }
+
+    {
+        H5::H5File handle(path, H5F_ACC_RDONLY);
+        auto output = kanaval::inputs::validate(handle, true, latest);
+        EXPECT_EQ(output.num_cells, 100);
+    }
+
+    // Fails if ranges is not the right shape.
+    {
+        H5::H5File handle(path, H5F_ACC_RDWR);
+        auto subhandle = handle.openGroup("inputs/parameters/subset/cells");
+        subhandle.unlink("ranges");
+        quick_write_dataset(subhandle, "ranges", std::vector<double>{ 1, 2, 3 });
+    }
+    quick_input_throw(path, "2-dimensional", latest);
+
+    {
+        H5::H5File handle(path, H5F_ACC_RDWR);
+        auto subhandle = handle.openGroup("inputs/parameters/subset/cells");
+        subhandle.unlink("ranges");
+
+        H5::DataSpace space;
+        std::vector<hsize_t> nranges{2, 3};
+        space.setExtentSimple(2, nranges.data());
+
+        auto dhandle = subhandle.createDataSet("ranges", H5::PredType::NATIVE_DOUBLE, space);
+        std::vector<double> ranges { 0.2, 0.5, 1, 1.2, 1.25, 3 };
+        dhandle.write(ranges.data(), H5::PredType::NATIVE_DOUBLE);
+    }
+    quick_input_throw(path, "two columns", latest);
+
+    // Fails if ranges is not sorted.
+    {
+        H5::H5File handle(path, H5F_ACC_RDWR);
+        auto subhandle = handle.openGroup("inputs/parameters/subset/cells");
+        subhandle.unlink("ranges");
+
+        auto dhandle = subhandle.createDataSet("ranges", H5::PredType::NATIVE_DOUBLE, space);
+        std::vector<double> ranges { 0.2, 1.5, 1, 1.2, 1.25, 3 };
+        dhandle.write(ranges.data(), H5::PredType::NATIVE_DOUBLE);
+    }
+    quick_input_throw(path, "sorted", latest);
 }
