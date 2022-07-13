@@ -70,8 +70,8 @@ The `subset/cells` group should contain one of:
     The subset is defined as all cells with a `field` value in `values`.
   - If continuous, the group should also contain `ranges`,
     a 2-dimensional float dataset specifying the ranges of allowable values.
-    Each row specifies the range `[a, b)` where `a` is the value in the first column and `b` is the value in the second column.
-    Ranges should be non-overlapping and sorted in order of increasing `a`.
+    Each row defines a range `[a, b]` where `a` is the value in the first column and `b` is the value in the second column.
+    Ranges should be non-overlapping (excepting the boundaries) and sorted in order of increasing `a`.
     The subset is defined as all cells that fall in any of the specified ranges.
 
 For multiple matrices, `parameters` should also contain:

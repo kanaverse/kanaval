@@ -2,7 +2,7 @@
 
 ## Overview
 
-We expect a `combine_embedding` HDF5 group at the root of the file, describing how embeddings are combined across multiple modalities.
+We expect a `combine_embeddings` HDF5 group at the root of the file, describing how embeddings are combined across multiple modalities.
 The group itself contains the `parameters` and `results` subgroups.
 
 Only a single embedding was generated prior to version 2.0 of the format, so the `combine_embeddings` group may be absent in pre-v2.0 files.
@@ -38,4 +38,4 @@ Downstream steps should instead use the coordinates from the PCA group of the av
 
 ## Changelog
 
-- Version 2.0: added the `combine_embedding` group.
+- Version 2.0: added the `combine_embeddings` group.
