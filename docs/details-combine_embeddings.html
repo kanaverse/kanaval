@@ -68,7 +68,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><p ><a class="anchor" id="md__github_workspace_docs_details_combine_embeddings_latest"></a> </p><h1>Overview</h1>
-<p >We expect a <code>combine_embedding</code> HDF5 group at the root of the file, describing how embeddings are combined across multiple modalities. The group itself contains the <code>parameters</code> and <code>results</code> subgroups.</p>
+<p >We expect a <code>combine_embeddings</code> HDF5 group at the root of the file, describing how embeddings are combined across multiple modalities. The group itself contains the <code>parameters</code> and <code>results</code> subgroups.</p>
 <p >Only a single embedding was generated prior to version 2.0 of the format, so the <code>combine_embeddings</code> group may be absent in pre-v2.0 files. No concept of multi-modality exists in earlier versions so downstream steps should use the PCs directly from the <a class="el" href="details-pca.html#md__github_workspace_docs_details_pca_latest">`pca`</a> step.</p>
 <p ><b>Definitions:</b></p>
 <ul>
@@ -90,7 +90,7 @@ $(function() {
 <p >Otherwise, <code>combined</code> may be missing, in which case it is assumed that only a single embedding exists in the analysis and no combining is necessary. Downstream steps should instead use the coordinates from the PCA group of the available modality in the <a class="el" href="details-pca.html#md__github_workspace_docs_details_pca_latest">`pca`</a> or <a class="el" href="details-adt_pca.html#md__github_workspace_docs_details_adt_pca_latest">`adt_pca`</a> step.</p>
 <h1>Changelog</h1>
 <ul>
-<li>Version 2.0: added the <code>combine_embedding</code> group. </li>
+<li>Version 2.0: added the <code>combine_embeddings</code> group. </li>
 </ul>
 </div></div><!-- contents -->
 </div><!-- PageDoc -->
