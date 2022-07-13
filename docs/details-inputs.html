@@ -100,7 +100,11 @@ $(function() {
 <p >Optionally, <code>parameters</code> may contain a <code>subset</code> group. This may in turn contain a <code>cells</code> group, specifying the subset of cells to be used in downstream steps. The <code>subset/cells</code> group should contain one of:</p>
 <ul>
 <li><code>indices</code>, a 1-dimensional integer dataset specifying the indices of the cells to retain. Indices should be relative to the loaded dataset before subsetting. The length of this dataset should be equal to the number of cells in <code>results/num_cells</code>. Indices should be unique and sorted.</li>
-<li><code>field</code>, a string scalar specifying the field of the column annotations to use for filtering. This should be accompanied by <code>values</code>, a 1-dimensional string dataset specifying the allowable values for this field. The subset is defined as all cells with a <code>field</code> value in <code>values</code>.</li>
+<li><code>field</code>, a string scalar specifying the field of the column annotations to use for filtering. This field can either be a continuous or categorical variable.<ul>
+<li>If categorical, the group should also contain <code>values</code>, a 1-dimensional string dataset specifying the allowable values for this field. The subset is defined as all cells with a <code>field</code> value in <code>values</code>.</li>
+<li>If continuous, the group should also contain <code>ranges</code>, a 2-dimensional float dataset specifying the ranges of allowable values. Each row specifies the range <code>[a, b)</code> where <code>a</code> is the value in the first column and <code>b</code> is the value in the second column. Ranges should be non-overlapping and sorted in order of increasing <code>a</code>. The subset is defined as all cells that fall in any of the specified ranges.</li>
+</ul>
+</li>
 </ul>
 <p >For multiple matrices, <code>parameters</code> should also contain:</p>
 <ul>
