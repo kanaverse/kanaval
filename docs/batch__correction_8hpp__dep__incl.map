@@ -1,4 +1,4 @@
 <map id="kanaval/batch_correction.hpp" name="kanaval/batch_correction.hpp">
-<area shape="rect" id="node1" title="Validate batch correction contents." alt="" coords="5,5,196,32"/>
-<area shape="rect" id="node2" href="$validate_8hpp.html" title="Validate the embedded state file of a kana file." alt="" coords="31,80,171,107"/>
+<area shape="rect" id="node1" title="Validate batch correction contents." alt="" coords="5,5,196,31"/>
+<area shape="rect" id="node2" href="$validate_8hpp.html" title="Validate the embedded state file of a kana file." alt="" coords="31,79,171,104"/>
 </map>

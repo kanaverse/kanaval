@@ -1,12 +1,12 @@
 <map id="kanaval/inputs.hpp" name="kanaval/inputs.hpp">
-<area shape="rect" id="node1" title="Validate input contents." alt="" coords="345,5,476,32"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,80,77,107"/>
-<area shape="rect" id="node3" title=" " alt="" coords="102,80,173,107"/>
-<area shape="rect" id="node4" title=" " alt="" coords="197,80,275,107"/>
-<area shape="rect" id="node5" title=" " alt="" coords="300,80,359,107"/>
-<area shape="rect" id="node6" title=" " alt="" coords="383,80,438,107"/>
-<area shape="rect" id="node7" title=" " alt="" coords="462,80,530,107"/>
-<area shape="rect" id="node8" title=" " alt="" coords="555,80,659,107"/>
-<area shape="rect" id="node9" title=" " alt="" coords="683,80,794,107"/>
-<area shape="rect" id="node10" title=" " alt="" coords="819,80,893,107"/>
+<area shape="rect" id="node1" title="Validate input contents." alt="" coords="345,5,476,31"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,79,77,104"/>
+<area shape="rect" id="node3" title=" " alt="" coords="102,79,173,104"/>
+<area shape="rect" id="node4" title=" " alt="" coords="197,79,275,104"/>
+<area shape="rect" id="node5" title=" " alt="" coords="300,79,359,104"/>
+<area shape="rect" id="node6" title=" " alt="" coords="383,79,438,104"/>
+<area shape="rect" id="node7" title=" " alt="" coords="462,79,530,104"/>
+<area shape="rect" id="node8" title=" " alt="" coords="555,79,659,104"/>
+<area shape="rect" id="node9" title=" " alt="" coords="683,79,794,104"/>
+<area shape="rect" id="node10" title=" " alt="" coords="819,79,893,104"/>
 </map>
