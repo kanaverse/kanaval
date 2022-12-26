@@ -59,7 +59,7 @@ inline int validate(const H5::H5File& handle, int num_cells, int num_modalities,
     try {
         remaining = validate_results(qhandle, num_cells, num_modalities);
     } catch (std::exception& e) {
-        throw utils::combine_errors(e, "failed to retrieve results from 'quality_control'");
+        throw utils::combine_errors(e, "failed to retrieve results from 'cell_filtering'");
     }
 
     return remaining;
