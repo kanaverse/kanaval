@@ -12,32 +12,28 @@ enable_testing()
 
 add_executable(
     libtest 
-    src/inputs.cpp
 
-    src/quality_control.cpp
-    src/adt_quality_control.cpp
-    src/cell_filtering.cpp
-
-    src/normalization.cpp
-    src/adt_normalization.cpp
-
-    src/feature_selection.cpp
-
-    src/pca.cpp
-    src/adt_pca.cpp
-    src/combine_embeddings.cpp
-    src/batch_correction.cpp
-
-    src/neighbor_index.cpp
-    src/tsne.cpp
-    src/umap.cpp
-    src/kmeans_cluster.cpp
-    src/snn_graph_cluster.cpp
-    src/choose_clustering.cpp
-    src/marker_detection.cpp
-    src/custom_selections.cpp
-    src/cell_labelling.cpp
-    src/validate.cpp
+    src/v2/inputs.cpp
+    src/v2/quality_control.cpp
+    src/v2/adt_quality_control.cpp
+    src/v2/cell_filtering.cpp
+    src/v2/normalization.cpp
+    src/v2/adt_normalization.cpp
+    src/v2/feature_selection.cpp
+    src/v2/pca.cpp
+    src/v2/adt_pca.cpp
+    src/v2/combine_embeddings.cpp
+    src/v2/batch_correction.cpp
+    src/v2/neighbor_index.cpp
+    src/v2/tsne.cpp
+    src/v2/umap.cpp
+    src/v2/kmeans_cluster.cpp
+    src/v2/snn_graph_cluster.cpp
+    src/v2/choose_clustering.cpp
+    src/v2/marker_detection.cpp
+    src/v2/custom_selections.cpp
+    src/v2/cell_labelling.cpp
+    src/v2/validate.cpp
 )
 
 target_link_libraries(
