@@ -38,31 +38,56 @@ Each file can be excised by reading the offsets and sizes in the `inputs` group 
 ## Structure of the HDF5 state file
 
 Inside the HDF5 state file, each analysis step is represented by a HDF5 group.
-The expectations for the contents of each group are described in the documentation for the corresponding validation function:
 
-|**Step**|**Specification**|**Function**|
-|---|---|---|
-| Inputs | [link](https://ltla.github.io/kanaval/details-inputs.html) | [link](https://ltla.github.io/kanaval/inputs_8hpp.html) |
-| Quality control | [link](https://ltla.github.io/kanaval/details-quality_control.html) | [link](https://ltla.github.io/kanaval/quality__control_8hpp.html) |
-| ADT quality control | [link](https://ltla.github.io/kanaval/details-adt_quality_control.html) | [link](https://ltla.github.io/kanaval/adt__quality__control_8hpp.html) |
-| Normalization | [link](https://ltla.github.io/kanaval/details-normalization.html) | [link](https://ltla.github.io/kanaval/normalization_8hpp.html) |
-| ADT normalization | [link](https://ltla.github.io/kanaval/details-adt_normalization.html) | [link](https://ltla.github.io/kanaval/adt__normalization_8hpp.html) |
-| Feature selection | [link](https://ltla.github.io/kanaval/details-feature_selection.html) | [link](https://ltla.github.io/kanaval/feature__selection_8hpp.html) |
-| PCA | [link](https://ltla.github.io/kanaval/details-pca.html) | [link](https://ltla.github.io/kanaval/pca_8hpp.html) |
-| ADT PCA | [link](https://ltla.github.io/kanaval/details-adt_pca.html) | [link](https://ltla.github.io/kanaval/adt__pca_8hpp.html) |
-| Combine embeddings | [link](https://ltla.github.io/kanaval/details-combine_embeddings.html) | [link](https://ltla.github.io/kanaval/combine__embeddings_8hpp.html) |
-| Batch correction | [link](https://ltla.github.io/kanaval/details-batch_correction.html) | [link](https://ltla.github.io/kanaval/batch__correction_8hpp.html) |
-| k-means clustering | [link](https://ltla.github.io/kanaval/details-kmeans_cluster.html) | [link](https://ltla.github.io/kanaval/kmeans__cluster_8hpp.html) |
-| Neighbor index | [link](https://ltla.github.io/kanaval/details-neighbor_index.html) | [link](https://ltla.github.io/kanaval/neighbor__index_8hpp.html) |
-| SNN graph clustering | [link](https://ltla.github.io/kanaval/details-snn_graph_cluster.html) | [link](https://ltla.github.io/kanaval/snn__graph__cluster_8hpp.html) |
-| Clustering choice | [link](https://ltla.github.io/kanaval/details-choose_clustering.html) | [link](https://ltla.github.io/kanaval/choose__clustering_8hpp.html) |
-| t-SNE | [link](https://ltla.github.io/kanaval/details-tsne.html) | [link](https://ltla.github.io/kanaval/tsne_8hpp.html) |
-| UMAP | [link](https://ltla.github.io/kanaval/details-umap.html) | [link](https://ltla.github.io/kanaval/umap_8hpp.html) |
-| Marker detection | [link](https://ltla.github.io/kanaval/details-marker_detection.html) | [link](https://ltla.github.io/kanaval/marker__detection_8hpp.html) |
-| Custom selections | [link](https://ltla.github.io/kanaval/details-custom_selections.html) | [link](https://ltla.github.io/kanaval/custom__selections_8hpp.html) |
-| Cell labelling | [link](https://ltla.github.io/kanaval/details-cell_labelling.html) | [link](https://ltla.github.io/kanaval/cell__labelling_8hpp.html) |
+**Version 2.1:**
 
-All of these can be executed on a state file by calling the [`validate()`](https://ltla.github.io/kanaval/validate_8hpp.html) function,
+- [Inputs](docs/details/inputs/v2_1.md)
+  - [v2.0](docs/details/inputs/v2_0.md)
+- [RNA quality control](docs/details/quality_control/v2_1.md)
+  - [v2.0](docs/details/quality_control/v1_0.md)
+- [ADT quality control](docs/details/adt_quality_control/v2_1.md)
+  - [v2.0](docs/details/adt_quality_control/v2_0.md)
+- [Cell filtering](docs/details/cell_filtering/v2_0.md)
+- [RNA normalization](docs/details/normalization/v1_0.md)
+- [ADT normalization](docs/details/adt_normalization/v2_0.md)
+- [Feature selection](docs/details/feature_selection/v1_0.md)
+- [RNA PCA](docs/details/pca/v2_0.md)
+- [ADT PCA](docs/details/adt_pca/v2_0.md)
+- [Combine embeddings](docs/details/combine_embeddings/v2_0.md)
+- [Batch correction](docs/details/batch_correction/v2_0.md)
+- [Neighbor index](docs/details/neighbor_index/v2_0.md)
+- [k-means clustering](docs/details/kmeans_cluster/v1_0.md)
+- [SNN graph clustering](docs/details/snn_graph_cluster/v1_0.md)
+- [Choose clustering](docs/details/choose_clustering/v1_0.md)
+- [Marker detection](docs/details/marker_detection/v2_0.md)
+- [Custom selections](docs/details/custom_selections/v2_1.md)
+  - [v2.0](docs/details/custom_selections/v2_0.md)
+- [Cell labelling](docs/details/cell_labelling/v1_0.md)
+- [t-SNE](docs/details/tsne/v1_0.md)
+- [UMAP](docs/details/umap/v1_0.md)
+
+**Version 1.2:**
+
+- [Inputs](docs/details/inputs/v1_2.md)
+  - [v1.1](docs/details/inputs/v1_1.md)
+  - [v1.0](docs/details/inputs/v1_0.md)
+- [Quality control](docs/details/quality_control/v1_0.md)
+- [Normalization](docs/details/normalization/v1_0.md)
+- [Feature selection](docs/details/feature_selection/v1_0.md)
+- [PCA](docs/details/pca/v1_1.md)
+  - [v1.0](docs/details/v1_0.md)
+- [k-means clustering](docs/details/kmeans_cluster/v1_0.md)
+- [SNN graph clustering](docs/details/snn_graph_cluster/v1_0.md)
+- [Choose clustering](docs/details/choose_clustering/v1_0.md)
+- [Marker detection](docs/details/marker_detection/v1_0.md)
+- [Custom selections](docs/details/custom_selections/v1_0.md)
+- [Cell labelling](docs/details/cell_labelling/v1_0.md)
+- [t-SNE](docs/details/tsne/v1_0.md)
+- [UMAP](docs/details/umap/v1_0.md)
+
+## Running the validator
+
+Calling the [`validate()`](https://ltla.github.io/kanaval/validate_8hpp.html) function will validate the state file,
 which will throw a reasonably informative error if there are any problems.
 
 ```cpp
