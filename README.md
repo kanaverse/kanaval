@@ -50,7 +50,7 @@ Inside the HDF5 state file, each analysis step is represented by a HDF5 group.
 - [Feature selection](docs/details/feature_selection/v1_0.md)
 - [RNA PCA](docs/details/pca/v2_0.md)
 - [ADT PCA](docs/details/adt_pca/v2_0.md)
-- [Combine embeddings](docs/details/combine_embeddings/v2_0.md)
+- [Combine embeddings](docs/details/combine_embeddings/v3_0.md)
 - [Batch correction](docs/details/batch_correction/v2_0.md)
 - [Neighbor index](docs/details/neighbor_index/v2_0.md)
 - [k-means clustering](docs/details/kmeans_cluster/v1_0.md)
