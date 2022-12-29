@@ -42,7 +42,7 @@ TEST(CellFilteringV2, AllOK) {
     }
 }
 
-void quick_filter_throw(const std::string& path, int num_cells, int num_modalities, std::string msg) {
+static void quick_filter_throw(const std::string& path, int num_cells, int num_modalities, std::string msg) {
     quick_throw([&]() -> void {
         H5::H5File handle(path, H5F_ACC_RDONLY);
         kanaval::v2::validate_cell_filtering(handle, num_cells, num_modalities, latest);
