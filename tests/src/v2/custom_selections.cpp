@@ -96,7 +96,7 @@ TEST(CustomSelectionsV2, MultiModalOK) {
     }, "ADT");
 }
 
-void quick_custom_throw(const std::string& path, int ngenes, int ncells, std::string msg) {
+static void quick_custom_throw(const std::string& path, int ngenes, int ncells, std::string msg) {
     quick_throw([&]() -> void {
         H5::H5File handle(path, H5F_ACC_RDONLY);
         kanaval::v2::validate_custom_selections(handle, ncells, { "RNA" }, { ngenes }, latest);

@@ -57,7 +57,7 @@ Inside the HDF5 state file, each analysis step is represented by a HDF5 group.
 - [SNN graph clustering](docs/details/snn_graph_cluster/v3_0.md)
 - [Choose clustering](docs/details/choose_clustering/v1_0.md)
 - [Marker detection](docs/details/marker_detection/v3_0.md)
-- [Custom selections](docs/details/custom_selections/v2_1.md)
+- [Custom selections](docs/details/custom_selections/v3_0.md)
 - [Cell labelling](docs/details/cell_labelling/v1_0.md)
 - [t-SNE](docs/details/tsne/v1_0.md)
 - [UMAP](docs/details/umap/v1_0.md)

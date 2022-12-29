@@ -5,27 +5,7 @@
 
 namespace v3 {
 
-void add_marker_detection_base(H5::Group& handle, int ngenes, int nclusters, bool has_auc) {
-    for (int i = 0; i < nclusters; ++i) {
-        auto istr = std::to_string(i);
-        auto xhandle = handle.createGroup(istr);
-        quick_write_dataset(xhandle, "means", std::vector<double>(ngenes));
-        quick_write_dataset(xhandle, "detected", std::vector<double>(ngenes));
-
-        for (const auto& e : kanaval::v2::markers::effects) {
-            if (!has_auc && e == "auc") {
-                continue;
-            }
-
-            auto ehandle = xhandle.createGroup(e);
-            quick_write_dataset(ehandle, "mean", std::vector<double>(ngenes));
-            quick_write_dataset(ehandle, "min", std::vector<double>(ngenes));
-            quick_write_dataset(ehandle, "min_rank", std::vector<double>(ngenes));
-        }
-    }
-}
-
-void add_marker_detection(H5::H5File& handle, const std::vector<int>& ngenes, int nclusters, const std::vector<std::string>& modality, bool has_auc = true, double lfc_threshold = 0) {
+void add_marker_detection(H5::H5File& handle, const std::unordered_map<std::string, int>& modalities, int nclusters, bool has_auc = true, double lfc_threshold = 0) {
     auto qhandle = handle.createGroup("marker_detection");
     auto phandle = qhandle.createGroup("parameters");
     quick_write_dataset(phandle, "compute_auc", static_cast<int>(has_auc));
@@ -33,14 +13,32 @@ void add_marker_detection(H5::H5File& handle, const std::vector<int>& ngenes, in
 
     auto rhandle = qhandle.createGroup("results");
     auto chandle = rhandle.createGroup("per_cluster");
-    for (size_t m = 0; m < modality.size(); ++m) {
-        auto mohandle = chandle.createGroup(modality[m]);
-        add_marker_detection_base(mohandle, ngenes[m], nclusters, has_auc);
+    for (const auto& p : modalities) {
+        auto mohandle = chandle.createGroup(p.first);
+        auto ngenes = p.second;
+
+        for (int i = 0; i < nclusters; ++i) {
+            auto istr = std::to_string(i);
+            auto xhandle = mohandle.createGroup(istr);
+            quick_write_dataset(xhandle, "means", std::vector<double>(ngenes));
+            quick_write_dataset(xhandle, "detected", std::vector<double>(ngenes));
+
+            for (const auto& e : kanaval::v3::markers::effects) {
+                if (!has_auc && e == "auc") {
+                    continue;
+                }
+
+                auto ehandle = xhandle.createGroup(e);
+                quick_write_dataset(ehandle, "mean", std::vector<double>(ngenes));
+                quick_write_dataset(ehandle, "min", std::vector<double>(ngenes));
+                quick_write_dataset(ehandle, "min_rank", std::vector<double>(ngenes));
+            }
+        }
     }
 }
 
 void add_marker_detection(H5::H5File& handle, int ngenes, int nclusters, bool has_auc = true, double lfc_threshold = 0) {
-    add_marker_detection(handle, { ngenes }, nclusters, { "RNA" }, has_auc, lfc_threshold);
+    add_marker_detection(handle, { { "RNA", ngenes } }, nclusters, has_auc, lfc_threshold);
 }
 
 }
@@ -54,7 +52,7 @@ TEST(MarkerDetectionV3, AllOK) {
     }
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        EXPECT_NO_THROW(kanaval::v3::validate_marker_detection(handle, 5, { "RNA" }, { 100 }, latest));
+        EXPECT_NO_THROW(kanaval::v3::validate_marker_detection(handle, 5, { { "RNA", 100 } }, latest));
     }
 }
 
@@ -63,11 +61,11 @@ TEST(MarkerDetectionV3, MultiModalOK) {
 
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
-        v3::add_marker_detection(handle, { 100, 5 }, 5, { "RNA", "ADT" });
+        v3::add_marker_detection(handle, { { "RNA", 100 }, { "ADT", 5 } }, 5);
     }
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        EXPECT_NO_THROW(kanaval::v3::validate_marker_detection(handle, 5, { "RNA", "ADT" }, { 100, 5 }, latest));
+        EXPECT_NO_THROW(kanaval::v3::validate_marker_detection(handle, 5, { { "RNA", 100 }, { "ADT", 5 } }, latest));
     }
 
     // Fails if multiple modalities were expected but not found.
@@ -77,14 +75,14 @@ TEST(MarkerDetectionV3, MultiModalOK) {
     }
     quick_throw([&]() -> void {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        kanaval::v3::validate_marker_detection(handle, 5, { "RNA", "ADT" }, { 100, 5 }, latest);
+        kanaval::v3::validate_marker_detection(handle, 5, { { "RNA", 100 }, { "ADT", 5 } }, latest);
     }, "ADT");
 }
 
 static void quick_marker_throw(const std::string& path, int ngenes, int nclusters, std::string msg) {
     quick_throw([&]() -> void {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        kanaval::v3::validate_marker_detection(handle, nclusters, { "RNA" }, { ngenes }, latest);
+        kanaval::v3::validate_marker_detection(handle, nclusters, { { "RNA", ngenes } }, latest);
     }, msg);
 }
 
@@ -170,7 +168,7 @@ TEST(MarkerDetectionV3, NoAucOK) {
     // Missing an AUC is okay...
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        EXPECT_NO_THROW(kanaval::v3::validate_marker_detection(handle, 5, { "RNA" }, { 100 }, latest));
+        EXPECT_NO_THROW(kanaval::v3::validate_marker_detection(handle, 5, { { "RNA", 100 } }, latest));
     }
 
     // Unless we force it to use AUCs.
