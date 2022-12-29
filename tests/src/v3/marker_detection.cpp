@@ -1,17 +1,22 @@
 #include <gtest/gtest.h>
-#include "kanaval/v2/marker_detection.hpp"
+#include "kanaval/v3/marker_detection.hpp"
 #include "../utils.h"
 #include <iostream>
 
-namespace v2 {
+namespace v3 {
 
-void add_marker_detection_base(H5::Group& handle, int ngenes, int nclusters) {
+void add_marker_detection_base(H5::Group& handle, int ngenes, int nclusters, bool has_auc) {
     for (int i = 0; i < nclusters; ++i) {
         auto istr = std::to_string(i);
         auto xhandle = handle.createGroup(istr);
         quick_write_dataset(xhandle, "means", std::vector<double>(ngenes));
         quick_write_dataset(xhandle, "detected", std::vector<double>(ngenes));
+
         for (const auto& e : kanaval::v2::markers::effects) {
+            if (!has_auc && e == "auc") {
+                continue;
+            }
+
             auto ehandle = xhandle.createGroup(e);
             quick_write_dataset(ehandle, "mean", std::vector<double>(ngenes));
             quick_write_dataset(ehandle, "min", std::vector<double>(ngenes));
@@ -20,105 +25,106 @@ void add_marker_detection_base(H5::Group& handle, int ngenes, int nclusters) {
     }
 }
 
-void add_marker_detection(H5::H5File& handle, const std::vector<int>& ngenes, int nclusters, const std::vector<std::string>& modality) {
+void add_marker_detection(H5::H5File& handle, const std::vector<int>& ngenes, int nclusters, const std::vector<std::string>& modality, bool has_auc = true, double lfc_threshold = 0) {
     auto qhandle = handle.createGroup("marker_detection");
-    qhandle.createGroup("parameters");
+    auto phandle = qhandle.createGroup("parameters");
+    quick_write_dataset(phandle, "compute_auc", static_cast<int>(has_auc));
+    quick_write_dataset(phandle, "lfc_threshold", lfc_threshold);
+
     auto rhandle = qhandle.createGroup("results");
     auto chandle = rhandle.createGroup("per_cluster");
     for (size_t m = 0; m < modality.size(); ++m) {
         auto mohandle = chandle.createGroup(modality[m]);
-        add_marker_detection_base(mohandle, ngenes[m], nclusters);
+        add_marker_detection_base(mohandle, ngenes[m], nclusters, has_auc);
     }
 }
 
-void add_marker_detection(H5::H5File& handle, int ngenes, int nclusters) {
-    add_marker_detection(handle, { ngenes }, nclusters, { "RNA" });
-}
-
-void add_marker_detection_legacy(H5::H5File& handle, int ngenes, int nclusters) {
-    auto qhandle = handle.createGroup("marker_detection");
-    qhandle.createGroup("parameters");
-    auto rhandle = qhandle.createGroup("results");
-    auto chandle = rhandle.createGroup("clusters");
-    add_marker_detection_base(chandle, ngenes, nclusters);
+void add_marker_detection(H5::H5File& handle, int ngenes, int nclusters, bool has_auc = true, double lfc_threshold = 0) {
+    add_marker_detection(handle, { ngenes }, nclusters, { "RNA" }, has_auc, lfc_threshold);
 }
 
 }
 
-TEST(MarkerDetectionV2, AllOK) {
+TEST(MarkerDetectionV3, AllOK) {
     const std::string path = "TEST_marker_detection.h5";
 
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
-        v2::add_marker_detection(handle, 100, 5);
+        v3::add_marker_detection(handle, 100, 5);
     }
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        EXPECT_NO_THROW(kanaval::v2::validate_marker_detection(handle, 5, { "RNA" }, { 100 }, latest));
+        EXPECT_NO_THROW(kanaval::v3::validate_marker_detection(handle, 5, { "RNA" }, { 100 }, latest));
     }
 }
 
-TEST(MarkerDetectionV2, MultiModalOK) {
+TEST(MarkerDetectionV3, MultiModalOK) {
     const std::string path = "TEST_marker_detection.h5";
 
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
-        v2::add_marker_detection(handle, { 100, 5 }, 5, { "RNA", "ADT" });
+        v3::add_marker_detection(handle, { 100, 5 }, 5, { "RNA", "ADT" });
     }
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        EXPECT_NO_THROW(kanaval::v2::validate_marker_detection(handle, 5, { "RNA", "ADT" }, { 100, 5 }, latest));
+        EXPECT_NO_THROW(kanaval::v3::validate_marker_detection(handle, 5, { "RNA", "ADT" }, { 100, 5 }, latest));
     }
 
     // Fails if multiple modalities were expected but not found.
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
-        v2::add_marker_detection(handle, 100, 5);
+        v3::add_marker_detection(handle, 100, 5);
     }
     quick_throw([&]() -> void {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        kanaval::v2::validate_marker_detection(handle, 5, { "RNA", "ADT" }, { 100, 5 }, latest);
+        kanaval::v3::validate_marker_detection(handle, 5, { "RNA", "ADT" }, { 100, 5 }, latest);
     }, "ADT");
 }
 
 static void quick_marker_throw(const std::string& path, int ngenes, int nclusters, std::string msg) {
     quick_throw([&]() -> void {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        kanaval::v2::validate_marker_detection(handle, nclusters, { "RNA" }, { ngenes }, latest);
+        kanaval::v3::validate_marker_detection(handle, nclusters, { "RNA" }, { ngenes }, latest);
     }, msg);
 }
 
-TEST(MarkerDetectionV2, ParametersFailed) {
+TEST(MarkerDetectionV3, ParametersFailed) {
     const std::string path = "TEST_marker_detection.h5";
 
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
-        v2::add_marker_detection(handle, 100, 7);
-        handle.unlink("marker_detection/parameters");
+        v3::add_marker_detection(handle, 100, 7);
+        handle.unlink("marker_detection/parameters/compute_auc");
     }
-    quick_marker_throw(path, 100, 7, "'parameters' group");
+    quick_marker_throw(path, 100, 7, "'compute_auc'");
+
+    {
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        v3::add_marker_detection(handle, 100, 7, false, -1);
+    }
+    quick_marker_throw(path, 100, 7, "'lfc_threshold' must be non-negative");
 }
 
-TEST(MarkerDetectionV2, ResultsFailed) {
+TEST(MarkerDetectionV3, ResultsFailed) {
     const std::string path = "TEST_marker_detection.h5";
 
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
-        v2::add_marker_detection(handle, 100, 7);
+        v3::add_marker_detection(handle, 100, 7);
         handle.unlink("marker_detection/results");
     }
     quick_marker_throw(path, 100, 7, "'results' group");
 
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
-        v2::add_marker_detection(handle, 100, 7);
+        v3::add_marker_detection(handle, 100, 7);
         handle.unlink("marker_detection/results/per_cluster/RNA");
     }
     quick_marker_throw(path, 100, 7, "RNA");
 
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
-        v2::add_marker_detection(handle, 100, 7);
+        v3::add_marker_detection(handle, 100, 7);
         handle.unlink("marker_detection/results/per_cluster/RNA/2");
     }
     quick_marker_throw(path, 100, 7, "number of clusters");
@@ -126,43 +132,55 @@ TEST(MarkerDetectionV2, ResultsFailed) {
     // Same number of clusters as expected, but now the numbers aren't not consecutive.
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
-        v2::add_marker_detection(handle, 100, 7);
+        v3::add_marker_detection(handle, 100, 7);
         handle.unlink("marker_detection/results/per_cluster/RNA/2");
     }
     quick_marker_throw(path, 100, 6, "cluster 2");
 
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
-        v2::add_marker_detection(handle, 100, 7);
+        v3::add_marker_detection(handle, 100, 7);
         handle.unlink("marker_detection/results/per_cluster/RNA/2/detected");
     }
     quick_marker_throw(path, 100, 7, "detected");
 
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
-        v2::add_marker_detection(handle, 100, 7);
+        v3::add_marker_detection(handle, 100, 7);
         handle.unlink("marker_detection/results/per_cluster/RNA/2/lfc");
     }
     quick_marker_throw(path, 100, 7, "summary statistic");
 
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
-        v2::add_marker_detection(handle, 100, 7);
+        v3::add_marker_detection(handle, 100, 7);
         handle.unlink("marker_detection/results/per_cluster/RNA/2/auc/min");
     }
     quick_marker_throw(path, 100, 7, "auc");
 }
 
-TEST(MarkerDetectionV2, LegacyOk) {
+TEST(MarkerDetectionV3, NoAucOK) {
     const std::string path = "TEST_marker_detection.h5";
 
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
-        v2::add_marker_detection_legacy(handle, 100, 5);
+        v3::add_marker_detection(handle, 100, 5, false);
     }
+
+    // Missing an AUC is okay...
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        EXPECT_NO_THROW(kanaval::v2::validate_marker_detection(handle, 5, {}, {100}, 1001000));
+        EXPECT_NO_THROW(kanaval::v3::validate_marker_detection(handle, 5, { "RNA" }, { 100 }, latest));
     }
+
+    // Unless we force it to use AUCs.
+    {
+        H5::H5File handle(path, H5F_ACC_RDWR);
+        auto phandle = handle.openGroup("marker_detection/parameters");
+        phandle.unlink("compute_auc");
+        quick_write_dataset(phandle, "compute_auc", 1);
+    }
+    quick_marker_throw(path, 100, 5, "auc");
 }
+
 

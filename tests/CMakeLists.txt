@@ -34,6 +34,9 @@ add_executable(
     src/v2/custom_selections.cpp
     src/v2/cell_labelling.cpp
     src/v2/validate.cpp
+
+    src/v3/marker_detection.cpp
+    src/v3/snn_graph_cluster.cpp
 )
 
 target_link_libraries(
