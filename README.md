@@ -39,6 +39,29 @@ Each file can be excised by reading the offsets and sizes in the `inputs` group 
 
 Inside the HDF5 state file, each analysis step is represented by a HDF5 group.
 
+**Version 3.0:**
+
+- [Inputs](docs/details/inputs/v2_1.md)
+- [RNA quality control](docs/details/quality_control/v2_1.md)
+- [ADT quality control](docs/details/adt_quality_control/v2_1.md)
+- [Cell filtering](docs/details/cell_filtering/v2_0.md)
+- [RNA normalization](docs/details/normalization/v1_0.md)
+- [ADT normalization](docs/details/adt_normalization/v2_0.md)
+- [Feature selection](docs/details/feature_selection/v1_0.md)
+- [RNA PCA](docs/details/pca/v2_0.md)
+- [ADT PCA](docs/details/adt_pca/v2_0.md)
+- [Combine embeddings](docs/details/combine_embeddings/v2_0.md)
+- [Batch correction](docs/details/batch_correction/v2_0.md)
+- [Neighbor index](docs/details/neighbor_index/v2_0.md)
+- [k-means clustering](docs/details/kmeans_cluster/v1_0.md)
+- [SNN graph clustering](docs/details/snn_graph_cluster/v3_0.md)
+- [Choose clustering](docs/details/choose_clustering/v1_0.md)
+- [Marker detection](docs/details/marker_detection/v3_0.md)
+- [Custom selections](docs/details/custom_selections/v2_1.md)
+- [Cell labelling](docs/details/cell_labelling/v1_0.md)
+- [t-SNE](docs/details/tsne/v1_0.md)
+- [UMAP](docs/details/umap/v1_0.md)
+
 **Version 2.1:**
 
 - [Inputs](docs/details/inputs/v2_1.md)
