@@ -33,35 +33,15 @@ inline std::pair<bool, int> validate_quality_control(const H5::H5File& handle, i
 
     int remaining;
     try {
-        auto rhandle = utils::check_and_open_group(qhandle, "results");
-
-        if (!skip || rhandle.exists("metrics")) {
-            try {
-                auto mhandle = utils::check_and_open_group(rhandle, "metrics");
-                std::vector<size_t> dims{ static_cast<size_t>(num_cells) };
-                utils::check_and_open_dataset(mhandle, "sums", H5T_FLOAT, dims);
-                utils::check_and_open_dataset(mhandle, "detected", H5T_INTEGER, dims);
-                utils::check_and_open_dataset(mhandle, "proportion", H5T_FLOAT, dims);
-            } catch (std::exception& e) {
-                throw utils::combine_errors(e, "failed to retrieve metrics from 'results'");
-            }
-        }
-
-        if (!skip || rhandle.exists("thresholds")) {
-            try {
-                auto thandle = utils::check_and_open_group(rhandle, "thresholds");
-
-                std::vector<size_t> dims{ static_cast<size_t>(num_samples) };
-                utils::check_and_open_dataset(thandle, "sums", H5T_FLOAT, dims);
-                utils::check_and_open_dataset(thandle, "detected", H5T_FLOAT, dims);
-                utils::check_and_open_dataset(thandle, "proportion", H5T_FLOAT, dims);
-
-            } catch (std::exception& e) {
-                throw utils::combine_errors(e, "failed to retrieve thresholds from 'results'");
-            }
-        }
-
-        remaining = quality_control::check_discard_vector(rhandle, num_cells, skip);
+        remaining = quality_control::validate_results(
+            qhandle,
+            num_cells,
+            num_samples,
+            { { "sums", H5T_FLOAT }, { "detected", H5T_INTEGER }, { "proportion", H5T_FLOAT } },
+            { "sums", "detected", "proportion" },
+            true, /* RNA is always assumed to be in use */
+            skip
+        );
     } catch (std::exception& e) {
         throw utils::combine_errors(e, "failed to retrieve results from 'quality_control'");
     }

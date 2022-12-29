@@ -83,6 +83,49 @@ int check_discard_vector(const Object& rhandle, size_t num_cells, bool skip) {
     return remaining;
 }
 
+inline int validate_results(
+    const H5::Group& handle, 
+    int num_cells, 
+    int num_samples, 
+    const std::vector<std::pair<std::string, H5T_class_t> >& metrics,
+    const std::vector<std::string>& thresholds,
+    bool in_use,
+    bool skip)
+{
+    auto rhandle = utils::check_and_open_group(handle, "results");
+    int remaining = -1;
+
+    if (in_use) {
+        if (!skip || rhandle.exists("metrics")) {
+            try {
+                auto mhandle = utils::check_and_open_group(rhandle, "metrics");
+                std::vector<size_t> dims{ static_cast<size_t>(num_cells) };
+                for (const auto& m : metrics) {
+                    utils::check_and_open_dataset(mhandle, m.first, m.second, dims);
+                }
+            } catch (std::exception& e) {
+                throw utils::combine_errors(e, "failed to retrieve metrics from 'results'");
+            }
+        }
+
+        if (!skip || rhandle.exists("thresholds")) {
+            try {
+                auto thandle = utils::check_and_open_group(rhandle, "thresholds");
+                std::vector<size_t> dims{ static_cast<size_t>(num_samples) };
+                for (const auto& t : thresholds) {
+                    utils::check_and_open_dataset(thandle, t, H5T_FLOAT, dims);
+                }
+            } catch (std::exception& e) {
+                throw utils::combine_errors(e, "failed to retrieve thresholds from 'results'");
+            }
+        }
+
+        remaining = check_discard_vector(rhandle, num_cells, skip);
+    }
+
+    return remaining;
+}
+
 }
 
 namespace markers {
