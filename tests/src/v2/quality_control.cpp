@@ -62,7 +62,7 @@ TEST(QualityControlV2, AllOK) {
     }
 }
 
-void quick_qc_throw(const std::string& path, int num_cells, int num_samples, std::string msg) {
+static void quick_qc_throw(const std::string& path, int num_cells, int num_samples, std::string msg) {
     quick_throw([&]() -> void {
         H5::H5File handle(path, H5F_ACC_RDONLY);
         kanaval::v2::validate_quality_control(handle, num_cells, num_samples, latest);
