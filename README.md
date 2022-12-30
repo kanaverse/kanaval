@@ -41,7 +41,7 @@ Inside the HDF5 state file, each analysis step is represented by a HDF5 group.
 
 **Version 3.0:**
 
-- [Inputs](docs/details/inputs/v2_1.md)
+- [Inputs](docs/details/inputs/v3_0.md)
 - [RNA quality control](docs/details/rna_quality_control/v3_0.md)
 - [ADT quality control](docs/details/adt_quality_control/v3_0.md)
 - [CRISPR quality control](docs/details/crispr_quality_control/v3_0.md)
