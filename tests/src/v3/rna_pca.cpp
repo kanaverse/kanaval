@@ -102,13 +102,6 @@ TEST(RnaPcaV3, ParametersFailed) {
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
         v3::add_rna_pca(handle, 10, 1000);
-        handle.unlink("rna_pca/parameters/num_hvgs");
-    }
-    quick_rna_pca_throw(path, 1000, "'num_hvgs' dataset");
-
-    {
-        H5::H5File handle(path, H5F_ACC_TRUNC);
-        v3::add_rna_pca(handle, 10, 1000);
         auto phandle = handle.openGroup("rna_pca/parameters");
         phandle.unlink("block_method");
         quick_write_dataset(phandle, "block_method", "foo");
