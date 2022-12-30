@@ -35,6 +35,7 @@ add_executable(
     src/v2/cell_labelling.cpp
     src/v2/validate.cpp
 
+    src/v3/inputs.cpp
     src/v3/rna_quality_control.cpp
     src/v3/adt_quality_control.cpp
     src/v3/crispr_quality_control.cpp
