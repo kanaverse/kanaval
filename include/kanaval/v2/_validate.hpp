@@ -1,5 +1,5 @@
-#ifndef KANAVAL_VALIDATE_V2_HPP
-#define KANAVAL_VALIDATE_V2_HPP
+#ifndef KANAVAL__VALIDATE_V2_HPP
+#define KANAVAL__VALIDATE_V2_HPP
 
 #include "inputs.hpp"
 

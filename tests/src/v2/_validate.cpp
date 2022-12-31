@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "kanaval/v2/validate.hpp"
+#include "kanaval/v2/_validate.hpp"
 #include "H5Cpp.h"
 #include "../utils.h"
 #include "helpers.h"
@@ -56,7 +56,7 @@ static void spawn(H5::H5File& handle, bool multi_matrix = false, bool include_ad
     v2::add_cell_labelling(handle, num_clusters);
 }
 
-TEST(Overall, Single) {
+TEST(OverallV2, Single) {
     const std::string path = "TEST_overall.h5";
 
     {
@@ -69,7 +69,7 @@ TEST(Overall, Single) {
     }
 }
 
-TEST(Overall, SingleAdts) {
+TEST(OverallV2, SingleAdts) {
     const std::string path = "TEST_overall.h5";
 
     {
@@ -82,7 +82,7 @@ TEST(Overall, SingleAdts) {
     }
 }
 
-TEST(Overall, Multiple) {
+TEST(OverallV2, Multiple) {
     const std::string path = "TEST_overall.h5";
 
     {
@@ -95,7 +95,7 @@ TEST(Overall, Multiple) {
     }
 }
 
-TEST(Overall, MultipleAdts) {
+TEST(OverallV2, MultipleAdts) {
     const std::string path = "TEST_overall.h5";
 
     {
