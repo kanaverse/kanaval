@@ -34,7 +34,7 @@ TEST(CombineEmbeddingsV3, AllOK) {
     }
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        EXPECT_NO_THROW(kanaval::v3::validate_combine_embeddings(handle, 100, { { "RNA", 10 }, { "ADT", 5 } }, latest));
+        EXPECT_EQ(kanaval::v3::validate_combine_embeddings(handle, 100, { { "RNA", 10 }, { "ADT", 5 } }, latest), 15);
     }
 
     // Works if there's only one modality and no PCs.
@@ -45,10 +45,10 @@ TEST(CombineEmbeddingsV3, AllOK) {
     }
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        EXPECT_NO_THROW(kanaval::v3::validate_combine_embeddings(handle, 100, { { "RNA", 5 } }, latest));
+        EXPECT_EQ(kanaval::v3::validate_combine_embeddings(handle, 100, { { "RNA", 5 } }, latest), 5);
 
         // CRISPR is not used by default, so still just one modality.
-        EXPECT_NO_THROW(kanaval::v3::validate_combine_embeddings(handle, 100, { { "RNA", 5 }, { "CRISPR", 100 } }, latest));
+        EXPECT_EQ(kanaval::v3::validate_combine_embeddings(handle, 100, { { "RNA", 5 }, { "CRISPR", 100 } }, latest), 5);
     }
 }
 

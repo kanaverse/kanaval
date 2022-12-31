@@ -11,7 +11,7 @@ namespace kanaval {
 
 namespace v3 {
 
-inline void validate_combine_embeddings(const H5::H5File& handle, int num_cells, const std::unordered_map<std::string, int>& modalities, int version) {
+inline int validate_combine_embeddings(const H5::H5File& handle, int num_cells, const std::unordered_map<std::string, int>& modalities, int version) {
     auto xhandle = utils::check_and_open_group(handle, "combine_embeddings");
 
     // Checking the parameters.
@@ -53,7 +53,7 @@ inline void validate_combine_embeddings(const H5::H5File& handle, int num_cells,
         throw utils::combine_errors(e, "failed to retrieve results from 'combine_embeddings'");
     }
 
-    return;
+    return total_dims;
 }
 
 }

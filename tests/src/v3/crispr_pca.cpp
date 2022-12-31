@@ -37,7 +37,7 @@ TEST(CrisprPcaV3, AllOK) {
     }
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        EXPECT_NO_THROW(kanaval::v3::validate_crispr_pca(handle, 1000, latest));
+        EXPECT_NO_THROW(kanaval::v3::validate_crispr_pca(handle, 1000, true, latest));
     }
 
     // Checking with other block_method.
@@ -50,14 +50,14 @@ TEST(CrisprPcaV3, AllOK) {
     }
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        EXPECT_NO_THROW(kanaval::v3::validate_crispr_pca(handle, 1000, latest));
+        EXPECT_NO_THROW(kanaval::v3::validate_crispr_pca(handle, 1000, true, latest));
     }
 }
 
 static void quick_crispr_pca_throw(const std::string& path, int num_cells, std::string msg) {
     quick_throw([&]() -> void {
         H5::H5File handle(path, H5F_ACC_RDONLY);
-        kanaval::v3::validate_crispr_pca(handle, num_cells, latest);
+        kanaval::v3::validate_crispr_pca(handle, num_cells, true, latest);
     }, msg);
 }
 
@@ -101,9 +101,29 @@ TEST(CrisprPcaV3, ResultsFailed) {
     }
     quick_crispr_pca_throw(path, 1000, "'results' group");
 
+    // Wrong dimensions.
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
         v3::add_crispr_pca(handle, 10, 1000);
     }
     quick_crispr_pca_throw(path, 500, "'pcs' dataset");
+}
+
+TEST(CrisprPcaV3, NotInUse) {
+    const std::string path = "TEST_crispr_pca.h5";
+
+    // Not okay if CRISPR is available...
+    {
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        v3::add_crispr_pca(handle, 10, 1000);
+        auto rhandle = handle.openGroup("crispr_pca/results");
+        rhandle.unlink("pcs");
+    }
+    quick_crispr_pca_throw(path, 500, "'pcs' dataset");
+
+    // Okay if it's missing.
+    {
+        H5::H5File handle(path, H5F_ACC_RDONLY);
+        EXPECT_EQ(kanaval::v3::validate_crispr_pca(handle, 1000, false, latest), -1);
+    }
 }

@@ -10,7 +10,7 @@ namespace kanaval {
 
 namespace v3 {
 
-inline int validate_crispr_quality_control(const H5::H5File& handle, int num_cells, int num_blocks, bool crispr_in_use, int version) {
+inline int validate_crispr_quality_control(const H5::H5File& handle, int num_cells, int num_blocks, bool crispr_available, int version) {
     auto xhandle = utils::check_and_open_group(handle, "crispr_quality_control");
 
     try {
@@ -31,7 +31,7 @@ inline int validate_crispr_quality_control(const H5::H5File& handle, int num_cel
             num_blocks, 
             { { "sums", H5T_FLOAT }, { "detected", H5T_INTEGER }, { "max_proportion", H5T_FLOAT }, { "max_index", H5T_INTEGER }},
             { "max_count" },
-            crispr_in_use
+            crispr_available
         );
     } catch (std::exception& e) {
         throw utils::combine_errors(e, "failed to retrieve results from 'crispr_quality_control'");

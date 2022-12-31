@@ -10,7 +10,7 @@ namespace kanaval {
 
 namespace v3 {
 
-inline int validate_rna_quality_control(const H5::H5File& handle, int num_cells, int num_blocks, bool rna_in_use, int version) {
+inline int validate_rna_quality_control(const H5::H5File& handle, int num_cells, int num_blocks, bool rna_available, int version) {
     auto xhandle = utils::check_and_open_group(handle, "rna_quality_control");
 
     try {
@@ -34,7 +34,7 @@ inline int validate_rna_quality_control(const H5::H5File& handle, int num_cells,
             num_blocks, 
             { { "sums", H5T_FLOAT }, { "detected", H5T_INTEGER }, { "proportion", H5T_FLOAT }},
             { "sums", "detected", "proportion" },
-            rna_in_use
+            rna_available
         );
     } catch (std::exception& e) {
         throw utils::combine_errors(e, "failed to retrieve results from 'rna_quality_control'");

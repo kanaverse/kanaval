@@ -12,7 +12,7 @@ namespace kanaval {
 
 namespace v3 {
 
-inline int validate_crispr_pca(const H5::H5File& handle, int num_cells, int version) {
+inline int validate_crispr_pca(const H5::H5File& handle, int num_cells, bool crispr_available, int version) {
     auto xhandle = utils::check_and_open_group(handle, "crispr_pca");
 
     int npcs;
@@ -23,10 +23,12 @@ inline int validate_crispr_pca(const H5::H5File& handle, int num_cells, int vers
         throw utils::combine_errors(e, "failed to retrieve parameters from 'crispr_pca'");
     }
 
-    int obs_pcs;
+    int obs_pcs = -1;
     try {
         auto rhandle = utils::check_and_open_group(xhandle, "results");
-        obs_pcs = pca::check_pca_contents(rhandle, npcs, num_cells);
+        if (crispr_available) {
+            obs_pcs = pca::check_pca_contents(rhandle, npcs, num_cells);
+        }
     } catch (std::exception& e) {
         throw utils::combine_errors(e, "failed to retrieve results from 'crispr_pca'");
     }
