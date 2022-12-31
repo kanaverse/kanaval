@@ -48,6 +48,7 @@ add_executable(
     src/v3/marker_detection.cpp
     src/v3/custom_selections.cpp
     src/v3/snn_graph_cluster.cpp
+    src/v3/_metadata.cpp
 )
 
 target_link_libraries(

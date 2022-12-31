@@ -11,9 +11,7 @@ The **kanaval** repository contains a specification of the expected structure an
 We use a specification-as-code approach that enforces the specification with a validator library, implemented with header-only C++ for portablity to any system that supports a foreign function interface. 
 It is thus possible to create `kana` files from other languages, validate them, and upload them to **kana**.
 
-## Background on the `kana` layout
-
-This section describes version 1 of the `kana` export format.
+## Format specification
 
 The first 8 bytes define an unsigned 64-bit integer in little-endian, specifying the format type.
 This is used to denote whether the input data files are embedded (0) or linked (1);
@@ -21,7 +19,6 @@ the former is used for export to a standalone file while the latter is used to s
 
 The next 8 bytes define another unsigned 64-bit integer describing the format version.
 We use semantic versioning where each version number is described by 3 digits, i.e., `XXXYYYZZZ`.
-This document will only consider version 1, i.e., `001YYYZZZ`.
 
 The next 8 bytes define another unsigned 64-bit integer specifying the size of the HDF5 file containing the analysis state.
 Let's call this value `state_nbytes`.
@@ -64,6 +61,8 @@ Inside the HDF5 state file, each analysis step is represented by a HDF5 group.
 - [Cell labelling](docs/details/cell_labelling/v1_0.md)
 - [t-SNE](docs/details/tsne/v1_0.md)
 - [UMAP](docs/details/umap/v1_0.md)
+
+*[File metadata](docs/details/_metadata/v3_0.md) is stored in its own group.*
 
 **Version 2.1:**
 
