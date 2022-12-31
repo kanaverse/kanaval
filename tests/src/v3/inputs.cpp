@@ -5,7 +5,7 @@
 
 namespace v3 {
 
-void add_single_matrix(H5::H5File& handle, std::string mode = "MatrixMarket", int ngenes = 1000, int ncells = 100) {
+void add_single_matrix(H5::H5File& handle, std::string mode = "MatrixMarket", int ngenes = 1000, int ncells = 100, int nblocks = 1) {
     auto ihandle = handle.createGroup("inputs");
 
     auto phandle = ihandle.createGroup("parameters");
@@ -37,7 +37,7 @@ void add_single_matrix(H5::H5File& handle, std::string mode = "MatrixMarket", in
 
     auto rhandle = ihandle.createGroup("results");
     quick_write_dataset(rhandle, "num_cells", ncells);
-    quick_write_dataset(rhandle, "num_blocks", 1);
+    quick_write_dataset(rhandle, "num_blocks", nblocks);
 
     auto idhandle = rhandle.createGroup("feature_identities");
     std::vector<int> identities(1000);
@@ -92,10 +92,7 @@ TEST(InputsV3, Blocking) {
     // Fails at first, if we inject multiple blocks without a blocking factor.
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
-        v3::add_single_matrix(handle, "H5AD");
-        auto rhandle = handle.openGroup("inputs/results");
-        rhandle.unlink("num_blocks");
-        quick_write_dataset(rhandle, "num_blocks", 5);
+        v3::add_single_matrix(handle, "H5AD", 1000, 100, 5);
     }
     quick_input_throw(path, "should be equal to the number of datasets");
 

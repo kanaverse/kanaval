@@ -50,6 +50,7 @@ add_executable(
     src/v3/custom_selections.cpp
     src/v3/snn_graph_cluster.cpp
     src/v3/_metadata.cpp
+    src/v3/_validate.cpp
 )
 
 target_link_libraries(
