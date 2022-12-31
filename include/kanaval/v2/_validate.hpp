@@ -32,28 +32,10 @@
 
 #include <algorithm>
 
-/**
- * @file validate.hpp
- *
- * @brief Validate the embedded state file of a kana file.
- */
-
 namespace kanaval {
 
-/** 
- * @namespace kanaval
- * @brief kana file validation (version 2 or lower)
- */
 namespace v2 {
 
-/**
- * Validate the analysis state HDF5 file embedded inside a `*.kana` file (version 2 or lower).
- * An error is raised if an invalid structure is detected in any step.
- *
- * @param handle Open handle to a HDF5 file.
- * @param embedded Whether the data files are embedded.
- * @param version Version of the kana file.
- */
 void validate(const H5::H5File& handle, bool embedded, int version) {
     auto i_out = validate_inputs(handle, embedded, version);
 
