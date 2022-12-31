@@ -1,5 +1,5 @@
-#ifndef KANAVAL_METADATA_V3_HPP
-#define KANAVAL_METADATA_V3_HPP
+#ifndef KANAVAL__METADATA_V3_HPP
+#define KANAVAL__METADATA_V3_HPP
 
 #include "H5Cpp.h"
 #include "../utils.hpp"
@@ -9,7 +9,9 @@ namespace kanaval {
 
 namespace v3 {
 
-void validate_metadata(const H5::H5File& handle, int version) {
+// Here we're using a double underscore for consistency,
+// given that everything else has validate_<step_name>.
+inline void validate__metadata(const H5::H5File& handle, int version) {
     try {    
         auto mhandle = utils::check_and_open_group(handle, "_metadata");
         auto v = utils::load_integer_scalar(mhandle, "format_version");

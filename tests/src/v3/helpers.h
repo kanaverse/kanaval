@@ -34,7 +34,7 @@ void add_rna_quality_control(H5::H5File& handle, int num_cells, int num_blocks, 
 
 void add_snn_graph_cluster(H5::H5File& handle, int num_cells, int num_clusters = 10);
 
-H5::Group add_metadata(H5::H5File& handle);
+H5::Group add__metadata(H5::H5File& handle);
 
 }
 

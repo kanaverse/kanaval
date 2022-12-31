@@ -114,7 +114,7 @@ void validate(const H5::H5File& handle, bool embedded, int version) {
     v2::validate_cell_labelling(handle, nclusters);
 
     // Checking metadata.
-    validate_metadata(handle, version);
+    validate__metadata(handle, version);
 }
 
 }

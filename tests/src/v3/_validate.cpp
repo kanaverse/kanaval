@@ -52,7 +52,7 @@ static void spawn_full(H5::H5File& handle, int num_blocks = 1) {
 
     v2::add_cell_labelling(handle, num_clusters);
 
-    v3::add_metadata(handle);
+    v3::add__metadata(handle);
 }
 
 TEST(OverallV3, MultiModalOk) {
@@ -168,7 +168,7 @@ TEST(OverallV3, UniModalOk) {
 
         v2::add_cell_labelling(handle, num_clusters);
 
-        v3::add_metadata(handle);
+        v3::add__metadata(handle);
     }
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
@@ -244,7 +244,7 @@ TEST(OverallV3, MultiDatasetOk) {
 
         v2::add_cell_labelling(handle, num_clusters);
 
-        v3::add_metadata(handle);
+        v3::add__metadata(handle);
     }
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
