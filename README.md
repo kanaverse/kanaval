@@ -46,7 +46,7 @@ Inside the HDF5 state file, each analysis step is represented by a HDF5 group.
 - [RNA normalization](docs/details/rna_normalization/v3_0.md)
 - [ADT normalization](docs/details/adt_normalization/v2_0.md)
 - [CRISPR normalization](docs/details/crispr_normalization/v3_0.md)
-- [Feature selection](docs/details/feature_selection/v1_0.md)
+- [Feature selection](docs/details/feature_selection/v3_0.md)
 - [RNA PCA](docs/details/rna_pca/v3_0.md)
 - [ADT PCA](docs/details/adt_pca/v2_0.md)
 - [CRISPR PCA](docs/details/crispr_pca/v3_0.md)
@@ -58,7 +58,7 @@ Inside the HDF5 state file, each analysis step is represented by a HDF5 group.
 - [Choose clustering](docs/details/choose_clustering/v1_0.md)
 - [Marker detection](docs/details/marker_detection/v3_0.md)
 - [Custom selections](docs/details/custom_selections/v3_0.md)
-- [Cell labelling](docs/details/cell_labelling/v1_0.md)
+- [Cell labelling](docs/details/cell_labelling/v3_0.md)
 - [t-SNE](docs/details/tsne/v1_0.md)
 - [UMAP](docs/details/umap/v1_0.md)
 

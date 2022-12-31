@@ -31,7 +31,7 @@
 
 #include "marker_detection.hpp"
 #include "custom_selections.hpp"
-#include "../v2/cell_labelling.hpp"
+#include "cell_labelling.hpp"
 
 #include "_metadata.hpp"
 #include <algorithm>
@@ -111,7 +111,7 @@ void validate(const H5::H5File& handle, bool embedded, int version) {
 
     validate_marker_detection(handle, nclusters, i_out.num_features, version);
     validate_custom_selections(handle, filtered_cells, i_out.num_features, version);
-    v2::validate_cell_labelling(handle, nclusters);
+    validate_cell_labelling(handle, nclusters, rna_available, version);
 
     // Checking metadata.
     validate__metadata(handle, version);

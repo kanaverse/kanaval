@@ -130,7 +130,7 @@ TEST(RnaPcaV3, ResultsFailed) {
 TEST(RnaPcaV3, NotInUse) {
     const std::string path = "TEST_rna_pca.h5";
 
-    // Not okay if CRISPR is available...
+    // Not okay if RNA is available...
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
         v3::add_rna_pca(handle, 10, 1000);
