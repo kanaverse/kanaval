@@ -42,6 +42,7 @@ add_executable(
     src/v3/cell_filtering.cpp
     src/v3/rna_normalization.cpp
     src/v3/crispr_normalization.cpp
+    src/v3/feature_selection.cpp
     src/v3/rna_pca.cpp
     src/v3/crispr_pca.cpp
     src/v3/combine_embeddings.cpp
