@@ -9,7 +9,11 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_library(kanaval INTERFACE)
 
+add_subdirectory(extern)
+
 target_include_directories(kanaval INTERFACE include/)
+
+target_link_libraries(kanaval INTERFACE millijson)
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     include(CTest)

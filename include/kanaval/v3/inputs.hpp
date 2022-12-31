@@ -3,6 +3,7 @@
 
 #include "H5Cpp.h"
 #include "../utils.hpp"
+#include "millijson/millijson.hpp"
 #include <stdexcept>
 #include <vector>
 #include <string>
@@ -68,17 +69,15 @@ inline size_t check_datasets(const H5::Group& phandle, bool embedded) {
 
             // Checking the options.
             if (curdhandle.exists("options")) {
-                auto ohandle = utils::check_and_open_group(curdhandle, "options");
+                auto opts = utils::load_string(curdhandle, "options");
+                millijson::Type type;
                 try {
-                    size_t noptions = ohandle.getNumObjs();
-                    for (size_t o = 0; o < noptions; ++o) {
-                        if (ohandle.childObjType(o) != H5O_TYPE_DATASET) {
-                            std::string optname = ohandle.getObjnameByIdx(o);
-                            throw std::runtime_error("option '" + optname + "' should be a dataset");
-                        }
-                    }
+                    type = millijson::validate_string(opts.c_str(), opts.size());
                 } catch (std::exception& e) {
-                    throw utils::combine_errors(e, "failed to load options");
+                    throw utils::combine_errors(e, "options should be a valid JSON string");
+                }
+                if (type != millijson::OBJECT) {
+                    throw std::runtime_error("options should encode a JSON object");
                 }
             }
 

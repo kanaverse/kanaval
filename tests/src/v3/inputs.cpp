@@ -184,24 +184,30 @@ TEST(InputsV3, Options) {
         H5::H5File handle(path, H5F_ACC_TRUNC);
         v3::add_single_matrix(handle);
         auto zerohandle = handle.openGroup("inputs/parameters/datasets/0");
-        auto ohandle = zerohandle.createGroup("options");
-        quick_write_dataset(ohandle, "featureTypeRnaName", "Gene Expression");
-        quick_write_dataset(ohandle, "assayIndex", 0);
+        quick_write_dataset(zerohandle, "options", "{ \"featureTypeRnaName\": \"Gene Expression\", \"assayIndex\": 0 }");
     }
     {
         H5::H5File handle(path, H5F_ACC_RDONLY);
         kanaval::v3::validate_inputs(handle, true, latest);
     }
 
-    // Fails if the children are groups.
+    // Fails for invalid JSON.
     {
         H5::H5File handle(path, H5F_ACC_TRUNC);
         v3::add_single_matrix(handle);
         auto zerohandle = handle.openGroup("inputs/parameters/datasets/0");
-        auto ohandle = zerohandle.createGroup("options");
-        ohandle.createGroup("foo");
+        quick_write_dataset(zerohandle, "options", "asdasdasd");
     }
-    quick_input_throw(path, "option 'foo' should be a dataset");
+    quick_input_throw(path, "options should be a valid JSON string");
+
+    // Fails for non-object JSON.
+    {
+        H5::H5File handle(path, H5F_ACC_TRUNC);
+        v3::add_single_matrix(handle);
+        auto zerohandle = handle.openGroup("inputs/parameters/datasets/0");
+        quick_write_dataset(zerohandle, "options", "[1, 2, 3]");
+    }
+    quick_input_throw(path, "options should encode a JSON object");
 }
 
 TEST(InputsV3, ParametersFail) {
